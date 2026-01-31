@@ -1,6 +1,13 @@
 [gd_scene format=3 uid="uid://haa7gldbrc60"]
 
 [ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/main.gd" id="1_o5qli"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/spawner_area.tscn" id="2_0wfyh"]
 
 [node name="Main" type="Node2D" unique_id=1836876014]
 script = ExtResource("1_o5qli")
+
+[node name="SpawnerArea" parent="." unique_id=1594890157 instance=ExtResource("2_0wfyh")]
+position = Vector2(592, 312)
+scale = Vector2(0.5, 0.5)
+
+[connection signal="pop_card" from="SpawnerArea" to="." method="_on_spawner_area_pop_card"]
