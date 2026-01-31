@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://tsli6q2atxla"]
 
-[ext_resource type="Script" uid="uid://b3d8iycsgeunp" path="res://scenes/spawner_area.gd" id="1_qthkk"]
+[ext_resource type="Script" uid="uid://b3d8iycsgeunp" path="res://scenes/deck.gd" id="1_qthkk"]
 [ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://graphics/cards/back/stardom.svg" id="2_iu1qe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qthkk"]
 size = Vector2(220, 320)
 
-[node name="SpawnerArea" type="Area2D" unique_id=1594890157]
+[node name="Deck" type="Area2D" unique_id=1594890157]
 script = ExtResource("1_qthkk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=867044228]
