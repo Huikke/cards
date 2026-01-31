@@ -3,6 +3,7 @@ extends Node2D
 var card_scene = preload("res://scenes/card.tscn")
 var suits = ["spade", "heart", "club", "diamond"]
 var back_sprite = "firemon.svg"
+var priority = 0
 
 func _on_spawner_area_pop_card(body, card_vs):
 	var card = card_scene.instantiate() as Area2D
@@ -11,6 +12,9 @@ func _on_spawner_area_pop_card(body, card_vs):
 
 	card.value = card_vs[0]
 	card.suit = card_vs[1]
+	
+	card.z_index = priority
+	priority += 1
 
 	add_child(card)
 	var x_move = randf_range(-1, 1)

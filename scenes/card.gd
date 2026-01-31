@@ -22,12 +22,22 @@ func _process(delta):
 
 
 func _on_input_event(_viewport, event, _shape_idx):
+	if event is InputEventMouseButton and event.pressed:
+		if Global.me_first == 0 or Global.me_first == get_instance_id():
+			Global.me_first = get_instance_id()
+		else:
+			return
 	if event is InputEventMouseButton and event.pressed and event.button_index == 2:
 		turn_card()
+		if not moving:
+			Global.me_first = get_instance_id()
+			await get_tree().process_frame
+			Global.me_first = 0
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		moving = position - event.position
 	if event is InputEventMouseButton and not event.pressed and event.button_index == 1:
 		moving = false
+		Global.me_first = 0
 
 func turn_card():
 	if not face:
