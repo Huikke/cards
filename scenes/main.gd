@@ -4,16 +4,6 @@ var card_scene = preload("res://scenes/card.tscn")
 var suits = ["spade", "heart", "club", "diamond"]
 var back_sprite = "firemon.svg"
 
-# Called when the node enters the scene tree for the first time.
-#func _ready():
-	#var card = card_scene.instantiate()
-	#card.position = Vector2(572, 324)
-	#card.scale = Vector2(1, 1)
-	#card.get_node("Sprite").texture = load("res://graphics/cards/back/" + back_sprite)
-	#card.value = randi_range(1, 13)
-	#card.suit = suits.pick_random()
-	#add_child(card)
-
 func _on_spawner_area_pop_card(body, card_vs):
 	var card = card_scene.instantiate() as Area2D
 	card.position = body.position

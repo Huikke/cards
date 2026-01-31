@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://tsli6q2atxla"]
 
 [ext_resource type="Script" uid="uid://b3d8iycsgeunp" path="res://scenes/spawner_area.gd" id="1_qthkk"]
-[ext_resource type="Texture2D" uid="uid://c1pdqojlw1p68" path="res://graphics/cards/back/backman.svg" id="2_iu1qe"]
+[ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://graphics/cards/back/stardom.svg" id="2_iu1qe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qthkk"]
 size = Vector2(220, 320)

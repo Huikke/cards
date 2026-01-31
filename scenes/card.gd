@@ -10,18 +10,26 @@ var face = false
 # Physics
 @export var direction = Vector2(0, 0)
 @export var speed = 0
+var moving = false
 
 func _ready():
 	$Sprite.texture = load("res://graphics/cards/back/" + back_sprite)
 
 func _process(delta):
 	position += direction * speed * delta
+	if moving:
+		position = moving + get_viewport().get_mouse_position()
+
 
 func _on_input_event(_viewport, event, _shape_idx):
-	if event is InputEventMouseButton and event.pressed:
-		on_tile_clicked()
+	if event is InputEventMouseButton and event.pressed and event.button_index == 2:
+		turn_card()
+	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
+		moving = position - event.position
+	if event is InputEventMouseButton and not event.pressed and event.button_index == 1:
+		moving = false
 
-func on_tile_clicked():
+func turn_card():
 	if not face:
 		var file_name = str(value) + "_" + suit + ".svg"
 		get_node("Sprite").texture = load("res://graphics/cards/front/" + file_name)
