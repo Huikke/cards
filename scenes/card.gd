@@ -3,7 +3,7 @@ extends Area2D
 # Card Attributes
 @export var value = "troll"
 @export var suit = "face"
-@export var back_sprite = "firemon.svg"
+@export var back_sprite = "flowexyz.svg"
 var suits = ["spade", "heart", "club", "diamond"]
 var face = false
 
