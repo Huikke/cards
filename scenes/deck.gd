@@ -16,6 +16,10 @@ func _ready():
 		$AdditionalSprites.add_child(card_padding)
 
 func _on_input_event(_viewport, event, _shape_idx):
+	if deck == []: # Bandage fix on too fast clicking
+			queue_free()
+			return
+	
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == 3:
 			deck.shuffle()
@@ -36,7 +40,6 @@ func _on_input_event(_viewport, event, _shape_idx):
 func deal():
 	var card = card_scene.instantiate() as Area2D
 	card.position = position
-	card.scale = Vector2(0.5, 0.5)
 	var pop_card = deck.pop_front()
 	card.value = pop_card[0]
 	card.suit = pop_card[1]

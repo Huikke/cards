@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cspr75vw5e5wk" path="res://graphics/cards/back/firemon.svg" id="2_6rnap"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qthkk"]
-size = Vector2(220, 320)
+size = Vector2(110, 160)
 
 [node name="Deck" type="Area2D" unique_id=1594890157]
 script = ExtResource("1_qthkk")
@@ -13,7 +13,6 @@ script = ExtResource("1_qthkk")
 shape = SubResource("RectangleShape2D_qthkk")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=400259144]
-position = Vector2(2, 2)
 texture = ExtResource("2_6rnap")
 
 [node name="AdditionalSprites" type="Node2D" parent="." unique_id=2114078145]

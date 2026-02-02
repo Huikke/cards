@@ -2,10 +2,34 @@
 
 [ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/main.gd" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/deck.tscn" id="2_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/UI/hud.tscn" id="3_sugp2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
+size = Vector2(721.5, 311)
 
 [node name="Main" type="Node2D" unique_id=1836876014]
 script = ExtResource("1_o5qli")
 
 [node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("2_0wfyh")]
-position = Vector2(561, 272)
-scale = Vector2(0.5, 0.5)
+position = Vector2(676, 346)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1655721103]
+anchor_mode = 0
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1675759328]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1889330051]
+position = Vector2(634, 637.5)
+shape = SubResource("RectangleShape2D_0wfyh")
+
+[node name="Polygon2D" type="Polygon2D" parent="Area2D" unique_id=1210025679]
+position = Vector2(-68, 134)
+color = Color(0.60320854, 0.3368698, 0.18042687, 1)
+polygon = PackedVector2Array(343, 350, 1078, 350, 1080, 665, 341, 659)
+
+[node name="Hand" parent="." unique_id=661734421 instance=ExtResource("3_sugp2")]
+
+[connection signal="card_entered" from="." to="Hand" method="_on_main_card_entered"]
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="draw" from="Area2D" to="." method="_on_area_2d_draw"]
+[connection signal="child_entered_tree" from="Area2D/CollisionShape2D" to="." method="_on_collision_shape_2d_child_entered_tree"]
