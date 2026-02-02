@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://haa7gldbrc60"]
 
 [ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/main.gd" id="1_o5qli"]
-[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/deck.tscn" id="2_0wfyh"]
-[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/UI/hud.tscn" id="3_sugp2"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hud.tscn" id="3_sugp2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
 size = Vector2(721.5, 311)
