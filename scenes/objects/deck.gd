@@ -3,13 +3,13 @@ extends Area2D
 signal deal_signal
 
 var card_scene = preload("res://scenes/objects/card.tscn")
-var back_sprite = "flowexyz.svg"
+var back_sprite = preload("res://assets/cards/back/" + "burgerman.svg")
 
 var deck_logic
 
 func _ready():
 	deck_logic = load("res://scripts/deck_logic.gd").new()
-	$Sprite.texture = load("res://assets/cards/back/" + back_sprite)
+	$Sprite.texture = back_sprite
 	for i in range(1, len(deck_logic.deck)/6 + 1):
 		var card_padding = $Sprite.duplicate()
 		card_padding.position += Vector2(i*2, i*2)
@@ -22,8 +22,7 @@ func _on_input_event(_viewport, event, _shape_idx):
 	
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == 3:
-			deck_logic.shuffle()
-			shuffle_animation()
+			deck_shuffle()
 		elif event.button_index == 2:
 			deal_burst()
 		elif event.button_index == 4:
@@ -47,9 +46,10 @@ func deal(mode: String = "local"):
 	var pop_card = deck_logic.deck.pop_front()
 	card.value = pop_card[0]
 	card.suit = pop_card[1]
+	card.back_sprite = back_sprite
 
 	if mode == "local":
-		deal_animation(card)
+		deck_deal(card)
 	elif mode == "direct":
 		return card
 
@@ -62,7 +62,7 @@ func deal_player(player):
 	deal_signal.emit(card, player)
 	
 
-func deal_animation(card):
+func deck_deal(card):
 	add_sibling(card)
 	var x_move = randf_range(-1, 1)
 	var y_move
@@ -74,7 +74,8 @@ func deal_animation(card):
 	card.speed = 1000
 	card.get_node("StopMotion").start()
 
-func shuffle_animation():
+func deck_shuffle():
+	deck_logic.shuffle()
 	var tween = create_tween()
 	tween.tween_property(self, "rotation", 0.5, 0.13)
 	tween.tween_property(self, "rotation", -0.5, 0.26)

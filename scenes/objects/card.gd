@@ -3,7 +3,7 @@ extends Area2D
 # Card Attributes
 @export var value = "troll"
 @export var suit = "face"
-@export var back_sprite = "flowexyz.svg"
+@export var back_sprite = preload("res://assets/cards/back/" + "flowexyz.svg")
 var suits = ["spade", "heart", "club", "diamond"]
 var face = false
 
@@ -13,7 +13,7 @@ var face = false
 var moving = false
 
 func _ready():
-	$Sprite.texture = load("res://assets/cards/back/" + back_sprite)
+	$Sprite.texture = back_sprite
 
 func _process(delta):
 	position += direction * speed * delta
@@ -55,7 +55,7 @@ func turn_card():
 		get_node("Sprite").texture = load("res://assets/cards/front/" + file_name)
 		face = true
 	elif face:
-		get_node("Sprite").texture = load("res://assets/cards/back/" + back_sprite)
+		get_node("Sprite").texture = back_sprite
 		face = false
 
 # For stopping the dealt card
