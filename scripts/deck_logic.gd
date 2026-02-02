@@ -10,3 +10,6 @@ func new_deck():
 	for i in range(1, 14):
 		for suit in suits:
 			deck.append([i, suit])
+
+func shuffle():
+	deck.shuffle()

@@ -27,8 +27,8 @@
    inkscape:deskcolor="#505050"
    inkscape:document-units="pt"
    inkscape:zoom="2.4941584"
-   inkscape:cx="66.355047"
-   inkscape:cy="161.37708"
+   inkscape:cx="66.355048"
+   inkscape:cy="160.97614"
    inkscape:window-width="1920"
    inkscape:window-height="1009"
    inkscape:window-x="1912"
@@ -40,7 +40,7 @@
          rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
    id="defs41" />
 	<path
-   style="font-variation-settings:normal;clip-rule:nonzero;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.997045;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+   style="font-variation-settings:normal;clip-rule:nonzero;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
    d="m 166.59084,235.21044 c 0,3.76618 -3.07779,6.84884 -6.85079,6.84884 H 7.3366396 c -3.7637504,0 -6.84057131,-3.08266 -6.84057131,-6.84884 V 7.4575302 c 0,-3.7661847 3.07682091,-6.84982131 6.84057131,-6.84982131 H 159.74005 c 3.773,0 6.85079,3.08363661 6.85079,6.84982131 z"
    id="path5" />
 

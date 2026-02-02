@@ -6,4 +6,10 @@
 [node name="HUD" type="CanvasLayer" unique_id=1156811625]
 script = ExtResource("1_vghik")
 
-[node name="Hand" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]
+[node name="P1_Hand" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]
+
+[node name="P2_Hand" parent="." unique_id=825960371 instance=ExtResource("2_f5ih3")]
+anchors_preset = 5
+anchor_top = 0.0
+anchor_bottom = 0.0
+grow_vertical = 1

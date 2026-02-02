@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hud.tscn" id="3_sugp2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
-size = Vector2(721.5, 311)
+size = Vector2(718.75, 119)
 
 [node name="Main" type="Node2D" unique_id=1836876014]
 script = ExtResource("1_o5qli")
@@ -19,17 +19,19 @@ anchor_mode = 0
 [node name="Area2D" type="Area2D" parent="." unique_id=1675759328]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1889330051]
-position = Vector2(634, 637.5)
+position = Vector2(632.625, 733.5)
 shape = SubResource("RectangleShape2D_0wfyh")
 
 [node name="Polygon2D" type="Polygon2D" parent="Area2D" unique_id=1210025679]
-position = Vector2(-68, 134)
+position = Vector2(-60, 450)
+scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
-polygon = PackedVector2Array(343, 350, 1078, 350, 1080, 665, 341, 659)
+polygon = PackedVector2Array(340, 420, 1080, 420, 1080, 665, 340, 665)
 
 [node name="Hand" parent="." unique_id=661734421 instance=ExtResource("3_sugp2")]
 
 [connection signal="card_entered" from="." to="Hand" method="_on_main_card_entered"]
+[connection signal="deal_signal" from="Deck" to="Hand" method="_on_deck_deal_signal"]
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="draw" from="Area2D" to="." method="_on_area_2d_draw"]
 [connection signal="child_entered_tree" from="Area2D/CollisionShape2D" to="." method="_on_collision_shape_2d_child_entered_tree"]
