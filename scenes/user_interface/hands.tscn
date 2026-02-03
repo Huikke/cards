@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://brmadw04ieoxr"]
 
-[ext_resource type="Script" uid="uid://ck7mtho4xw5yq" path="res://scenes/user_interface/hud.gd" id="1_vghik"]
+[ext_resource type="Script" uid="uid://ck7mtho4xw5yq" path="res://scenes/user_interface/hands.gd" id="1_vghik"]
 [ext_resource type="PackedScene" uid="uid://ile8r5dimjpv" path="res://scenes/user_interface/hand.tscn" id="2_f5ih3"]
 
-[node name="HUD" type="CanvasLayer" unique_id=1156811625]
+[node name="Hands" type="CanvasLayer" unique_id=1156811625]
 script = ExtResource("1_vghik")
 
 [node name="P1_Hand" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]

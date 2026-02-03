@@ -2,31 +2,42 @@
 
 [ext_resource type="Script" uid="uid://dpgdr5yyanh1n" path="res://scenes/games/best_of_three.gd" id="1_qp27h"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_h3kue"]
-[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hud.tscn" id="3_6ndmv"]
+[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_6ndmv"]
+[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_h3kue"]
+[ext_resource type="PackedScene" uid="uid://rjb3uf1yi6jp" path="res://scenes/user_interface/score_display.tscn" id="5_6ndmv"]
 
 [node name="BestOfThree" type="Node2D" unique_id=1520870245]
 script = ExtResource("1_qp27h")
 
 [node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("2_h3kue")]
-position = Vector2(1012, 396)
+position = Vector2(450, -3)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1648973163]
-anchor_mode = 0
+script = ExtResource("3_h3kue")
 
-[node name="HUD" parent="." unique_id=1156811625 instance=ExtResource("3_6ndmv")]
+[node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_6ndmv")]
 
 [node name="W" type="Polygon2D" parent="." unique_id=551719074]
 visible = false
 modulate = Color(0, 0.6430884, 0.24585307, 1)
 z_index = 5
-polygon = PackedVector2Array(232, 183, 363, 146, 477, 376, 601, 120, 675, 357, 809, 115, 928, 194, 696, 635, 580, 365, 413, 627)
+position = Vector2(-636, -400)
+polygon = PackedVector2Array(232, 183, 363, 146, 477, 376, 601, 120, 656.2506, 296.9513, 675, 357, 809, 115, 928, 194, 696, 635, 580, 365, 413, 627)
 
 [node name="L" type="Polygon2D" parent="." unique_id=473438890]
 visible = false
 z_index = 5
-position = Vector2(51, -41)
+position = Vector2(-642, -402)
 color = Color(0.7696689, 0, 0.14094555, 1)
 polygon = PackedVector2Array(337, 117, 517, 117, 487, 581, 820, 600, 807, 717, 314, 701)
 
-[connection signal="deal_signal" from="Deck" to="HUD" method="_on_card_to_hand"]
-[connection signal="card_selected" from="HUD" to="." method="_on_hud_card_selected"]
+[node name="T" type="Polygon2D" parent="." unique_id=2055944075]
+visible = false
+position = Vector2(-643, -397)
+color = Color(0.10980392, 0.2, 0.9764706, 1)
+polygon = PackedVector2Array(1019, 134, 1001, 343, 743, 329, 732, 746, 560, 746, 590, 322, 280, 303, 277, 133)
+
+[node name="ScoreDisplay" parent="." unique_id=807158604 instance=ExtResource("5_6ndmv")]
+
+[connection signal="deal_signal" from="Deck" to="Hands" method="_on_card_to_hand"]
+[connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]

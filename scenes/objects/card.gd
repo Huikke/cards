@@ -14,6 +14,7 @@ var face = false
 
 func _ready():
 	$Sprite.texture = back_sprite
+	z_index = 1
 
 func _process(delta):
 	super(delta)
@@ -35,3 +36,4 @@ func turn_card():
 # For stopping the dealt card
 func _on_stop_motion_timeout():
 	speed = 0
+	z_index = 0

@@ -1,7 +1,12 @@
 func bigger(n1: Node, n2: Node):
-	if n1.value > n2.value:
+	var bonus = 0
+	if n1.value == 1: # Ace is best!
+		bonus += 13
+	if n2.value == 1:
+		bonus -= 13
+	if n1.value + bonus > n2.value:
 		return n1
-	elif n2.value < n1.value:
+	elif n1.value + bonus < n2.value:
 		return n2
 	else:
-		return n2
+		return null

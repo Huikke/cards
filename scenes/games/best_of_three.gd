@@ -7,7 +7,7 @@ var human_score = 0
 var ai_score = 0
 
 func _ready():
-	for hand in $HUD.get_children():
+	for hand in $Hands.get_children():
 		hand.get_child(0).custom_minimum_size.x = 120
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
@@ -17,20 +17,23 @@ func _ready():
 			$Deck.deal_player(j)
 
 
-func _on_hud_card_selected(human_card):
+func _on_hands_card_selected(human_card):
 	if human_card.pnum == 0: # Only play own cards
 		var ai_card = ai_play()
 
 		var winner = mathbot.bigger(human_card, ai_card)
-		if winner == human_card:
+		if winner == null:
+			pass
+		elif winner == human_card:
 			human_score += 1
 		elif winner == ai_card:
 			ai_score += 1
-		var VIP_var = 600
+		
+		var center = get_viewport().get_camera_2d().position
+		var position_nudge = [Vector2(0, 200), Vector2(0,-200)]
 		for card in [human_card, ai_card]:
 			var wild_card = card_scene.instantiate() as Area2D
-			wild_card.position = Vector2(660, VIP_var)
-			VIP_var = 200
+			wild_card.position = center + position_nudge[card.pnum]
 			wild_card.value = card.value
 			wild_card.suit = card.suit
 			add_child(wild_card)
@@ -39,17 +42,21 @@ func _on_hud_card_selected(human_card):
 		human_card.queue_free()
 		ai_card.queue_free()
 		
+		$ScoreDisplay/Score.text = str(human_score) + " : " + str(ai_score)
+
 		if game_over == true:
 			if human_score > ai_score:
 				$W.visible = true
-			else:
+			elif human_score < ai_score:
 				$L.visible = true
+			else:
+				$T.visible = true
 
 
 var first = true
 var game_over = false
 func ai_play():
-	var ai_hand = $HUD/P2_Hand.get_children()
+	var ai_hand = $Hands/P2_Hand.get_children()
 	# Temporary solution to our invisible card
 	if first:
 		ai_hand.pop_front()

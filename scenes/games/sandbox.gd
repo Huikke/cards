@@ -16,7 +16,7 @@ func _on_area_entered(object, area):
 	card_entered.emit(object, p)
 	object.queue_free()
 
-func _on_hud_card_selected(card_ui):
+func _on_hands_card_selected(card_ui):
 	var card_ow = card_scene.instantiate() # ow == Overworld
 	card_ow.position = get_viewport().get_camera_2d().position
 	card_ow.value = card_ui.value

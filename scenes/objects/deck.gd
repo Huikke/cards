@@ -66,7 +66,7 @@ func deal_player(player):
 	
 
 func deck_deal(card):
-	add_sibling(card)
+	get_parent().add_child(card)
 	var x_move = randf_range(-1, 1)
 	var y_move
 	if x_move > 0:
