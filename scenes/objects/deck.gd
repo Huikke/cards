@@ -3,7 +3,7 @@ extends Area2D
 signal deal_signal
 
 var card_scene = preload("res://scenes/objects/card.tscn")
-var back_sprite = preload("res://assets/cards/back/" + "symmetra.svg")
+var back_sprite = preload("res://assets/cards/back/" + "backman.svg")
 
 var deck_logic
 

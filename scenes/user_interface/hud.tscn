@@ -15,6 +15,7 @@ anchor_bottom = 0.0
 grow_vertical = 1
 
 [connection signal="gui_input" from="P1_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
+[connection signal="gui_input" from="P2_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
 
 [editable path="P1_Hand"]
 [editable path="P2_Hand"]

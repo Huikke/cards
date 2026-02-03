@@ -1,19 +1,19 @@
 [gd_scene format=3 uid="uid://b7xbqvh4nqikp"]
 
-[ext_resource type="Script" uid="uid://dpgdr5yyanh1n" path="res://scenes/games/best_of_three.gd" id="1_maioj"]
-[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_ql740"]
-[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hud.tscn" id="2_maioj"]
+[ext_resource type="Script" uid="uid://dpgdr5yyanh1n" path="res://scenes/games/best_of_three.gd" id="1_qp27h"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_h3kue"]
+[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hud.tscn" id="3_6ndmv"]
 
 [node name="BestOfThree" type="Node2D" unique_id=1520870245]
-script = ExtResource("1_maioj")
+script = ExtResource("1_qp27h")
 
-[node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("1_ql740")]
+[node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("2_h3kue")]
 position = Vector2(1012, 396)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1648973163]
 anchor_mode = 0
 
-[node name="HUD" parent="." unique_id=1156811625 instance=ExtResource("2_maioj")]
+[node name="HUD" parent="." unique_id=1156811625 instance=ExtResource("3_6ndmv")]
 
 [node name="W" type="Polygon2D" parent="." unique_id=551719074]
 visible = false
@@ -28,5 +28,5 @@ position = Vector2(51, -41)
 color = Color(0.7696689, 0, 0.14094555, 1)
 polygon = PackedVector2Array(337, 117, 517, 117, 487, 581, 820, 600, 807, 717, 314, 701)
 
-[connection signal="deal_signal" from="Deck" to="HUD" method="_on_deck_deal_signal"]
+[connection signal="deal_signal" from="Deck" to="HUD" method="_on_card_to_hand"]
 [connection signal="card_selected" from="HUD" to="." method="_on_hud_card_selected"]

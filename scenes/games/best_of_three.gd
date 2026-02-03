@@ -18,32 +18,32 @@ func _ready():
 
 
 func _on_hud_card_selected(human_card):
-	var ai_card = ai_play()
+	if human_card.pnum == 0: # Only play own cards
+		var ai_card = ai_play()
 
-	var winner = mathbot.bigger(human_card, ai_card)
-	if winner == human_card:
-		human_score += 1
-	elif winner == ai_card:
-		ai_score += 1
-	var VIP_var = 600
-	for card in [human_card, ai_card]:
-		var wild_card = card_scene.instantiate() as Area2D
-		wild_card.position = Vector2(660, VIP_var)
-		VIP_var = 200
-		wild_card.value = card.value
-		wild_card.suit = card.suit
-		add_child(wild_card)
-		wild_card.turn_card()
+		var winner = mathbot.bigger(human_card, ai_card)
+		if winner == human_card:
+			human_score += 1
+		elif winner == ai_card:
+			ai_score += 1
+		var VIP_var = 600
+		for card in [human_card, ai_card]:
+			var wild_card = card_scene.instantiate() as Area2D
+			wild_card.position = Vector2(660, VIP_var)
+			VIP_var = 200
+			wild_card.value = card.value
+			wild_card.suit = card.suit
+			add_child(wild_card)
+			wild_card.turn_card()
 
-	human_card.queue_free()
-	ai_card.queue_free()
-	
-	if game_over == true:
-		if human_score > ai_score:
-			$W.visible = true
-		else:
-			$L.visible = true
-
+		human_card.queue_free()
+		ai_card.queue_free()
+		
+		if game_over == true:
+			if human_score > ai_score:
+				$W.visible = true
+			else:
+				$L.visible = true
 
 
 var first = true

@@ -7,31 +7,44 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
 size = Vector2(718.75, 119)
 
-[node name="Main" type="Node2D" unique_id=1836876014]
+[node name="Sandbox" type="Node2D" unique_id=1836876014]
 script = ExtResource("1_a8pr3")
 
 [node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("2_j6lu3")]
-position = Vector2(676, 346)
+position = Vector2(1025, 393)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1655721103]
 anchor_mode = 0
 
-[node name="Area2D" type="Area2D" parent="." unique_id=1675759328]
+[node name="AreaP1" type="Area2D" parent="." unique_id=1675759328]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1889330051]
-position = Vector2(632.625, 733.5)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP1" unique_id=1889330051]
+position = Vector2(615.9863, 736.5)
 shape = SubResource("RectangleShape2D_0wfyh")
 
-[node name="Polygon2D" type="Polygon2D" parent="Area2D" unique_id=1210025679]
-position = Vector2(-60, 450)
+[node name="Polygon2D" type="Polygon2D" parent="AreaP1" unique_id=1210025679]
+position = Vector2(-76.6387, 453)
 scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
 polygon = PackedVector2Array(340, 420, 1080, 420, 1080, 665, 340, 665)
 
+[node name="AreaP2" type="Area2D" parent="." unique_id=1963656190]
+position = Vector2(595, 72)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP2" unique_id=1234602290]
+position = Vector2(-2.3613281, -5.000061)
+shape = SubResource("RectangleShape2D_0wfyh")
+
+[node name="Polygon2D" type="Polygon2D" parent="AreaP2" unique_id=1517248897]
+position = Vector2(-701.3613, -296.99997)
+scale = Vector2(0.97834915, 0.5258383)
+color = Color(0.60320854, 0.3368698, 0.18042687, 1)
+polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081.4136, 675.1123, 340, 665)
+
 [node name="HUD" parent="." unique_id=661734421 instance=ExtResource("3_tpt06")]
 
-[connection signal="card_entered" from="." to="HUD" method="_on_main_card_entered"]
-[connection signal="deal_signal" from="Deck" to="HUD" method="_on_deck_deal_signal"]
-[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
-[connection signal="draw" from="Area2D" to="." method="_on_area_2d_draw"]
-[connection signal="child_entered_tree" from="Area2D/CollisionShape2D" to="." method="_on_collision_shape_2d_child_entered_tree"]
+[connection signal="card_entered" from="." to="HUD" method="_on_card_to_hand"]
+[connection signal="deal_signal" from="Deck" to="HUD" method="_on_card_to_hand"]
+[connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]
+[connection signal="area_entered" from="AreaP2" to="." method="_on_area_entered" flags=18]
+[connection signal="card_selected" from="HUD" to="." method="_on_hud_card_selected"]
