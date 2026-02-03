@@ -1,49 +1,52 @@
-extends Area2D
+extends GameObject2D
+class_name Deck
 
 signal deal_signal
 
 var card_scene = preload("res://scenes/objects/card.tscn")
-var back_sprite = preload("res://assets/cards/back/" + "backman.svg")
+var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
 
-var deck_logic
+var logic
 
 func _ready():
-	deck_logic = load("res://scripts/deck_logic.gd").new()
+	logic = load("res://scripts/deck_logic.gd").new()
 	$Sprite.texture = back_sprite
-	for i in range(1, len(deck_logic.deck)/6 + 1):
+	for i in range(1, len(logic.deck)/6 + 1):
 		var card_padding = $Sprite.duplicate()
 		card_padding.position += Vector2(i*2, i*2)
 		$AdditionalSprites.add_child(card_padding)
 
-func _on_input_event(_viewport, event, _shape_idx):
-	if deck_logic.deck == []: # Bandage fix on too fast clicking
-			queue_free()
-			return
-	
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == 3:
-			deck_shuffle()
-		elif event.button_index == 2:
-			deal_burst()
-		elif event.button_index == 4:
-			deal_player(1)
-		elif event.button_index == 5:
-			deal_player(0)
-		else:
-			deal()
+func mouse2():
+	if empty_delete():
+		return
+	deal()
+	if empty_delete():
+		return
+	card_stack()
 
-		if deck_logic.deck == []:
-			queue_free()
-			return
+func mouse3():
+	deck_shuffle()
 
-		var card_padding = $AdditionalSprites.get_child_count()
-		if card_padding > len(deck_logic.deck) / card_padding or len(deck_logic.deck) == 1:
-			$AdditionalSprites.get_child(-1).queue_free()
+func mouse4():
+	if empty_delete():
+		return
+	deal_player(1)
+	if empty_delete():
+		return
+	card_stack()
+
+func mouse5():
+	if empty_delete():
+		return
+	deal_player(0)
+	if empty_delete():
+		return
+	card_stack()
 
 func deal(mode: String = "local"):
-	var card = card_scene.instantiate() as Area2D
+	var card = card_scene.instantiate()
 	card.position = position
-	var pop_card = deck_logic.deck.pop_front()
+	var pop_card = logic.deck.pop_front()
 	card.value = pop_card[0]
 	card.suit = pop_card[1]
 	card.back_sprite = back_sprite
@@ -54,7 +57,7 @@ func deal(mode: String = "local"):
 		return card
 
 func deal_burst():
-	for i in len(deck_logic.deck):
+	for i in len(logic.deck):
 		deal()
 
 func deal_player(player):
@@ -75,8 +78,19 @@ func deck_deal(card):
 	card.get_node("StopMotion").start()
 
 func deck_shuffle():
-	deck_logic.shuffle()
+	logic.shuffle()
 	var tween = create_tween()
 	tween.tween_property(self, "rotation", 0.5, 0.13)
 	tween.tween_property(self, "rotation", -0.5, 0.26)
 	tween.tween_property(self, "rotation", 0, 0.13)
+
+# Cosmetic, adds additional cards to the bottom to make illusion of card stack
+func card_stack():
+	var stack_count = $AdditionalSprites.get_child_count()
+	if stack_count > len(logic.deck) / stack_count or len(logic.deck) == 1:
+		$AdditionalSprites.get_child(-1).queue_free()
+
+func empty_delete():
+	if logic.deck == []:
+		queue_free()
+		return true

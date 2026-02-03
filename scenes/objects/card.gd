@@ -1,53 +1,27 @@
-extends Area2D
+extends GameObject2D
+class_name Card
 
 # Card Attributes
 @export var value = "troll"
 @export var suit = "face"
-@export var back_sprite = preload("res://assets/cards/back/" + "backman.svg")
+@export var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
 var suits = ["spade", "heart", "club", "diamond"]
 var face = false
 
 # Physics
 @export var direction = Vector2(0, 0)
 @export var speed = 0
-var moving = false
 
 func _ready():
 	$Sprite.texture = back_sprite
 
 func _process(delta):
+	super(delta)
 	position += direction * speed * delta
-	if moving:
-		position = moving + get_viewport().get_mouse_position()
 
 
-func _on_input_event(_viewport, event, _shape_idx):
-	# Copied code in order to click the upmost card in the tree 
-	if event is InputEventMouseButton and event.pressed:
-		var ppqp2d = PhysicsPointQueryParameters2D.new()
-		ppqp2d.position = event.position
-		ppqp2d.collide_with_areas = true
-		var objects_clicked = get_world_2d().direct_space_state.intersect_point(ppqp2d)
-
-		var colliders = objects_clicked.map(
-			func(dict):
-				return dict.collider
-		)
-
-		colliders.sort_custom(
-			func(c1, c2):
-				return c1.get_index() < c2.get_index() 
-		)
-		#################
-
-		if colliders[-1] == self:
-			if event.button_index == 2:
-				turn_card()
-			if event.button_index == 1:
-				get_parent().move_child(self, -1)
-				moving = position - event.position
-	if event is InputEventMouseButton and not event.pressed and event.button_index == 1:
-		moving = false
+func mouse2():
+	turn_card()
 
 func turn_card():
 	if not face:

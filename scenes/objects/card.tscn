@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bo6mt8a0ehh6s"]
 
 [ext_resource type="Script" uid="uid://btxr13l038ktw" path="res://scenes/objects/card.gd" id="1_6u4wf"]
-[ext_resource type="Texture2D" uid="uid://c1pdqojlw1p68" path="res://assets/cards/back/backman.svg" id="2_wg63d"]
+[ext_resource type="Texture2D" uid="uid://cnbvgieo30kup" path="res://assets/cards/back/chicken.svg" id="2_wg63d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6u4wf"]
 size = Vector2(120, 168)
