@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://haa7gldbrc60"]
 
-[ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/sandbox.gd" id="1_a8pr3"]
+[ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/games/sandbox.gd" id="1_a8pr3"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_j6lu3"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hud.tscn" id="3_tpt06"]
 

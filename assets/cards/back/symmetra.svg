@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="240"
+   height="336"
+   viewBox="0 0 63.5 88.9"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="symmetra.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="false"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     inkscape:zoom="2"
+     inkscape:cx="171.75"
+     inkscape:cy="157.75"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     labelstyle="default" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="base"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
+       id="rect1"
+       width="63.235416"
+       height="88.635414"
+       x="0.1322915"
+       y="0.13229166"
+       rx="2.6458333"
+       ry="2.6458333"
+       inkscape:label="outer" />
+    <rect
+       style="fill:#333333;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
+       id="rect3"
+       width="52.652084"
+       height="78.052086"
+       x="5.4239583"
+       y="5.4239583"
+       rx="2.6458333"
+       ry="2.6458333"
+       inkscape:label="inner" />
+    <rect
+       style="fill:#f9f9f9;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
+       id="rect4"
+       width="42.068752"
+       height="67.46875"
+       x="10.715625"
+       y="10.715625"
+       rx="2.6458333"
+       ry="2.6458333"
+       inkscape:label="inner2" />
+    <rect
+       style="fill:#1a1a1a;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
+       id="rect5"
+       width="31.485416"
+       height="56.885418"
+       x="16.007292"
+       y="16.007292"
+       rx="2.6458333"
+       ry="2.6458333"
+       inkscape:label="inner3" />
+    <rect
+       style="fill:#f2f2f2;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
+       id="rect6"
+       width="20.902084"
+       height="46.302082"
+       x="21.298958"
+       y="21.298958"
+       rx="2.6458333"
+       ry="2.6458333"
+       inkscape:label="inner4" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
+       id="rect2"
+       width="10.31875"
+       height="35.71875"
+       x="26.590626"
+       y="26.590626"
+       rx="2.6458333"
+       ry="2.6458333"
+       inkscape:label="inner5" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="main" />
+</svg>

@@ -29,7 +29,7 @@
    inkscape:document-units="pt"
    inkscape:zoom="2.4941586"
    inkscape:cx="139.72648"
-   inkscape:cy="100.43467"
+   inkscape:cy="164.18362"
    inkscape:window-width="1920"
    inkscape:window-height="1009"
    inkscape:window-x="1912"
@@ -132,7 +132,7 @@
        stdDeviation="0.16121557"
        id="feGaussianBlur28" /></filter></defs>
 	<path
-   style="clip-rule:nonzero;fill:#ffffff;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+   style="clip-rule:nonzero;fill:#ffffff;fill-rule:nonzero;stroke:#000000;stroke-width:0.75;stroke-miterlimit:4;stroke-dasharray:none"
    d="m 167.53351,235.60657 c 0,3.77735 -3.08691,6.86914 -6.87109,6.86914 H 7.8074422 c -3.7749023,0 -6.86083978,-3.09179 -6.86083978,-6.86914 V 7.178833 c 0,-3.7773438 3.08593748,-6.87011715 6.86083978,-6.87011715 H 160.66242 c 3.78418,0 6.87109,3.09277335 6.87109,6.87011715 z"
    id="path5" /><path
    style="clip-rule:nonzero;opacity:1;fill:url(#linearGradient26);fill-rule:nonzero;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter26)"

@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://tsli6q2atxla"]
 
 [ext_resource type="Script" uid="uid://b3d8iycsgeunp" path="res://scenes/objects/deck.gd" id="1_qthkk"]
-[ext_resource type="Texture2D" uid="uid://cspr75vw5e5wk" path="res://assets/cards/back/firemon.svg" id="2_6rnap"]
+[ext_resource type="Texture2D" uid="uid://gvcb8bjmlq4m" path="res://assets/cards/back/symmetra.svg" id="2_xkthn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qthkk"]
-size = Vector2(110, 160)
+size = Vector2(120, 168)
 
 [node name="Deck" type="Area2D" unique_id=1594890157]
 script = ExtResource("1_qthkk")
@@ -13,7 +13,7 @@ script = ExtResource("1_qthkk")
 shape = SubResource("RectangleShape2D_qthkk")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=400259144]
-texture = ExtResource("2_6rnap")
+texture = ExtResource("2_xkthn")
 
 [node name="AdditionalSprites" type="Node2D" parent="." unique_id=2114078145]
 
