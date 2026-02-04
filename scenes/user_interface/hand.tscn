@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://ile8r5dimjpv"]
 
 [ext_resource type="Script" uid="uid://bmwusn2i136q2" path="res://scenes/user_interface/hand.gd" id="1_1v58l"]
-[ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://assets/cards/back/stardom.svg" id="1_hgomj"]
+[ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://assets/cards/back/stargazer.svg" id="1_hgomj"]
 [ext_resource type="Script" uid="uid://c4bf1458icnj3" path="res://scenes/user_interface/ui_card.gd" id="1_ilmbc"]
+[ext_resource type="Script" uid="uid://dlpni12plppdu" path="res://scenes/user_interface/front_card_padding.gd" id="4_manev"]
 
 [node name="Hand" type="HBoxContainer" unique_id=911318685]
 anchors_preset = 7
@@ -26,13 +27,14 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_ilmbc")
 
-[node name="TextureRect" type="TextureRect" parent="PhysicalCard" unique_id=1935730928]
+[node name="CardSprite" type="TextureRect" parent="PhysicalCard" unique_id=1935730928]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 120.0
+offset_bottom = 168.0
 texture = ExtResource("1_hgomj")
 
 [node name="FrontCardPadding" type="Panel" parent="." unique_id=218087966]
 custom_minimum_size = Vector2(76, 166)
 layout_mode = 2
 mouse_filter = 2
+script = ExtResource("4_manev")

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_j6lu3"]
 [ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_8j86d"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_tpt06"]
+[ext_resource type="PackedScene" uid="uid://dlyxqijksc6ws" path="res://scenes/user_interface/extra_gui.tscn" id="5_sboq1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
 size = Vector2(718.75, 119)
@@ -39,15 +40,20 @@ scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
 polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081.4136, 675.1123, 340, 665)
 
-[node name="Hands" parent="." unique_id=661734421 instance=ExtResource("3_tpt06")]
-
 [node name="Objects" type="Node2D" parent="." unique_id=911626190]
 
 [node name="Deck" parent="Objects" unique_id=1594890157 instance=ExtResource("2_j6lu3")]
 position = Vector2(-186, -34)
 
+[node name="Hands" parent="." unique_id=661734421 instance=ExtResource("3_tpt06")]
+
+[node name="ExtraGUI" parent="." unique_id=356094007 instance=ExtResource("5_sboq1")]
+
 [connection signal="card_entered" from="." to="Hands" method="_on_card_to_hand"]
 [connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP2" to="." method="_on_area_entered" flags=18]
-[connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
 [connection signal="deal_signal" from="Objects/Deck" to="Hands" method="_on_card_to_hand"]
+[connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
+[connection signal="value_changed" from="ExtraGUI/HSlider" to="Hands" method="_on_card_size_slider_changed"]
+
+[editable path="ExtraGUI"]

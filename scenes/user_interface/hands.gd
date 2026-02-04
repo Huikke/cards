@@ -4,8 +4,8 @@ signal card_selected
 
 func _ready():
 	await get_tree().create_timer(0.3).timeout
-	$P2_Hand/PhysicalCard/TextureRect.flip_h = true
-	$P2_Hand/PhysicalCard/TextureRect.flip_v = true
+	$P2_Hand/PhysicalCard/CardSprite.flip_h = true
+	$P2_Hand/PhysicalCard/CardSprite.flip_v = true
 
 
 func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
@@ -26,7 +26,29 @@ func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
 	hand.add_child(card_o)
 	hand.move_child(get_node(node_str + "/FrontCardPadding"), -1)
 
-
 func _on_card_gui_input(event, card_ui):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		card_selected.emit(card_ui)
+
+
+func change_card_overlap(custom_size):
+	for hand in get_children():
+		var first = true
+		var invisible_card
+		for card in hand.get_children():
+			if card is PhysicalCard:
+				card.custom_minimum_size.x = custom_size
+			if first:
+				invisible_card = card
+				first = false
+			if card is CardPadding:
+				# -4 is BoxContainer leftover space
+				var free_space = invisible_card.get_child(0).size.x - custom_size - 4
+				if free_space > 0:
+					card.visible = true
+					card.custom_minimum_size.x = free_space
+				else:
+					card.visible = false
+
+func _on_card_size_slider_changed(value):
+	change_card_overlap(value)

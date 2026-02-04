@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://dlyxqijksc6ws"]
+
+[node name="ExtraGUI" type="CanvasLayer" unique_id=356094007]
+
+[node name="HSlider" type="HSlider" parent="." unique_id=1227464739]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -16.0
+offset_right = 236.0
+grow_vertical = 0
+max_value = 200.0
+value = 40.0

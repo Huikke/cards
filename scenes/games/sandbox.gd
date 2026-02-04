@@ -3,7 +3,8 @@ extends Node2D
 var card_scene = preload("res://scenes/objects/card.tscn")
 signal card_entered(Area2D, int)
 
-
+func _ready():
+	$Hands.change_card_overlap(40)
 
 func _on_area_entered(object, area):
 	if object is not Card:

@@ -7,9 +7,7 @@ var human_score = 0
 var ai_score = 0
 
 func _ready():
-	for hand in $Hands.get_children():
-		hand.get_child(0).custom_minimum_size.x = 120
-		hand.change_padding(Vector2(0, 0))
+	$Hands.change_card_overlap(120)
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
 	for i in range(3):
