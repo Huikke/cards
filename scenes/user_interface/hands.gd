@@ -9,8 +9,9 @@ func _ready():
 
 
 func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
-	var path = "res://assets/cards/front/"
-	var hand = get_node("P" + str(p + 1) + "_Hand")
+	var path = "res://assets/cards/front/perfectionism/"
+	var node_str = "P" + str(p + 1) + "_Hand"
+	var hand = get_node(node_str)
 	var card_o = hand.get_child(0).duplicate()
 	card_o.visible = true
 
@@ -23,6 +24,7 @@ func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
 	card_o.pnum = p
 
 	hand.add_child(card_o)
+	hand.move_child(get_node(node_str + "/FrontCardPadding"), -1)
 
 
 func _on_card_gui_input(event, card_ui):

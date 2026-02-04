@@ -27,7 +27,7 @@ func mouse2():
 func turn_card():
 	if not face:
 		var file_name = str(value) + "_" + suit + ".svg"
-		get_node("Sprite").texture = load("res://assets/cards/front/" + file_name)
+		get_node("Sprite").texture = load("res://assets/cards/front/perfectionism/" + file_name)
 		face = true
 	elif face:
 		get_node("Sprite").texture = back_sprite

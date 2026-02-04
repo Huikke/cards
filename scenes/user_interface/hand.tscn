@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://ile8r5dimjpv"]
 
+[ext_resource type="Script" uid="uid://bmwusn2i136q2" path="res://scenes/user_interface/hand.gd" id="1_1v58l"]
 [ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://assets/cards/back/stardom.svg" id="1_hgomj"]
 [ext_resource type="Script" uid="uid://c4bf1458icnj3" path="res://scenes/user_interface/ui_card.gd" id="1_ilmbc"]
 
@@ -9,14 +10,17 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_top = -80.0
+offset_left = -38.0
+offset_top = -86.0
+offset_right = 38.0
 offset_bottom = 80.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("1_1v58l")
 
 [node name="PhysicalCard" type="Control" parent="." unique_id=1653592494]
 visible = false
-custom_minimum_size = Vector2(40, 160)
+custom_minimum_size = Vector2(40, 168)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -27,3 +31,8 @@ layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("1_hgomj")
+
+[node name="FrontCardPadding" type="Panel" parent="." unique_id=218087966]
+custom_minimum_size = Vector2(76, 166)
+layout_mode = 2
+mouse_filter = 2

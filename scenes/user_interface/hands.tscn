@@ -2,11 +2,15 @@
 
 [ext_resource type="Script" uid="uid://ck7mtho4xw5yq" path="res://scenes/user_interface/hands.gd" id="1_vghik"]
 [ext_resource type="PackedScene" uid="uid://ile8r5dimjpv" path="res://scenes/user_interface/hand.tscn" id="2_f5ih3"]
+[ext_resource type="Texture2D" uid="uid://c1pdqojlw1p68" path="res://assets/cards/back/backman.svg" id="3_xppsm"]
 
 [node name="Hands" type="CanvasLayer" unique_id=1156811625]
 script = ExtResource("1_vghik")
 
 [node name="P1_Hand" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]
+offset_left = -82.0
+offset_top = -88.0
+offset_right = 82.0
 
 [node name="P2_Hand" parent="." unique_id=825960371 instance=ExtResource("2_f5ih3")]
 anchors_preset = 5
@@ -14,7 +18,11 @@ anchor_top = 0.0
 anchor_bottom = 0.0
 grow_vertical = 1
 
+[node name="TextureRect" parent="P2_Hand/PhysicalCard" parent_id_path=PackedInt32Array(825960371, 1653592494) index="0" unique_id=1935730928]
+texture = ExtResource("3_xppsm")
+
 [connection signal="gui_input" from="P1_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
+[connection signal="gui_input" from="P1_Hand/FrontCardPadding" to="." method="_on_card_gui_input" flags=18]
 [connection signal="gui_input" from="P2_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
 
 [editable path="P1_Hand"]

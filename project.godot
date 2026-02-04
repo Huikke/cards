@@ -24,6 +24,10 @@ Global="*uid://baac12ljyh3ts"
 window/size/viewport_width=1280
 window/size/viewport_height=800
 
+[gui]
+
+theme/custom_font="uid://gslp6a6j808u"
+
 [input]
 
 up={

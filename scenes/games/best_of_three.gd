@@ -9,6 +9,7 @@ var ai_score = 0
 func _ready():
 	for hand in $Hands.get_children():
 		hand.get_child(0).custom_minimum_size.x = 120
+		hand.change_padding(Vector2(0, 0))
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
 	for i in range(3):
@@ -60,6 +61,7 @@ func ai_play():
 	# Temporary solution to our invisible card
 	if first:
 		ai_hand.pop_front()
+		ai_hand.pop_back()
 	var ai_card = ai_hand.pick_random()
 	print(ai_hand)
 	if len(ai_hand) == 1: # hand does not go empty before queue free
