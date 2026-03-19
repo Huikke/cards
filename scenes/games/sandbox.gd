@@ -14,6 +14,10 @@ func _on_area_entered(object, area):
 		p = 0
 	elif area == $AreaP2:
 		p = 1
+	elif area == $AreaP3:
+		p = 2
+	elif area == $AreaP4:
+		p = 3
 	card_entered.emit(object, p)
 	object.queue_free()
 

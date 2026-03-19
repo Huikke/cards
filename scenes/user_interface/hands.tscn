@@ -8,22 +8,51 @@
 script = ExtResource("1_vghik")
 
 [node name="P1_Hand" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]
-offset_left = -82.0
-offset_top = -88.0
-offset_right = 82.0
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -85.0
+offset_bottom = 83.0
+grow_vertical = 0
 
 [node name="P2_Hand" parent="." unique_id=825960371 instance=ExtResource("2_f5ih3")]
-anchors_preset = 5
-anchor_top = 0.0
-anchor_bottom = 0.0
-grow_vertical = 1
+offset_left = 1280.0
+offset_top = 84.0
+offset_right = 1280.0
+offset_bottom = 252.0
+rotation = 3.1415927
 
 [node name="CardSprite" parent="P2_Hand/PhysicalCard" parent_id_path=PackedInt32Array(825960371, 1653592494) index="0" unique_id=1935730928]
 texture = ExtResource("3_xppsm")
 
+[node name="P3_Hand" parent="." unique_id=479539659 instance=ExtResource("2_f5ih3")]
+offset_left = 83.0
+offset_right = -397.0
+offset_bottom = 166.0
+rotation = 1.5707964
+
+[node name="CardSprite" parent="P3_Hand/PhysicalCard" parent_id_path=PackedInt32Array(479539659, 1653592494) index="0" unique_id=1935730928]
+texture = ExtResource("3_xppsm")
+
+[node name="P4_Hand" parent="." unique_id=1894932184 instance=ExtResource("2_f5ih3")]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 1197.0
+offset_right = 717.0
+offset_bottom = 166.0
+grow_vertical = 0
+rotation = -1.5707964
+
+[node name="CardSprite" parent="P4_Hand/PhysicalCard" parent_id_path=PackedInt32Array(1894932184, 1653592494) index="0" unique_id=1935730928]
+texture = ExtResource("3_xppsm")
+
 [connection signal="gui_input" from="P1_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
-[connection signal="gui_input" from="P1_Hand/FrontCardPadding" to="." method="_on_card_gui_input" flags=18]
 [connection signal="gui_input" from="P2_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
+[connection signal="gui_input" from="P3_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
+[connection signal="gui_input" from="P4_Hand/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
 
 [editable path="P1_Hand"]
 [editable path="P2_Hand"]
+[editable path="P3_Hand"]
+[editable path="P4_Hand"]

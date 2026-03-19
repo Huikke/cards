@@ -4,8 +4,6 @@ signal card_selected
 
 func _ready():
 	await get_tree().create_timer(0.3).timeout
-	$P2_Hand/PhysicalCard/CardSprite.flip_h = true
-	$P2_Hand/PhysicalCard/CardSprite.flip_v = true
 
 
 func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player

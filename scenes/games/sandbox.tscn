@@ -40,6 +40,36 @@ scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
 polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081.4136, 675.1123, 340, 665)
 
+[node name="AreaP3" type="Area2D" parent="." unique_id=375168498]
+position = Vector2(-566, -19)
+rotation = -1.5707964
+scale = Vector2(0.7345348, 1.1484727)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP3" unique_id=1503736864]
+position = Vector2(-2.3613281, -5.000061)
+shape = SubResource("RectangleShape2D_0wfyh")
+
+[node name="Polygon2D" type="Polygon2D" parent="AreaP3" unique_id=502931178]
+position = Vector2(-701.3613, -296.99997)
+scale = Vector2(0.97834915, 0.5258383)
+color = Color(0.60320854, 0.3368698, 0.18042687, 1)
+polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081.4136, 675.1123, 340, 665, 339.99988, 541.07776)
+
+[node name="AreaP4" type="Area2D" parent="." unique_id=749332771]
+position = Vector2(563, -19)
+rotation = 1.5707964
+scale = Vector2(0.7345348, 1.1484727)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP4" unique_id=206807146]
+position = Vector2(-2.3613281, -5.000061)
+shape = SubResource("RectangleShape2D_0wfyh")
+
+[node name="Polygon2D" type="Polygon2D" parent="AreaP4" unique_id=78480024]
+position = Vector2(-701.3613, -296.99997)
+scale = Vector2(0.97834915, 0.5258383)
+color = Color(0.60320854, 0.3368698, 0.18042687, 1)
+polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081.4136, 675.1123, 340, 665)
+
 [node name="Objects" type="Node2D" parent="." unique_id=911626190]
 
 [node name="Deck" parent="Objects" unique_id=1594890157 instance=ExtResource("2_j6lu3")]
@@ -52,6 +82,8 @@ position = Vector2(-186, -34)
 [connection signal="card_entered" from="." to="Hands" method="_on_card_to_hand"]
 [connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP2" to="." method="_on_area_entered" flags=18]
+[connection signal="area_entered" from="AreaP3" to="." method="_on_area_entered" flags=18]
+[connection signal="area_entered" from="AreaP4" to="." method="_on_area_entered" flags=18]
 [connection signal="deal_signal" from="Objects/Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
 [connection signal="value_changed" from="ExtraGUI/HSlider" to="Hands" method="_on_card_size_slider_changed"]
