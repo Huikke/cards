@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://8u28xvynurd7"]
+
+[ext_resource type="Script" uid="uid://c6ex16e5a1a1m" path="res://scenes/games/poker.gd" id="1_dhslg"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_gbg6l"]
+[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="2_dhslg"]
+[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
+
+[node name="Poker" type="Node2D" unique_id=1075910118]
+script = ExtResource("1_dhslg")
+
+[node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("1_gbg6l")]
+position = Vector2(343, 0)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1633113562]
+script = ExtResource("2_dhslg")
+
+[node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
+
+[connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
+[connection signal="table_deal" from="Deck" to="." method="_on_deck_table_deal"]
+[connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]

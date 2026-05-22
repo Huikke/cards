@@ -10,10 +10,10 @@ func _ready():
 	$Hands.change_card_overlap(120)
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
-	for i in range(3):
-		for j in range(2):
+	for card in range(3): # Card amount
+		for player in range(2): # Player amount
 			await get_tree().create_timer(0.2).timeout
-			$Deck.deal_player(j)
+			$Deck.deal_player(player)
 
 
 func _on_hands_card_selected(human_card):

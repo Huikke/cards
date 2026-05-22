@@ -1,7 +1,8 @@
 extends GameObject2D
 class_name Deck
 
-signal deal_signal
+signal hand_deal
+signal table_deal
 
 var card_scene = preload("res://scenes/objects/card.tscn")
 var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
@@ -52,7 +53,9 @@ func deal(mode: String = "local"):
 	card.back_sprite = back_sprite
 
 	if mode == "local":
-		deck_deal(card)
+		deck_deal(card, true)
+	if mode == "table":
+		deck_deal(card, false)
 	elif mode == "direct":
 		return card
 
@@ -62,20 +65,24 @@ func deal_burst():
 
 func deal_player(player):
 	var card = deal("direct")
-	deal_signal.emit(card, player)
+	hand_deal.emit(card, player)
 	
 
-func deck_deal(card):
+func deck_deal(card, motion: bool = false):
 	get_parent().add_child(card)
-	var x_move = randf_range(-1, 1)
-	var y_move
-	if x_move > 0:
-		y_move = [1-x_move, -1+x_move].pick_random()
+
+	if motion:
+		var x_move = randf_range(-1, 1)
+		var y_move
+		if x_move > 0:
+			y_move = [1-x_move, -1+x_move].pick_random()
+		else:
+			y_move = [-1-x_move, 1+x_move].pick_random()
+		card.direction = Vector2(x_move, y_move * 1.3)
+		card.speed = 1000
+		card.get_node("StopMotion").start()
 	else:
-		y_move = [-1-x_move, 1+x_move].pick_random()
-	card.direction = Vector2(x_move, y_move * 1.3)
-	card.speed = 1000
-	card.get_node("StopMotion").start()
+		table_deal.emit(card)
 
 func deck_shuffle():
 	logic.shuffle()

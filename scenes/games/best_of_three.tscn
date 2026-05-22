@@ -39,5 +39,5 @@ polygon = PackedVector2Array(1019, 134, 1001, 343, 743, 329, 732, 746, 560, 746,
 
 [node name="ScoreDisplay" parent="." unique_id=807158604 instance=ExtResource("5_6ndmv")]
 
-[connection signal="deal_signal" from="Deck" to="Hands" method="_on_card_to_hand"]
+[connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
