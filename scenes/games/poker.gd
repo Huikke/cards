@@ -19,3 +19,7 @@ func _ready():
 func _on_deck_table_deal(card):
 	card.position = card_placement
 	card_placement += Vector2(125, 0)
+
+
+func _on_call_pressed():
+	$Hands.get_hand_content()

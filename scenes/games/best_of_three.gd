@@ -55,13 +55,12 @@ func _on_hands_card_selected(human_card):
 var first = true
 var game_over = false
 func ai_play():
-	var ai_hand = $Hands/P2_Hand.get_children()
+	var ai_hand = $Hands/P1_Hand.get_children()
 	# Temporary solution to our invisible card
 	if first:
 		ai_hand.pop_front()
 		ai_hand.pop_back()
 	var ai_card = ai_hand.pick_random()
-	print(ai_hand)
 	if len(ai_hand) == 1: # hand does not go empty before queue free
 		game_over = true
 	return ai_card
