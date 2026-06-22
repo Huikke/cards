@@ -50,7 +50,6 @@ func change_card_overlap(custom_size):
 				first = false
 			if card is CardPadding:
 				# -4 is BoxContainer leftover space
-				print(invisible_card.get_child(0).size)
 				var free_space = invisible_card.get_child(0).size.x - custom_size - 4
 				if free_space > 0:
 					card.visible = true

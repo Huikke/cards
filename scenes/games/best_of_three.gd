@@ -36,7 +36,7 @@ func _on_hands_card_selected(human_card):
 			wild_card.value = card.value
 			wild_card.suit = card.suit
 			add_child(wild_card)
-			wild_card.turn_card()
+			wild_card.flip_card()
 
 		human_card.queue_free()
 		ai_card.queue_free()

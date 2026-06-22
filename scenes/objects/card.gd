@@ -22,9 +22,9 @@ func _process(delta):
 
 
 func mouse2():
-	turn_card()
+	flip_card()
 
-func turn_card():
+func flip_card():
 	if not face:
 		var file_name = str(value) + "_" + suit + ".svg"
 		get_node("Sprite").texture = load("res://assets/cards/front/perfectionism/" + file_name)

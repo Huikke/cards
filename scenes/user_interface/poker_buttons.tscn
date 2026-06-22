@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://de6wcdlfhqgrb"]
+
+[ext_resource type="Script" uid="uid://mtsh5i2nw8gc" path="res://scenes/user_interface/poker_buttons.gd" id="1_ymvb1"]
+
+[node name="PokerButtons" type="CanvasLayer" unique_id=685716816]
+script = ExtResource("1_ymvb1")
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="." unique_id=391524028]
+custom_minimum_size = Vector2(450, 0)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -40.0
+offset_right = -15.0
+offset_bottom = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+alignment = 1
+
+[node name="Fold" type="Button" parent="ButtonsContainer" unique_id=734767298]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Fold"
+
+[node name="Call" type="Button" parent="ButtonsContainer" unique_id=1712630377]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Call"
+
+[node name="Raise" type="Button" parent="ButtonsContainer" unique_id=933969005]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+size_flags_horizontal = 10
+text = "Raise"
+
+[connection signal="button_up" from="ButtonsContainer/Fold" to="." method="_on_fold"]
+[connection signal="button_up" from="ButtonsContainer/Call" to="." method="_on_call"]
+[connection signal="button_up" from="ButtonsContainer/Raise" to="." method="_on_raise"]

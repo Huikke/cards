@@ -18,6 +18,7 @@ config/icon="res://assets/icon.svg"
 [autoload]
 
 Global="*uid://baac12ljyh3ts"
+GlobalSignal="*uid://cwgm7rs0ae85v"
 
 [display]
 

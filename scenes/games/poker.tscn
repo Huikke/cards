@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_gbg6l"]
 [ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="2_dhslg"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
+[ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
 
 [node name="Poker" type="Node2D" unique_id=1075910118]
 script = ExtResource("1_dhslg")
@@ -16,42 +17,9 @@ script = ExtResource("2_dhslg")
 
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
 
-[node name="ButtonsLayer" type="CanvasLayer" parent="." unique_id=1915606482]
-
-[node name="ButtonsContainer" type="HBoxContainer" parent="ButtonsLayer" unique_id=1968303907]
-custom_minimum_size = Vector2(450, 0)
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -40.0
-offset_right = -15.0
-offset_bottom = -15.0
-grow_horizontal = 0
-grow_vertical = 0
-alignment = 1
-
-[node name="Fold" type="Button" parent="ButtonsLayer/ButtonsContainer" unique_id=429509541]
-custom_minimum_size = Vector2(140, 70)
-layout_mode = 2
-size_flags_horizontal = 2
-text = "Fold"
-
-[node name="Call" type="Button" parent="ButtonsLayer/ButtonsContainer" unique_id=812678499]
-custom_minimum_size = Vector2(140, 70)
-layout_mode = 2
-size_flags_horizontal = 6
-text = "Call"
-
-[node name="Raise" type="Button" parent="ButtonsLayer/ButtonsContainer" unique_id=1761264859]
-custom_minimum_size = Vector2(140, 70)
-layout_mode = 2
-size_flags_horizontal = 10
-text = "Raise"
+[node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
+visible = false
 
 [connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="table_deal" from="Deck" to="." method="_on_deck_table_deal"]
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
-[connection signal="pressed" from="ButtonsLayer/ButtonsContainer/Call" to="." method="_on_call_pressed"]
