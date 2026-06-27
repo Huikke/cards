@@ -9,8 +9,8 @@ func _ready():
 func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
 	var path = "res://assets/cards/front/perfectionism/"
 	var node_str = "P" + str(p) + "_Hand"
-	var hand = get_node(node_str)
-	var card_o = hand.get_child(0).duplicate()
+	var hand_content = get_node(node_str).get_child(0)
+	var card_o = hand_content.get_child(0).duplicate()
 	card_o.visible = true
 
 	if p == 0:
@@ -21,8 +21,8 @@ func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
 	card_o.suit = card_i.suit
 	card_o.pnum = p # Prevents playing other people's cards
 
-	hand.add_child(card_o)
-	hand.move_child(get_node(node_str + "/FrontCardPadding"), -1)
+	hand_content.add_child(card_o)
+	hand_content.move_child(get_node(node_str + "/HandContainer/FrontCardPadding"), -1)
 
 func _on_card_gui_input(event, card_ui):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
@@ -42,7 +42,7 @@ func change_card_overlap(custom_size):
 	for hand in get_children():
 		var first = true
 		var invisible_card
-		for card in hand.get_children():
+		for card in hand.get_child(0).get_children():
 			if card is PhysicalCard:
 				card.custom_minimum_size.x = custom_size
 			if first:

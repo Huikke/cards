@@ -55,7 +55,8 @@ func _on_hands_card_selected(human_card):
 var first = true
 var game_over = false
 func ai_play():
-	var ai_hand = $Hands/P1_Hand.get_children()
+	var ai_hand = $Hands/P1_Hand/HandContainer.get_children()
+	print(ai_hand)
 	# Temporary solution to our invisible card
 	if first:
 		ai_hand.pop_front()

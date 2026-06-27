@@ -1,19 +1,25 @@
 [gd_scene format=3 uid="uid://ile8r5dimjpv"]
 
-[ext_resource type="Script" uid="uid://bmwusn2i136q2" path="res://scenes/user_interface/hand.gd" id="1_1v58l"]
+[ext_resource type="Script" uid="uid://bmwusn2i136q2" path="res://scenes/user_interface/hand_container.gd" id="1_1v58l"]
 [ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://assets/cards/back/stargazer.svg" id="1_hgomj"]
 [ext_resource type="Script" uid="uid://c4bf1458icnj3" path="res://scenes/user_interface/ui_card.gd" id="1_ilmbc"]
 [ext_resource type="Script" uid="uid://dlpni12plppdu" path="res://scenes/user_interface/front_card_padding.gd" id="4_manev"]
 
-[node name="Hand" type="HBoxContainer" unique_id=911318685]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 168.0
+[node name="Hand" type="Control" unique_id=438621734]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_bottom = 166.0
 grow_horizontal = 2
-alignment = 1
+
+[node name="HandContainer" type="HBoxContainer" parent="." unique_id=825208858]
+layout_mode = 0
+offset_right = 76.0
+offset_bottom = 166.0
 script = ExtResource("1_1v58l")
 
-[node name="PhysicalCard" type="Control" parent="." unique_id=1653592494]
+[node name="PhysicalCard" type="Control" parent="HandContainer" unique_id=1653592494]
 visible = false
 custom_minimum_size = Vector2(40, 168)
 layout_mode = 2
@@ -21,13 +27,13 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_ilmbc")
 
-[node name="CardSprite" type="TextureRect" parent="PhysicalCard" unique_id=1935730928]
+[node name="CardSprite" type="TextureRect" parent="HandContainer/PhysicalCard" unique_id=1935730928]
 layout_mode = 0
 offset_right = 120.0
 offset_bottom = 168.0
 texture = ExtResource("1_hgomj")
 
-[node name="FrontCardPadding" type="Panel" parent="." unique_id=218087966]
+[node name="FrontCardPadding" type="Panel" parent="HandContainer" unique_id=218087966]
 custom_minimum_size = Vector2(76, 166)
 layout_mode = 2
 mouse_filter = 2
