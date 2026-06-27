@@ -84,7 +84,6 @@ position = Vector2(-186, -34)
 [connection signal="area_entered" from="AreaP2" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP3" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP4" to="." method="_on_area_entered" flags=18]
-[connection signal="deal_signal" from="Objects/Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
 [connection signal="value_changed" from="ExtraGUI/HSlider" to="Hands" method="_on_card_size_slider_changed"]
 

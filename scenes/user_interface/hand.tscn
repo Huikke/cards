@@ -7,16 +7,23 @@
 
 [node name="Hand" type="Control" unique_id=438621734]
 layout_mode = 3
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_bottom = 166.0
+anchors_preset = 10
+anchor_right = 1.0
 grow_horizontal = 2
 
 [node name="HandContainer" type="HBoxContainer" parent="." unique_id=825208858]
-layout_mode = 0
-offset_right = 76.0
-offset_bottom = 166.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -83.0
+offset_right = 38.0
+offset_bottom = 83.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_1v58l")
 
 [node name="PhysicalCard" type="Control" parent="HandContainer" unique_id=1653592494]
@@ -38,3 +45,17 @@ custom_minimum_size = Vector2(76, 166)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("4_manev")
+
+[node name="Indicator" type="ColorRect" parent="." unique_id=1190718394]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -40.0
+offset_right = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+color = Color(0.6797427, 0.67084867, 0.68869585, 1)

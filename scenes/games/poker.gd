@@ -3,7 +3,6 @@ extends Node2D
 var pk_logic = poker_logic.new()
 
 var table_cards = []
-var current_turn: int
 var phase = 0
 
 var card_placement: Vector2
@@ -35,9 +34,8 @@ func _on_deck_table_deal(card):
 	card_placement += Vector2(125, 0)
 	table_cards.append(card)
 
-func _on_player_turn(turn):
+func _on_player_turn():
 	$ButtonsLayer.visible = true
-	current_turn = turn
 
 func _on_next_phase():
 	phase += 1
@@ -50,16 +48,28 @@ func _on_next_phase():
 	if phase == 3:
 		table_cards[4].flip_card()
 	if phase == 4:
-		print("end")
+		showdown()
 		return
-	var starting_player = (Global.starting_player + 2) % 4
-	pk_logic.round_manager(starting_player, -1)
+	# var starting_player = (Global.starting_player + 2) % 4
+	pk_logic.round_manager(Global.starting_player)
 
-func _on_fold():
+func _on_fold(player):
+	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Red")
+	if player == 0:
+		pk_logic.round_manager(1)
+
+func _on_call(player):
+	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Lime_Green")
+	if player == 0:
+		pk_logic.round_manager(1)
+
+func _on_raise(player):
 	$Hands.get_hand_content()
+	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Blue")
 
-func _on_call():
-	pk_logic.round_manager(1, current_turn) # Needs change in multiplayer
-
-func _on_raise():
-	$Hands.get_hand_content()
+func showdown():
+	for player in range(0,4):
+		if player not in Global.folded:
+			# WIP
+			$Hands.get_hand_content()
+			pass

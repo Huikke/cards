@@ -31,7 +31,7 @@ func _on_card_gui_input(event, card_ui):
 func get_hand_content():
 	for p in range(4):
 		var node_str = "P" + str(p) + "_Hand"
-		var hand = get_node(node_str).get_children()
+		var hand = get_node(node_str).get_child(0).get_children()
 		var hand_list = []
 		for card in hand:
 			if card is PhysicalCard and card.value != 0:

@@ -1,11 +1,10 @@
 extends CanvasLayer
 
-
 func _on_fold():
-	GlobalSignal.fold.emit()
+	GlobalSignal.fold.emit(0)
 
 func _on_call():
-	GlobalSignal.call.emit()
+	GlobalSignal.call.emit(0)
 
 func _on_raise():
-	GlobalSignal.raise.emit()
+	GlobalSignal.raise.emit(0)
