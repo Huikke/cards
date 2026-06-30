@@ -6,6 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_2teuh"]
+font_size = 50
+
 [node name="Poker" type="Node2D" unique_id=1075910118]
 script = ExtResource("1_dhslg")
 
@@ -19,6 +22,23 @@ script = ExtResource("2_dhslg")
 
 [node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
 visible = false
+
+[node name="ExtraLayer" type="CanvasLayer" parent="." unique_id=810472621]
+
+[node name="RoundLabel" type="Label" parent="ExtraLayer" unique_id=1757960512]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.5
+offset_top = -200.0
+offset_right = 32.5
+offset_bottom = -181.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Round 1"
+label_settings = SubResource("LabelSettings_2teuh")
 
 [connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="table_deal" from="Deck" to="." method="_on_deck_table_deal"]

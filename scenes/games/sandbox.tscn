@@ -27,29 +27,29 @@ scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
 polygon = PackedVector2Array(340, 420, 1080, 420, 1080, 665, 340, 665)
 
-[node name="AreaP2" type="Area2D" parent="." unique_id=1963656190]
+[node name="AreaP3" type="Area2D" parent="." unique_id=1963656190]
 position = Vector2(2, -330)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP2" unique_id=1234602290]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP3" unique_id=1234602290]
 position = Vector2(-2.3613281, -5.000061)
 shape = SubResource("RectangleShape2D_0wfyh")
 
-[node name="Polygon2D" type="Polygon2D" parent="AreaP2" unique_id=1517248897]
+[node name="Polygon2D" type="Polygon2D" parent="AreaP3" unique_id=1517248897]
 position = Vector2(-701.3613, -296.99997)
 scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
 polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081.4136, 675.1123, 340, 665)
 
-[node name="AreaP3" type="Area2D" parent="." unique_id=375168498]
+[node name="AreaP2" type="Area2D" parent="." unique_id=375168498]
 position = Vector2(-566, -19)
 rotation = -1.5707964
 scale = Vector2(0.7345348, 1.1484727)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP3" unique_id=1503736864]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaP2" unique_id=1503736864]
 position = Vector2(-2.3613281, -5.000061)
 shape = SubResource("RectangleShape2D_0wfyh")
 
-[node name="Polygon2D" type="Polygon2D" parent="AreaP3" unique_id=502931178]
+[node name="Polygon2D" type="Polygon2D" parent="AreaP2" unique_id=502931178]
 position = Vector2(-701.3613, -296.99997)
 scale = Vector2(0.97834915, 0.5258383)
 color = Color(0.60320854, 0.3368698, 0.18042687, 1)
@@ -79,12 +79,25 @@ position = Vector2(-186, -34)
 
 [node name="ExtraGUI" parent="." unique_id=356094007 instance=ExtResource("5_sboq1")]
 
+[node name="Flipper" type="Button" parent="ExtraGUI" unique_id=109036398]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -93.0
+offset_top = -27.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Flip Cards"
+
 [connection signal="card_entered" from="." to="Hands" method="_on_card_to_hand"]
 [connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]
-[connection signal="area_entered" from="AreaP2" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP3" to="." method="_on_area_entered" flags=18]
+[connection signal="area_entered" from="AreaP2" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP4" to="." method="_on_area_entered" flags=18]
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
 [connection signal="value_changed" from="ExtraGUI/HSlider" to="Hands" method="_on_card_size_slider_changed"]
+[connection signal="pressed" from="ExtraGUI/Flipper" to="Hands" method="_on_flipper_pressed"]
 
 [editable path="ExtraGUI"]
