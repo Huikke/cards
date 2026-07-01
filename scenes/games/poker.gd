@@ -2,7 +2,8 @@ extends Node2D
 
 var pk_logic = poker_logic.new()
 
-var table_cards = []
+var table_cards_physical = []
+var table_cards_data = []
 var phase = 0
 
 var card_placement: Vector2
@@ -53,7 +54,8 @@ func game_loop(player: int):
 func _on_deck_table_deal(card):
 	card.position = card_placement
 	card_placement += Vector2(125, 0)
-	table_cards.append(card)
+	table_cards_physical.append(card)
+	table_cards_data.append([card.value, card.suit])
 
 func player_turn():
 	$ButtonsLayer.visible = true
@@ -61,17 +63,17 @@ func player_turn():
 func next_phase():
 	phase += 1
 	if phase == 1:
-		table_cards[0].flip_card()
-		table_cards[1].flip_card()
-		table_cards[2].flip_card()
+		table_cards_physical[0].flip_card()
+		table_cards_physical[1].flip_card()
+		table_cards_physical[2].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 2"
 		color_reset()
 	elif phase == 2:
-		table_cards[3].flip_card()
+		table_cards_physical[3].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 3"
 		color_reset()
 	elif phase == 3:
-		table_cards[4].flip_card()
+		table_cards_physical[4].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 4"
 		color_reset()
 	elif phase == 4:
@@ -96,7 +98,7 @@ func _on_call(player):
 		game_loop(1) # Change needed in mp
 
 func _on_raise(player):
-	$Hands.get_hand_content()
+	print(table_cards_data)
 	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Blue")
 
 func color_reset():
@@ -107,4 +109,7 @@ func color_reset():
 func showdown():
 	for player in range(0,4):
 		if player not in Global.folded:
-			$Hands.flip_hand(player)
+			if player != 0: # Change needed in mp
+				$Hands.flip_hand(player)
+			var final_hand = $Hands.get_hand_content(player) + table_cards_data
+			pk_logic.check_hand(final_hand)

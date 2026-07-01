@@ -32,15 +32,15 @@ func _on_card_gui_input(event, card_ui):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		card_selected.emit(card_ui)
 
-func get_hand_content():
-	for p in range(4):
-		var node_str = "P" + str(p) + "_Hand"
-		var hand = get_node(node_str).get_child(0).get_children()
-		var hand_list = []
-		for card in hand:
-			if card is PhysicalCard and card.value != 0:
-				hand_list.append([card.value, card.suit])
-		print("Player " + str(p + 1) + " has" + str(hand_list))
+func get_hand_content(player: int):
+	var node_str = "P" + str(player) + "_Hand"
+	var hand = get_node(node_str).get_child(0).get_children()
+	var hand_list = []
+	for card in hand:
+		if card is PhysicalCard and card.value != 0:
+			hand_list.append([card.value, card.suit])
+	print("Player " + str(player + 1) + " has" + str(hand_list))
+	return hand_list
 
 func change_card_overlap(custom_size):
 	for hand in get_children():
@@ -75,8 +75,10 @@ func flip_hand(player: int):
 				card.get_child(0).texture = card.back_sprite
 				card.face_up = false
 
+# Sandbox only
 func _on_card_size_slider_changed(value):
 	change_card_overlap(value)
 
+# Sandbox only
 func _on_flipper_pressed():
 	flip_hand(0)
