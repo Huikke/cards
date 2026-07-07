@@ -15,7 +15,7 @@ func turn(player: int):
 		ai_turn(player)
 
 func ai_turn(player: int):
-	var choice = randi_range(0, 5)
+	var choice = randi_range(0, 20)
 	print(player, ": ", choice)
 	if choice == 0:
 		GlobalSignal.fold.emit(player)
@@ -24,5 +24,77 @@ func ai_turn(player: int):
 		GlobalSignal.call.emit(player)
 
 func check_hand(cards: Array):
-	for card in cards:
-		print(card)
+	var flush = false
+	var straight = false
+
+	var suit_count = {"spade": 0, "heart": 0, "club": 0, "diamond": 0}
+	var ranks = []
+	for i in range(0, len(cards)):
+		match cards[i][1]:
+			"spade":
+				suit_count["spade"] += 1
+			"heart":
+				suit_count["heart"] += 1
+			"club":
+				suit_count["club"] += 1
+			"diamond":
+				suit_count["diamond"] += 1
+		ranks.append(cards[i][0])
+
+	ranks.sort()
+	var rank_helper = 0
+	var straight_count = 0
+	var stack_size = 0
+	var stack_amount = 0
+	var rank_dict = {}
+	print(ranks)
+	for rank in ranks:
+		# Straight
+		if rank_helper == 0 or rank_helper - rank == -1:
+			straight_count += 1
+			rank_helper = rank
+			# Process Ace
+			if rank_helper == 13 and ranks[0] == 1:
+				straight_count += 1
+			# Break on Straight
+			if straight_count >= 5:
+				straight = true
+				break
+		elif rank_helper - rank == 0:
+			pass
+		else:
+			straight_count = 0
+			rank_helper = 0
+		
+		# Stack
+		if rank_dict.has(rank):
+			rank_dict[rank] += 1
+		else:
+			rank_dict[rank] = 1
+
+	for suit in suit_count:
+		if suit_count[suit] >= 5:
+			flush = true
+
+	# Stack
+	for rank in rank_dict:
+		if rank_dict[rank] == 1:
+			continue
+		elif rank_dict[rank] == 2 and stack_amount == 0:
+			stack_size = 2
+			stack_amount = 1
+		elif rank_dict[rank] == 3 and stack_amount == 0:
+			stack_size = 3
+			stack_amount = 1
+		elif rank_dict[rank] == 2 and stack_amount == 1:
+			stack_amount = 2
+		elif rank_dict[rank] == 3 and stack_amount == 1:
+			stack_size = 3
+			stack_amount = 2
+		else:
+			print("Error!")
+
+
+	print(str(straight) + " " + str(straight_count))
+	print(str(flush) + " " + str(suit_count))
+	print(str(stack_size) + ", " + str(stack_amount))

@@ -37,13 +37,13 @@ func game_begin():
 
 func game_loop(player: int):
 	while true:
-		await get_tree().create_timer(0.5).timeout
+		await get_tree().create_timer(0.3).timeout
 		var escape = pk_logic.turn(player)
 		if escape == 0:
 			player_turn()
 			break
 		elif escape == -1:
-			await get_tree().create_timer(1).timeout
+			await get_tree().create_timer(0.5).timeout
 			next_phase()
 			break
 		elif escape == -2:
