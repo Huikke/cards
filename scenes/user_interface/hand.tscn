@@ -5,11 +5,17 @@
 [ext_resource type="Script" uid="uid://c4bf1458icnj3" path="res://scenes/user_interface/ui_card.gd" id="1_ilmbc"]
 [ext_resource type="Script" uid="uid://dlpni12plppdu" path="res://scenes/user_interface/front_card_padding.gd" id="4_manev"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_manev"]
+font_size = 40
+
 [node name="Hand" type="Control" unique_id=438621734]
 layout_mode = 3
-anchors_preset = 10
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 0
 
 [node name="HandContainer" type="HBoxContainer" parent="." unique_id=825208858]
 layout_mode = 1
@@ -59,3 +65,30 @@ offset_right = -40.0
 grow_horizontal = 0
 grow_vertical = 0
 color = Color(0.6797427, 0.67084867, 0.68869585, 1)
+
+[node name="LabelPanel" type="Panel" parent="." unique_id=720950606]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -130.0
+offset_bottom = -130.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PlayerLabel" type="Label" parent="LabelPanel" unique_id=1108914018]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -0.5
+offset_top = -23.0
+offset_right = 0.5
+offset_bottom = 23.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_manev")

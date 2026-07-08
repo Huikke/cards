@@ -92,9 +92,28 @@ func check_hand(cards: Array):
 			stack_size = 3
 			stack_amount = 2
 		else:
-			print("Error!")
+			print("Error! (Or more likely there's 3 pairs)")
 
 
 	print(str(straight) + " " + str(straight_count))
 	print(str(flush) + " " + str(suit_count))
 	print(str(stack_size) + ", " + str(stack_amount))
+
+	if flush and straight: # This is not ready
+		return "Straight Flush"
+	if stack_size == 4:
+		return "Four of a Kind"
+	if stack_size == 3 and stack_amount == 2:
+		return "Full House"
+	elif flush:
+		return "Flush"
+	elif straight:
+		return "Straight"
+	elif stack_size == 3 and stack_amount == 1:
+		return "Three of a Kind"
+	elif stack_size == 2 and stack_amount == 2:
+		return "Two Pair"
+	elif stack_size == 2 and stack_amount == 1:
+		return "Pair"
+	else:
+		return "High Card"

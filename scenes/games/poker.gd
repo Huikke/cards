@@ -67,15 +67,15 @@ func next_phase():
 		table_cards_physical[1].flip_card()
 		table_cards_physical[2].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 2"
-		color_reset()
+		indicator_reset()
 	elif phase == 2:
 		table_cards_physical[3].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 3"
-		color_reset()
+		indicator_reset()
 	elif phase == 3:
 		table_cards_physical[4].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 4"
-		color_reset()
+		indicator_reset()
 	elif phase == 4:
 		$ExtraLayer/RoundLabel.text = "Showdown"
 		showdown()
@@ -89,11 +89,13 @@ func next_phase():
 
 func _on_fold(player):
 	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Red")
+	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Fold"
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
 func _on_call(player):
 	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Lime_Green")
+	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Call"
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
@@ -101,15 +103,17 @@ func _on_raise(player):
 	print(table_cards_data)
 	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Blue")
 
-func color_reset():
-	for i in range(4):
-		$Hands.get_node("P" + str(i) + "_Hand/Indicator").color = Color("Gray")
+func indicator_reset():
+	for player in range(4):
+		$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Gray")
+		$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = ""
 
 
 func showdown():
-	for player in range(0,4):
+	for player in range(4):
 		if player not in Global.folded:
 			if player != 0: # Change needed in mp
 				$Hands.flip_hand(player)
 			var final_hand = $Hands.get_hand_content(player) + table_cards_data
-			pk_logic.check_hand(final_hand)
+			var hand_value = pk_logic.check_hand(final_hand)
+			$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = hand_value
