@@ -30,19 +30,15 @@ func check_hand(cards: Array):
 	for card in cards:
 		if card[0] == 1:
 			card[0] = 14
-			# Ace is being recognised as 1 in straight as well
-			rank_helper = 1
-			straight_count = 1
 
 	cards.sort()
+	cards.reverse()
 
 	var flush = ""
 	var straight = 0
-
+	# For Flush
 	var suit_values = {"spade": [], "heart": [], "club": [], "diamond": []}
-
-	var stack_size = 0
-	var stack_amount = 0
+	# For Stack
 	var rank_values = {}
 
 	for card in cards:
@@ -61,13 +57,16 @@ func check_hand(cards: Array):
 				suit_values["diamond"].append(rank)
 
 		# Line
-		if rank_helper == 0 or rank_helper - rank == -1:
+		if rank_helper - rank == 0 or straight_count == 5:
+			pass
+		elif rank_helper == 0 or rank_helper - rank == 1:
 			straight_count += 1
 			rank_helper = rank
-			if straight_count >= 5:
-				straight = rank
-		elif rank_helper - rank == 0:
-			pass
+			if straight_count == 5:
+				straight = rank + 4
+			elif straight_count == 4 and rank == 2 and cards[0][0] == 14:
+				straight_count += 1
+				straight = rank + 3
 		else:
 			straight_count = 1
 			rank_helper = rank
@@ -82,36 +81,42 @@ func check_hand(cards: Array):
 		if len(suit_values[suit]) >= 5:
 			if len(suit_values[suit]) >= 6:
 				if len(suit_values[suit]) == 7:
-					suit_values[suit].pop_front()
-				suit_values[suit].pop_front()
+					suit_values[suit].pop_back()
+				suit_values[suit].pop_back()
 			flush = suit
 
 	# Stack
 	var stacks = []
-	for rank in rank_values.keys():
+	var singles = []
+	for rank in rank_values:
 		if rank_values[rank] == 1:
-			rank_values.erase(rank)
+			singles.append([rank_values[rank], rank])
 		else:
 			stacks.append([rank_values[rank], rank])
-	print(stacks)
+
+	stacks.sort()
+	stacks.reverse()
+
 	if len(stacks) >= 2:
-		stacks.sort()
 		var count = 0
 		for stack in stacks:
 			count += stack[0]
 		if count > 5:
-			if stacks[0][0] == 2:
-				stacks.pop_front()
-			elif stacks[0][0] == 3:
-				stacks[0][0] = 2
-	print(stacks)
+			if stacks[-1][0] == 2:
+				stacks[-1][0] = 1
+				singles.append(stacks.pop_back())
+				singles.sort()
+				singles.reverse()
+			elif stacks[-1][0] == 3:
+				stacks[-1][0] = 2
 
 
+	# Final Judgment
 	if flush and straight: # This is not ready
 		return "Straight Flush"
 	if len(stacks) == 1 and stacks[0][0] == 4:
 		return  ["Four of a Kind", stacks]
-	if len(stacks) == 2 and stacks[1][0] == 3:
+	if len(stacks) == 2 and stacks[0][0] == 3:
 		return ["Full House", stacks]
 	elif flush != "":
 		return ["Flush", suit_values[flush]]
@@ -119,9 +124,10 @@ func check_hand(cards: Array):
 		return ["Straight", straight]
 	elif len(stacks) == 1 and stacks[0][0] == 3:
 		return ["Three of a Kind", stacks]
-	elif len(stacks) == 2 and stacks[1][0] == 2:
+	elif len(stacks) == 2 and stacks[0][0] == 2:
 		return ["Two Pair", stacks]
 	elif len(stacks) == 1 and stacks[0][0] == 2:
 		return ["Pair", stacks]
 	else:
-		return "High Card"
+		singles.resize(5)
+		return ["High Card", singles]
