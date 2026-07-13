@@ -16,7 +16,6 @@ func turn(player: int):
 
 func ai_turn(player: int):
 	var choice = randi_range(0, 20)
-	print(player, ": ", choice)
 	if choice == 0:
 		GlobalSignal.fold.emit(player)
 		Global.folded.append(player)
@@ -24,13 +23,28 @@ func ai_turn(player: int):
 		GlobalSignal.call.emit(player)
 
 func check_hand(cards: Array):
+	# Ace is the best
+	for card in cards:
+		if card[0] == 1:
+			card[0] = 14
+
+	cards.sort()
+
 	var flush = false
 	var straight = false
-
 	var suit_count = {"spade": 0, "heart": 0, "club": 0, "diamond": 0}
-	var ranks = []
-	for i in range(0, len(cards)):
-		match cards[i][1]:
+
+
+	var rank_helper = 0
+	var straight_count = 0
+	var stack_size = 0
+	var stack_amount = 0
+	var rank_dict = {}
+	for card in cards:
+		var rank = card[0]
+		var suit = card[1]
+		# Suit
+		match suit:
 			"spade":
 				suit_count["spade"] += 1
 			"heart":
@@ -39,32 +53,19 @@ func check_hand(cards: Array):
 				suit_count["club"] += 1
 			"diamond":
 				suit_count["diamond"] += 1
-		ranks.append(cards[i][0])
 
-	ranks.sort()
-	var rank_helper = 0
-	var straight_count = 0
-	var stack_size = 0
-	var stack_amount = 0
-	var rank_dict = {}
-	print(ranks)
-	for rank in ranks:
-		# Straight
+		# Line
+		# TODO: Ace being the smallest
 		if rank_helper == 0 or rank_helper - rank == -1:
 			straight_count += 1
 			rank_helper = rank
-			# Process Ace
-			if rank_helper == 13 and ranks[0] == 1:
-				straight_count += 1
-			# Break on Straight
 			if straight_count >= 5:
 				straight = true
-				break
 		elif rank_helper - rank == 0:
 			pass
 		else:
-			straight_count = 0
-			rank_helper = 0
+			straight_count = 1
+			rank_helper = rank
 		
 		# Stack
 		if rank_dict.has(rank):
@@ -95,9 +96,9 @@ func check_hand(cards: Array):
 			print("Error! (Or more likely there's 3 pairs)")
 
 
-	print(str(straight) + " " + str(straight_count))
-	print(str(flush) + " " + str(suit_count))
-	print(str(stack_size) + ", " + str(stack_amount))
+	#print(str(straight) + " " + str(straight_count))
+	#print(str(flush) + " " + str(suit_count))
+	#print(str(stack_size) + ", " + str(stack_amount))
 
 	if flush and straight: # This is not ready
 		return "Straight Flush"

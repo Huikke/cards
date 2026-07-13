@@ -100,7 +100,7 @@ func _on_call(player):
 		game_loop(1) # Change needed in mp
 
 func _on_raise(player):
-	print(table_cards_data)
+	showdown()
 	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Blue")
 
 func indicator_reset():
