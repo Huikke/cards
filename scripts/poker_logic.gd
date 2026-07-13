@@ -23,44 +23,49 @@ func ai_turn(player: int):
 		GlobalSignal.call.emit(player)
 
 func check_hand(cards: Array):
+	var rank_helper = 0
+	var straight_count = 0
+
 	# Ace is the best
 	for card in cards:
 		if card[0] == 1:
 			card[0] = 14
+			# Ace is being recognised as 1 in straight as well
+			rank_helper = 1
+			straight_count = 1
 
 	cards.sort()
 
-	var flush = false
-	var straight = false
-	var suit_count = {"spade": 0, "heart": 0, "club": 0, "diamond": 0}
+	var flush = ""
+	var straight = 0
 
+	var suit_values = {"spade": [], "heart": [], "club": [], "diamond": []}
 
-	var rank_helper = 0
-	var straight_count = 0
 	var stack_size = 0
 	var stack_amount = 0
-	var rank_dict = {}
+	var rank_values = {}
+
 	for card in cards:
 		var rank = card[0]
 		var suit = card[1]
+
 		# Suit
 		match suit:
 			"spade":
-				suit_count["spade"] += 1
+				suit_values["spade"].append(rank)
 			"heart":
-				suit_count["heart"] += 1
+				suit_values["heart"].append(rank)
 			"club":
-				suit_count["club"] += 1
+				suit_values["club"].append(rank)
 			"diamond":
-				suit_count["diamond"] += 1
+				suit_values["diamond"].append(rank)
 
 		# Line
-		# TODO: Ace being the smallest
 		if rank_helper == 0 or rank_helper - rank == -1:
 			straight_count += 1
 			rank_helper = rank
 			if straight_count >= 5:
-				straight = true
+				straight = rank
 		elif rank_helper - rank == 0:
 			pass
 		else:
@@ -68,53 +73,55 @@ func check_hand(cards: Array):
 			rank_helper = rank
 		
 		# Stack
-		if rank_dict.has(rank):
-			rank_dict[rank] += 1
+		if rank_values.has(rank):
+			rank_values[rank] += 1
 		else:
-			rank_dict[rank] = 1
+			rank_values[rank] = 1
 
-	for suit in suit_count:
-		if suit_count[suit] >= 5:
-			flush = true
+	for suit in suit_values:
+		if len(suit_values[suit]) >= 5:
+			if len(suit_values[suit]) >= 6:
+				if len(suit_values[suit]) == 7:
+					suit_values[suit].pop_front()
+				suit_values[suit].pop_front()
+			flush = suit
 
 	# Stack
-	for rank in rank_dict:
-		if rank_dict[rank] == 1:
-			continue
-		elif rank_dict[rank] == 2 and stack_amount == 0:
-			stack_size = 2
-			stack_amount = 1
-		elif rank_dict[rank] == 3 and stack_amount == 0:
-			stack_size = 3
-			stack_amount = 1
-		elif rank_dict[rank] == 2 and stack_amount == 1:
-			stack_amount = 2
-		elif rank_dict[rank] == 3 and stack_amount == 1:
-			stack_size = 3
-			stack_amount = 2
+	var stacks = []
+	for rank in rank_values.keys():
+		if rank_values[rank] == 1:
+			rank_values.erase(rank)
 		else:
-			print("Error! (Or more likely there's 3 pairs)")
+			stacks.append([rank_values[rank], rank])
+	print(stacks)
+	if len(stacks) >= 2:
+		stacks.sort()
+		var count = 0
+		for stack in stacks:
+			count += stack[0]
+		if count > 5:
+			if stacks[0][0] == 2:
+				stacks.pop_front()
+			elif stacks[0][0] == 3:
+				stacks[0][0] = 2
+	print(stacks)
 
-
-	#print(str(straight) + " " + str(straight_count))
-	#print(str(flush) + " " + str(suit_count))
-	#print(str(stack_size) + ", " + str(stack_amount))
 
 	if flush and straight: # This is not ready
 		return "Straight Flush"
-	if stack_size == 4:
-		return "Four of a Kind"
-	if stack_size == 3 and stack_amount == 2:
-		return "Full House"
-	elif flush:
-		return "Flush"
-	elif straight:
-		return "Straight"
-	elif stack_size == 3 and stack_amount == 1:
-		return "Three of a Kind"
-	elif stack_size == 2 and stack_amount == 2:
-		return "Two Pair"
-	elif stack_size == 2 and stack_amount == 1:
-		return "Pair"
+	if len(stacks) == 1 and stacks[0][0] == 4:
+		return  ["Four of a Kind", stacks]
+	if len(stacks) == 2 and stacks[1][0] == 3:
+		return ["Full House", stacks]
+	elif flush != "":
+		return ["Flush", suit_values[flush]]
+	elif straight != 0:
+		return ["Straight", straight]
+	elif len(stacks) == 1 and stacks[0][0] == 3:
+		return ["Three of a Kind", stacks]
+	elif len(stacks) == 2 and stacks[1][0] == 2:
+		return ["Two Pair", stacks]
+	elif len(stacks) == 1 and stacks[0][0] == 2:
+		return ["Pair", stacks]
 	else:
 		return "High Card"
