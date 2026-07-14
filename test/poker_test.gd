@@ -39,5 +39,13 @@ func _ready():
 	print(pk_logic.check_hand(hand))
 	
 	# Straight Flush
-	hand = [[10, "diamond"], [1, "diamond"], [2, "diamond"], [13, "diamond"], [6, "diamond"], [12, "diamond"], [10, "club"]]
+	hand = [[10, "diamond"], [1, "diamond"], [2, "diamond"], [13, "diamond"], [11, "diamond"], [12, "diamond"], [10, "club"]]
+	print(pk_logic.check_hand(hand))
+
+	# Fake Straight Flush
+	hand = [[10, "diamond"], [1, "diamond"], [2, "diamond"], [13, "diamond"], [11, "diamond"], [12, "club"], [10, "club"]]
+	print(pk_logic.check_hand(hand))
+
+	# Straight Flush
+	hand = [[4, "diamond"], [1, "diamond"], [2, "diamond"], [3, "diamond"], [11, "diamond"], [5, "diamond"], [10, "club"]]
 	print(pk_logic.check_hand(hand))
