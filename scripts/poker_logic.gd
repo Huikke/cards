@@ -31,16 +31,20 @@ func check_hand(cards: Array):
 	cards.sort()
 	cards.reverse()
 
-	var flush = ""
-	var straight = 0
-	var straight_flush = 0
+	# For Straight Flush
+	var straight_flush = false
+	var straight_flush_hand = []
 	# For Flush
+	var flush = ""
 	var suit_values = {"spade": [], "heart": [], "club": [], "diamond": []}
 	# For Straight
-	var rank_helper = 0
-	var straight_count = 0
+	var straight = false
+	var straight_hand = []
+	var prev_rank = 0
 	# For Stack
-	var rank_values = {}
+	var stacks_dict = {}
+	var stack_size_list = [0, 0, 0, 0]
+	var stack_hand = []
 
 	for card in cards:
 		var rank = card[0]
@@ -49,113 +53,116 @@ func check_hand(cards: Array):
 		# Suit
 		match suit:
 			"spade":
-				suit_values["spade"].append(rank)
+				suit_values["spade"].append(card)
 			"heart":
-				suit_values["heart"].append(rank)
+				suit_values["heart"].append(card)
 			"club":
-				suit_values["club"].append(rank)
+				suit_values["club"].append(card)
 			"diamond":
-				suit_values["diamond"].append(rank)
+				suit_values["diamond"].append(card)
 
 		# Line
-		var results = straight_calculator(rank_helper, rank, straight_count, cards[0][0])
+		var results = straight_calculator(card, prev_rank, straight_hand, cards[0])
 		if results != null:
-			rank_helper = results[0]
-			straight_count = results[1]
-			straight = results[2]
+			prev_rank = results[0]
+			straight = results[1]
 
 		# Stack
-		if rank_values.has(rank):
-			rank_values[rank] += 1
+		if stacks_dict.has(rank):
+			stacks_dict[rank].append(card)
 		else:
-			rank_values[rank] = 1
+			stacks_dict[rank] = [card]
+
 
 	# Suit
 	for suit in suit_values:
 		if len(suit_values[suit]) >= 5:
-			var rank_helper2 = 0
-			var straight_count2 = 0
-			for rank in suit_values[suit]:
-				var results2 = straight_calculator(rank_helper2, rank, straight_count2, suit_values[suit][0])
-				if results2 != null:
-					rank_helper2 = results2[0]
-					straight_count2 = results2[1]
-					straight_flush = results2[2]
-			if len(suit_values[suit]) >= 6:
-				if len(suit_values[suit]) == 7:
-					suit_values[suit].pop_back()
-				suit_values[suit].pop_back()
+			var prev_card = 0
+			for card in suit_values[suit]:
+				var results = straight_calculator(card, prev_card, straight_flush_hand, suit_values[suit][0])
+				if results != null:
+					prev_card = results[0]
+					straight_flush = results[1]
 			flush = suit
 
-	# Stack
-	var stacks = []
-	var singles = []
-	for rank in rank_values:
-		if rank_values[rank] == 1:
-			singles.append([rank_values[rank], rank])
+	# Stacks
+	var stacks_dict2 = {}
+	for rank in stacks_dict:
+		if stacks_dict2.has(len(stacks_dict[rank])):
+			stacks_dict2[len(stacks_dict[rank])].append(stacks_dict[rank])
 		else:
-			stacks.append([rank_values[rank], rank])
+			stacks_dict2[len(stacks_dict[rank])] = [stacks_dict[rank]]
+		stack_size_list[len(stacks_dict[rank])-1] += 1
 
-	stacks.sort()
-	stacks.reverse()
+	var total_size = 0
+	for size in range(4, 0, -1):
+		if stack_size_list[size-1] == 0:
+			continue
+		for stack in stacks_dict2[size]:
+			total_size += size
+			if total_size <= 5:
+				for card in stack:
+					stack_hand.append(card)
+			elif size == 3:
+				total_size -= size
+				var new_stack = [stack[0], stack[1]]
+				if stacks_dict2.has(2):
+					stacks_dict2[2].append(new_stack)
+					stacks_dict2[2].sort()
+					stacks_dict2[2].reverse()
+					stack_size_list[size-2] += 1
+				else:
+					stacks_dict2[2] = [new_stack]
+					stack_size_list[size-2] += 1
+			elif size == 2:
+				total_size -= size
+				var new_stack = [stack[0]]
+				if stacks_dict2.has(1):
+					stacks_dict2[1].append(new_stack)
+					stacks_dict2[1].sort()
+					stacks_dict2[1].reverse()
+					stack_size_list[size-2] += 1
+				else:
+					stacks_dict2[1] = [new_stack]
+					stack_size_list[size-2] += 1
 
-	if len(stacks) >= 2:
-		var count = 0
-		for stack in stacks:
-			count += stack[0]
-		if count > 5:
-			if stacks[-1][0] == 2:
-				stacks[-1][0] = 1
-				singles.append(stacks.pop_back())
-				singles.sort()
-				singles.reverse()
-			elif stacks[-1][0] == 3:
-				stacks[-1][0] = 2
-
-	var final_hand = stacks.duplicate(true)
-	var count2 = 0
-	for stack in stacks:
-		count2 += stack[0]
-	for i in range(0, 5-count2):
-		final_hand.append(singles[i])
 
 	# Final Judgment
-	if straight_flush: # This is not ready
-		return ["Straight Flush", straight_flush]
-	if len(stacks) == 1 and stacks[0][0] == 4:
-		return  ["Four of a Kind", final_hand]
-	if len(stacks) == 2 and stacks[0][0] == 3:
-		return ["Full House", final_hand]
+	if straight_flush:
+		return ["Straight Flush", straight_flush_hand]
+	if stack_size_list[3] >= 1:
+		return  ["Four of a Kind", stack_hand]
+	if stack_size_list[2] >= 1 and stack_size_list[1] >= 1 or stack_size_list[2] >= 2:
+		return ["Full House", stack_hand]
 	elif flush != "":
+		suit_values[flush].resize(5)
 		return ["Flush", suit_values[flush]]
-	elif straight != 0:
-		return ["Straight", straight]
-	elif len(stacks) == 1 and stacks[0][0] == 3:
-		return ["Three of a Kind", final_hand]
-	elif len(stacks) == 2 and stacks[0][0] == 2:
-		return ["Two Pair", final_hand]
-	elif len(stacks) == 1 and stacks[0][0] == 2:
-		return ["Pair", final_hand]
+	elif straight:
+		return ["Straight", straight_hand]
+	elif stack_size_list[2] == 1:
+		return ["Three of a Kind", stack_hand]
+	elif stack_size_list[1] >= 2:
+		return ["Two Pair", stack_hand]
+	elif stack_size_list[1] == 1:
+		return ["Pair", stack_hand]
 	else:
-		singles.resize(5)
-		return ["High Card", singles]
+		return ["High Card", stack_hand]
 
-func straight_calculator(rank_helper, rank, straight_count, first_rank):
-	var straight = 0
-	if rank_helper - rank == 0 or straight_count == 5:
+func straight_calculator(card, prev_rank, straight_hand, first_card):
+	var rank = card[0]
+	if prev_rank - rank == 0 or len(straight_hand) == 5:
 		pass
-	elif rank_helper == 0 or rank_helper - rank == 1:
-		straight_count += 1
-		rank_helper = rank
-		if straight_count == 5:
-			straight = rank + 4
-			return [rank_helper, straight_count, straight]
-		elif straight_count == 4 and rank == 2 and first_rank == 14:
-			straight_count += 1
-			straight = rank + 3
-			return [rank_helper, straight_count, straight]
-		return [rank_helper, straight_count, straight]
+	elif prev_rank == 0 or prev_rank - rank == 1:
+		straight_hand.append(card)
+		prev_rank = rank
+		if len(straight_hand) == 5:
+			return [prev_rank, true]
+		elif len(straight_hand) == 4 and rank == 2 and first_card[0] == 14:
+			straight_hand.append(first_card)
+			return [prev_rank, true]
+		return [prev_rank, false]
 	else:
-		straight_count = 1
-		rank_helper = rank
-		return [rank_helper, straight_count, straight]
+		straight_hand.clear()
+		straight_hand.append(card)
+		prev_rank = rank
+		return [prev_rank, false]
