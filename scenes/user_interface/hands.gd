@@ -39,7 +39,6 @@ func get_hand_content(player: int):
 	for card in hand:
 		if card is PhysicalCard and card.value != 0:
 			hand_list.append([card.value, card.suit])
-	print("Player " + str(player + 1) + " has" + str(hand_list))
 	return hand_list
 
 func change_card_overlap(custom_size):

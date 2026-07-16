@@ -8,6 +8,8 @@ var phase = 0
 
 var card_placement: Vector2
 
+var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
+
 func _ready():
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	$Hands.change_card_overlap(120)
@@ -82,7 +84,7 @@ func next_phase():
 		return
 	else:
 		$ExtraLayer/RoundLabel.text = "Error"
-		print("overtime!")
+		push_error("Round overflow")
 	# var starting_player = (Global.starting_player + 2) % 4
 	game_loop(Global.starting_player)
 	
@@ -110,10 +112,39 @@ func indicator_reset():
 
 
 func showdown():
+	var poker_hand_list = []
+
 	for player in range(4):
 		if player not in Global.folded:
 			if player != 0: # Change needed in mp
 				$Hands.flip_hand(player)
-			var final_hand = $Hands.get_hand_content(player) + table_cards_data
-			var hand_value = pk_logic.check_hand(final_hand)
-			$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = hand_value
+			var hand_and_river = $Hands.get_hand_content(player) + table_cards_data
+			var poker_hand = pk_logic.check_hand(hand_and_river)
+			$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = hand_types[poker_hand[0]]
+			poker_hand_list.append(poker_hand)
+			print(poker_hand)
+		else:
+			poker_hand_list.append([0, null])
+
+	var winners = []
+	var best_hand
+	var player = 0
+	for poker_hand in poker_hand_list:
+		if winners.is_empty():
+			best_hand = poker_hand
+			winners.append(player)
+		else:
+			var result = pk_logic.compare_hand(best_hand, poker_hand)
+			if result == 2:
+				best_hand = poker_hand
+				winners.clear()
+				winners.append(player)
+			elif result == 0:
+				winners.append(player)
+		player += 1
+	
+	if len(winners) == 1:
+		await get_tree().create_timer(1).timeout
+		$ExtraLayer/RoundLabel.text = "Player " + str(winners[0]+1) + " Wins!"
+	else:
+		$ExtraLayer/RoundLabel.text = "It's a Tie!"

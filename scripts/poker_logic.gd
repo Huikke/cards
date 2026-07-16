@@ -129,24 +129,24 @@ func check_hand(cards: Array):
 
 	# Final Judgment
 	if straight_flush:
-		return ["Straight Flush", straight_flush_hand]
+		return [9, straight_flush_hand]
 	if stack_size_list[3] >= 1:
-		return  ["Four of a Kind", stack_hand]
+		return  [8, stack_hand]
 	if stack_size_list[2] >= 1 and stack_size_list[1] >= 1 or stack_size_list[2] >= 2:
-		return ["Full House", stack_hand]
+		return [7, stack_hand]
 	elif flush != "":
 		suit_values[flush].resize(5)
-		return ["Flush", suit_values[flush]]
+		return [6, suit_values[flush]]
 	elif straight:
-		return ["Straight", straight_hand]
+		return [5, straight_hand]
 	elif stack_size_list[2] == 1:
-		return ["Three of a Kind", stack_hand]
+		return [4, stack_hand]
 	elif stack_size_list[1] >= 2:
-		return ["Two Pair", stack_hand]
+		return [3, stack_hand]
 	elif stack_size_list[1] == 1:
-		return ["Pair", stack_hand]
+		return [2, stack_hand]
 	else:
-		return ["High Card", stack_hand]
+		return [1, stack_hand]
 
 func straight_calculator(card, prev_rank, straight_hand, first_card):
 	var rank = card[0]
@@ -166,3 +166,16 @@ func straight_calculator(card, prev_rank, straight_hand, first_card):
 		straight_hand.append(card)
 		prev_rank = rank
 		return [prev_rank, false]
+
+func compare_hand(hand1, hand2):
+	if hand1[0] > hand2[0]:
+		return 1
+	elif hand1[0] < hand2[0]:
+		return 2
+
+	for i in range(0, 5):
+		if hand1[1][i][0] > hand2[1][i][0]:
+			return 1
+		elif hand1[1][i][0] < hand2[1][i][0]:
+			return 2
+	return 0
