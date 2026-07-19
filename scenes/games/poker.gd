@@ -90,24 +90,24 @@ func next_phase():
 	
 
 func _on_fold(player):
-	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Red")
+	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Red")
 	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Fold"
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
 func _on_call(player):
-	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Lime_Green")
+	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Lime_Green")
 	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Call"
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
 func _on_raise(player):
 	showdown()
-	$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Blue")
+	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Blue")
 
 func indicator_reset():
 	for player in range(4):
-		$Hands.get_node("P" + str(player) + "_Hand/Indicator").color = Color("Gray")
+		$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Gray")
 		$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = ""
 
 
