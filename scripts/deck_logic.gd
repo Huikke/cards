@@ -1,4 +1,4 @@
-class_name deck_logic
+class_name DeckLogic
 
 var deck = []
 

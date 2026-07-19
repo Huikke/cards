@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ile8r5dimjpv"]
 
 [ext_resource type="Script" uid="uid://bmwusn2i136q2" path="res://scenes/user_interface/hand_container.gd" id="1_1v58l"]
+[ext_resource type="Script" uid="uid://bpv0d1e8hrpaa" path="res://scripts/player.gd" id="1_g06li"]
 [ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://assets/cards/back/stargazer.svg" id="1_hgomj"]
 [ext_resource type="Script" uid="uid://c4bf1458icnj3" path="res://scenes/user_interface/ui_card.gd" id="1_ilmbc"]
 [ext_resource type="Script" uid="uid://dlpni12plppdu" path="res://scenes/user_interface/front_card_padding.gd" id="4_manev"]
@@ -16,6 +17,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("1_g06li")
 
 [node name="HandContainer" type="HBoxContainer" parent="." unique_id=825208858]
 layout_mode = 1

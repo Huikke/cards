@@ -172,6 +172,8 @@ func compare_hand(hand1, hand2):
 		return 1
 	elif hand1[0] < hand2[0]:
 		return 2
+	elif hand1[0] == 0 and hand2[0] == 0:
+		return 0
 
 	for i in range(0, 5):
 		if hand1[1][i][0] > hand2[1][i][0]:

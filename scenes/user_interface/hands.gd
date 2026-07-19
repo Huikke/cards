@@ -4,9 +4,6 @@ signal card_selected
 
 var texture_path = "res://assets/cards/front/perfectionism/"
 
-func _ready():
-	await get_tree().create_timer(0.3).timeout
-
 
 func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
 	var node_str = "P" + str(p) + "_Hand"

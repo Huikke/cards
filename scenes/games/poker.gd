@@ -10,32 +10,47 @@ var card_placement: Vector2
 
 var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 
+var min_bet = 200
+var pot = 0
+
 func _ready():
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	$Hands.change_card_overlap(120)
-	$Deck.deck_shuffle()
-	await get_tree().create_timer(0.3).timeout
-	for card in range(2): # Card amount
-		for player in range(4): # Player amount
-			await get_tree().create_timer(0.2).timeout
-			$Deck.deal_player(player)
-	
-	for card in range(5):
-		await get_tree().create_timer(0.25).timeout
-		$Deck.deal("table")
 	
 	GlobalSignal.fold.connect(_on_fold)
 	GlobalSignal.call.connect(_on_call)
 	GlobalSignal.raise.connect(_on_raise)
 
-	game_begin()
-
-func game_begin():
 	var starting_player = randi_range(0, 3)
+
+	game_begin(starting_player, 4)
+
+func game_begin(starting_player, player_amount):
+	$Deck.deck_shuffle()
+	await get_tree().create_timer(0.3).timeout
+	for card in range(2): # Card amount
+		for player in range(player_amount): # Player amount
+			player = (starting_player + player) % player_amount
+			await get_tree().create_timer(0.2).timeout
+			$Deck.deal_player(player)
+
+	for card in range(5):
+		await get_tree().create_timer(0.2).timeout
+		$Deck.deal("table")
+
+	var blind_halfer = 2
+	for player in range(2):
+		player = (starting_player + player) % player_amount
+		await get_tree().create_timer(0.2).timeout
+		pot += $Hands.get_node("P" + str(player) + "_Hand").bet(min_bet/blind_halfer)
+		$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+		update_pot()
+		blind_halfer = 1
+
 	print("starting player: ", starting_player)
 	Global.starting_player = starting_player
 	Global.current_turn = 0
-	game_loop(starting_player)
+	game_loop((starting_player + 2) % player_amount)
 
 func game_loop(player: int):
 	while true:
@@ -98,6 +113,11 @@ func _on_fold(player):
 func _on_call(player):
 	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Lime_Green")
 	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Call"
+
+	pot += $Hands.get_node("P" + str(player) + "_Hand").bet(min_bet)
+	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+	update_pot()
+
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
@@ -109,6 +129,10 @@ func indicator_reset():
 	for player in range(4):
 		$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Gray")
 		$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = ""
+
+
+func update_pot():
+	$ExtraLayer/PotLabel.text = "Pot: " + str(pot) + " €"
 
 
 func showdown():
@@ -146,5 +170,7 @@ func showdown():
 	if len(winners) == 1:
 		await get_tree().create_timer(1).timeout
 		$ExtraLayer/RoundLabel.text = "Player " + str(winners[0]+1) + " Wins!"
+		$Hands.get_node("P" + str(winners[0]) + "_Hand").win(pot)
+		$Hands.get_node("P" + str(winners[0]) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(winners[0]) + "_Hand").money) + " €"
 	else:
 		$ExtraLayer/RoundLabel.text = "It's a Tie!"
