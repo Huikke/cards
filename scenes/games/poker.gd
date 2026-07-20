@@ -10,7 +10,8 @@ var card_placement: Vector2
 
 var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 
-var min_bet = 200
+var min_bet = 400
+var current_bet = 0
 var pot = 0
 
 func _ready():
@@ -26,6 +27,7 @@ func _ready():
 	game_begin(starting_player, 4)
 
 func game_begin(starting_player, player_amount):
+	current_bet = min_bet
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
 	for card in range(2): # Card amount
@@ -42,6 +44,7 @@ func game_begin(starting_player, player_amount):
 	for player in range(2):
 		player = (starting_player + player) % player_amount
 		await get_tree().create_timer(0.2).timeout
+		@warning_ignore("integer_division")
 		pot += $Hands.get_node("P" + str(player) + "_Hand").bet(min_bet/blind_halfer)
 		$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
 		update_pot()
@@ -56,7 +59,10 @@ func game_loop(player: int):
 	while true:
 		await get_tree().create_timer(0.3).timeout
 		var escape = pk_logic.turn(player)
-		if escape == 0:
+		if len(Global.folded) == 3:
+			uncontested_win()
+			break
+		elif escape == 0:
 			player_turn()
 			break
 		elif escape == -1:
@@ -107,14 +113,21 @@ func next_phase():
 func _on_fold(player):
 	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Red")
 	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Fold"
+
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
 func _on_call(player):
-	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Lime_Green")
+	var indicator = $Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator")
+
+	if indicator.color != Color("Lime_Green"):
+		indicator.color = Color("Lime_Green")
+	else:
+		indicator.modulate *= 1.5
+
 	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Call"
 
-	pot += $Hands.get_node("P" + str(player) + "_Hand").bet(min_bet)
+	pot += $Hands.get_node("P" + str(player) + "_Hand").bet(current_bet)
 	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
 	update_pot()
 
@@ -122,13 +135,25 @@ func _on_call(player):
 		game_loop(1) # Change needed in mp
 
 func _on_raise(player):
-	showdown()
 	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Blue")
+	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Raise"
+
+	current_bet += min_bet
+	Global.current_turn = 1
+
+	pot += $Hands.get_node("P" + str(player) + "_Hand").bet(current_bet)
+	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+	update_pot()
+
+	if player == 0:
+		game_loop(1) # Change needed in mp
 
 func indicator_reset():
 	for player in range(4):
-		$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Gray")
-		$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = ""
+		if player not in Global.folded:
+			$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Gray")
+			$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").modulate = Color(1, 1, 1)
+			$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = ""
 
 
 func update_pot():
@@ -169,8 +194,16 @@ func showdown():
 	
 	if len(winners) == 1:
 		await get_tree().create_timer(1).timeout
-		$ExtraLayer/RoundLabel.text = "Player " + str(winners[0]+1) + " Wins!"
+		$ExtraLayer/RoundLabel.text = "Player " + str(winners[0] + 1) + " Wins!"
 		$Hands.get_node("P" + str(winners[0]) + "_Hand").win(pot)
 		$Hands.get_node("P" + str(winners[0]) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(winners[0]) + "_Hand").money) + " €"
 	else:
+		# WIP
 		$ExtraLayer/RoundLabel.text = "It's a Tie!"
+
+func uncontested_win():
+	for player in range(4):
+		if player not in Global.folded:
+			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
+			$Hands.get_node("P" + str(player) + "_Hand").win(pot)
+			$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"

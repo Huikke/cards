@@ -19,6 +19,8 @@ func ai_turn(player: int):
 	if choice == 0:
 		GlobalSignal.fold.emit(player)
 		Global.folded.append(player)
+	elif choice >= 1 and choice <= 2:
+		GlobalSignal.raise.emit(player)
 	else:
 		GlobalSignal.call.emit(player)
 

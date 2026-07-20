@@ -10,5 +10,5 @@ func _on_call():
 	GlobalSignal.call.emit(0)
 
 func _on_raise():
-	# $".".visible = false
+	$".".visible = false
 	GlobalSignal.raise.emit(0)
