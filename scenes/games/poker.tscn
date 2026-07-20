@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="2_dhslg"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
+[ext_resource type="PackedScene" uid="uid://vt3aar4cejpm" path="res://scenes/user_interface/poker_stats.tscn" id="6_y74yl"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2teuh"]
 font_size = 50
@@ -24,7 +25,6 @@ script = ExtResource("2_dhslg")
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
 
 [node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
-visible = false
 
 [node name="ExtraLayer" type="CanvasLayer" parent="." unique_id=810472621]
 
@@ -58,6 +58,34 @@ grow_vertical = 2
 text = "Pot: 0 €"
 label_settings = SubResource("LabelSettings_y74yl")
 metadata/_edit_use_anchors_ = true
+
+[node name="StatsP0" parent="ExtraLayer" unique_id=1693016226 instance=ExtResource("6_y74yl")]
+
+[node name="StatsP1" parent="ExtraLayer" unique_id=447980441 instance=ExtResource("6_y74yl")]
+anchors_preset = -1
+anchor_left = 0.01
+anchor_top = 0.33
+anchor_right = 0.01
+anchor_bottom = 0.33
+offset_bottom = -16.0
+grow_vertical = 1
+
+[node name="StatsP2" parent="ExtraLayer" unique_id=1677276982 instance=ExtResource("6_y74yl")]
+anchors_preset = -1
+anchor_left = 0.6
+anchor_top = 0.1
+anchor_right = 0.6
+anchor_bottom = 0.1
+grow_vertical = 1
+
+[node name="StatsP3" parent="ExtraLayer" unique_id=915369297 instance=ExtResource("6_y74yl")]
+anchors_preset = -1
+anchor_left = 0.8
+anchor_top = 0.75
+anchor_right = 0.8
+anchor_bottom = 0.75
+offset_bottom = -80.0
+grow_vertical = 1
 
 [connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="table_deal" from="Deck" to="." method="_on_deck_table_deal"]

@@ -6,14 +6,14 @@
 script = ExtResource("1_ymvb1")
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="." unique_id=391524028]
-custom_minimum_size = Vector2(450, 0)
+custom_minimum_size = Vector2(460, 0)
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -40.0
+offset_left = -465.0
+offset_top = -85.0
 offset_right = -15.0
 offset_bottom = -15.0
 grow_horizontal = 0
@@ -37,6 +37,10 @@ custom_minimum_size = Vector2(140, 70)
 layout_mode = 2
 size_flags_horizontal = 10
 text = "Raise"
+
+[node name="VSlider" type="VSlider" parent="ButtonsContainer" unique_id=1309020332]
+layout_mode = 2
+max_value = 5.0
 
 [connection signal="button_up" from="ButtonsContainer/Fold" to="." method="_on_fold"]
 [connection signal="button_up" from="ButtonsContainer/Call" to="." method="_on_call"]

@@ -45,8 +45,8 @@ func game_begin(starting_player, player_amount):
 		player = (starting_player + player) % player_amount
 		await get_tree().create_timer(0.2).timeout
 		@warning_ignore("integer_division")
-		pot += $Hands.get_node("P" + str(player) + "_Hand").bet(min_bet/blind_halfer)
-		$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+		pot += $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
+		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"
 		update_pot()
 		blind_halfer = 1
 
@@ -111,38 +111,38 @@ func next_phase():
 	
 
 func _on_fold(player):
-	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Red")
-	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Fold"
+	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Fold"
 
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
 func _on_call(player):
-	var indicator = $Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator")
+	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
 
 	if indicator.color != Color("Lime_Green"):
 		indicator.color = Color("Lime_Green")
 	else:
 		indicator.modulate *= 1.5
 
-	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Call"
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Call"
 
-	pot += $Hands.get_node("P" + str(player) + "_Hand").bet(current_bet)
-	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+	pot += $Hands.get_node("HandP" + str(player)).bet(current_bet)
+	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"
 	update_pot()
 
 	if player == 0:
 		game_loop(1) # Change needed in mp
 
 func _on_raise(player):
-	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Blue")
-	$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = "Raise"
+	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Raise"
 
 	current_bet += min_bet
 	Global.current_turn = 1
 
-	pot += $Hands.get_node("P" + str(player) + "_Hand").bet(current_bet)
-	$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+	pot += $Hands.get_node("HandP" + str(player)).bet(current_bet)
+	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"
 	update_pot()
 
 	if player == 0:
@@ -151,9 +151,9 @@ func _on_raise(player):
 func indicator_reset():
 	for player in range(4):
 		if player not in Global.folded:
-			$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").color = Color("Gray")
-			$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/MarginContainer/Indicator").modulate = Color(1, 1, 1)
-			$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = ""
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
+			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 
 
 func update_pot():
@@ -169,7 +169,7 @@ func showdown():
 				$Hands.flip_hand(player)
 			var hand_and_river = $Hands.get_hand_content(player) + table_cards_data
 			var poker_hand = pk_logic.check_hand(hand_and_river)
-			$Hands.get_node("P" + str(player) + "_Hand/LabelPanel/PlayerLabel").text = hand_types[poker_hand[0]]
+			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = hand_types[poker_hand[0]]
 			poker_hand_list.append(poker_hand)
 			print(poker_hand)
 		else:
@@ -195,8 +195,8 @@ func showdown():
 	if len(winners) == 1:
 		await get_tree().create_timer(1).timeout
 		$ExtraLayer/RoundLabel.text = "Player " + str(winners[0] + 1) + " Wins!"
-		$Hands.get_node("P" + str(winners[0]) + "_Hand").win(pot)
-		$Hands.get_node("P" + str(winners[0]) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(winners[0]) + "_Hand").money) + " €"
+		$Hands.get_node("HandP" + str(winners[0])).win(pot)
+		$ExtraLayer.get_node("StatsP" + str(winners[0]) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(winners[0])).money) + " €"
 	else:
 		# WIP
 		$ExtraLayer/RoundLabel.text = "It's a Tie!"
@@ -205,5 +205,5 @@ func uncontested_win():
 	for player in range(4):
 		if player not in Global.folded:
 			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
-			$Hands.get_node("P" + str(player) + "_Hand").win(pot)
-			$Hands.get_node("P" + str(player) + "_Hand/HBoxContainer/PanelContainer/MarginContainer/CurrencyLabel").text = str($Hands.get_node("P" + str(player) + "_Hand").money) + " €"
+			$Hands.get_node("HandP" + str(player)).win(pot)
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"

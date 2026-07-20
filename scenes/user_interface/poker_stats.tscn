@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://vt3aar4cejpm"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bqnes"]
+font_size = 40
+
+[node name="PokerStats" type="Control" unique_id=1693016226]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+
+[node name="HBC" type="HBoxContainer" parent="." unique_id=2039971285]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -66.0
+offset_right = 248.0
+grow_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="PC" type="PanelContainer" parent="HBC" unique_id=1728718009]
+layout_mode = 2
+
+[node name="MC" type="MarginContainer" parent="HBC/PC" unique_id=887584120]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CurrencyLabel" type="Label" parent="HBC/PC/MC" unique_id=1125409101]
+layout_mode = 2
+text = "10000 €"
+label_settings = SubResource("LabelSettings_bqnes")
+
+[node name="Indicator" type="ColorRect" parent="HBC" unique_id=1904205855]
+custom_minimum_size = Vector2(66, 66)
+layout_mode = 2
+color = Color(0.6797427, 0.67084867, 0.68869585, 1)
