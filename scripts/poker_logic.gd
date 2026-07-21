@@ -7,7 +7,7 @@ func turn(player: int):
 		print("next round")
 		Global.current_turn = 0
 		return -1
-	if player in Global.folded:
+	if player in Global.fold_list:
 		return -2
 	elif player == 0:
 		return player
@@ -18,7 +18,7 @@ func ai_turn(player: int):
 	var choice = randi_range(0, 20)
 	if choice == 0:
 		GlobalSignal.fold.emit(player)
-		Global.folded.append(player)
+		Global.fold_list.append(player)
 	elif choice >= 1 and choice <= 2:
 		GlobalSignal.raise.emit(player)
 	else:

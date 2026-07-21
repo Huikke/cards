@@ -25,6 +25,7 @@ script = ExtResource("2_dhslg")
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
 
 [node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
+visible = false
 
 [node name="ExtraLayer" type="CanvasLayer" parent="." unique_id=810472621]
 

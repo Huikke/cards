@@ -36,12 +36,18 @@ text = "Call"
 custom_minimum_size = Vector2(140, 70)
 layout_mode = 2
 size_flags_horizontal = 10
-text = "Raise"
+text = "
+Raise
+400 €"
 
-[node name="VSlider" type="VSlider" parent="ButtonsContainer" unique_id=1309020332]
+[node name="RaiseSlider" type="VSlider" parent="ButtonsContainer" unique_id=1309020332]
 layout_mode = 2
-max_value = 5.0
+min_value = 400.0
+max_value = 1000.0
+step = 100.0
+value = 400.0
 
 [connection signal="button_up" from="ButtonsContainer/Fold" to="." method="_on_fold"]
 [connection signal="button_up" from="ButtonsContainer/Call" to="." method="_on_call"]
 [connection signal="button_up" from="ButtonsContainer/Raise" to="." method="_on_raise"]
+[connection signal="value_changed" from="ButtonsContainer/RaiseSlider" to="." method="_on_raise_slider_value_changed"]

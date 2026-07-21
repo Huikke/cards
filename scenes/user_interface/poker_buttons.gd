@@ -12,3 +12,8 @@ func _on_call():
 func _on_raise():
 	$".".visible = false
 	GlobalSignal.raise.emit(0)
+
+
+func _on_raise_slider_value_changed(value):
+	$ButtonsContainer/Raise.text = "\nRaise\n" + str(int(value)) + " €"
+	GlobalSignal.raise_slider_value_changed.emit(value)
