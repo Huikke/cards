@@ -4,10 +4,9 @@ class_name Deck
 var card_scene = preload("res://scenes/objects/card.tscn")
 var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
 
-var logic
+var logic = DeckLogic.new()
 
 func _ready():
-	logic = load("res://scripts/deck_logic.gd").new()
 	$Sprite.texture = back_sprite
 	@warning_ignore("integer_division")
 	for i in range(1, len(logic.deck)/6 + 1):
@@ -100,3 +99,6 @@ func empty_delete():
 	if logic.deck == []:
 		queue_free()
 		return true
+
+func reset_deck():
+	logic = DeckLogic.new()

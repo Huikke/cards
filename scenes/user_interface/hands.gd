@@ -71,6 +71,18 @@ func flip_hand(player: int):
 				card.get_child(0).texture = card.back_sprite
 				card.face_up = false
 
+func clear_hand(player):
+	var node_str = "HandP" + str(player)
+	var hand = get_node(node_str).get_child(0).get_children()
+	for card in hand:
+		if card is PhysicalCard and card.value != 0:
+			card.queue_free()
+
+func clear_hands():
+	for player in range(4):
+		clear_hand(player)
+
+
 # Sandbox only
 func _on_card_size_slider_changed(value):
 	change_card_overlap(value)

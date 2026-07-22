@@ -1,11 +1,13 @@
 extends Node2D
 
 var pk_logic = poker_logic.new()
-#var deck_scene = preload("res://scenes/objects/deck.tscn")
 
 var table_cards_physical = []
 var table_cards_data = []
 var phase = 0
+
+var starting_player: int
+var player_count: int
 
 var card_placement: Vector2
 
@@ -32,44 +34,38 @@ func _ready():
 	GlobalSignal.raise.connect(_on_raise)
 	GlobalSignal.raise_slider_value_changed.connect(_on_raise_slider_value_changed)
 
-	var starting_player = randi_range(0, 3)
+	starting_player = randi_range(0, 3)
+	player_count = 4
 
-	game_begin(starting_player, 4)
+	game_begin(starting_player, player_count)
 
-func game_begin(starting_player, player_amount):
-	#var deck = deck_scene.instantiate()
-	#deck.position = Vector2(343, 0)
-	#add_child(deck)
-	#deck.deck_shuffle()
+func game_begin(starting_player, player_count):
 	$Deck.deck_shuffle()
 
 	await get_tree().create_timer(0.3).timeout
 	for card in range(2): # Card amount
-		for player in range(player_amount): # Player amount
-			player = (starting_player + player) % player_amount
+		for player in range(player_count): # Player amount
+			player = (starting_player + player) % player_count
 			await get_tree().create_timer(0.2).timeout
 			#deck.deal_player(player)
 			$Deck.deal_player(player)
 
 	for card in range(5):
 		await get_tree().create_timer(0.2).timeout
-		#deck.deal("table")
 		$Deck.deal("table")
 
 	var blind_halfer = 2
 	for player in range(2):
-		player = (starting_player + player) % player_amount
+		player = (starting_player + player) % player_count
 		await get_tree().create_timer(0.2).timeout
 		@warning_ignore("integer_division")
 		pot += $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
 		money_display_update(player)
 		blind_halfer = 1
 
-	print("starting player: ", starting_player)
-	Global.starting_player = starting_player
 	Global.current_turn = 0
 	$ExtraLayer/RoundLabel.text = "Round 1"
-	game_loop((starting_player + 2) % player_amount)
+	game_loop((starting_player + 2) % player_count)
 
 func game_loop(player: int):
 	while true:
@@ -77,7 +73,7 @@ func game_loop(player: int):
 		var escape = pk_logic.turn(player)
 		if len(Global.fold_list) == 3:
 			uncontested_win()
-			game_reset()
+			$Countdown.start()
 			break
 		elif escape == 0:
 			player_turn()
@@ -128,7 +124,7 @@ func next_phase():
 	else:
 		$ExtraLayer/RoundLabel.text = "Error"
 		push_error("Round overflow")
-	game_loop(Global.starting_player)
+	game_loop(starting_player)
 
 
 func _on_fold(player):
@@ -242,17 +238,26 @@ func uncontested_win():
 
 
 func game_reset():
+	Global.fold_list.clear()
+	$Deck.reset_deck()
+	$Hands.clear_hands()
+	for card in table_cards_physical:
+		card.queue_free()
+
+	table_cards_physical.clear()
+	table_cards_data.clear()
+	phase = 0
+	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	pot = 0
 	round_bet = min_bet
 
-	Global.fold_list.clear()
-
 	money_display_update()
 	indicator_reset()
-	
+
+	starting_player = (starting_player + 1) % player_count
+
 
 func _on_countdown_timeout():
-	print(intermission)
 	var break_secs = 6	
 	if intermission >= 3 and intermission <= break_secs:
 		$ExtraLayer/RoundLabel.text = "Next round starts in " + str(break_secs - intermission)
@@ -261,5 +266,6 @@ func _on_countdown_timeout():
 		intermission = 0
 		$Countdown.stop()
 		game_reset()
+		game_begin(starting_player, player_count)
 	else:
 		intermission += 1
