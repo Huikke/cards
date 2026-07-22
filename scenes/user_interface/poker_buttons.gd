@@ -1,7 +1,7 @@
 extends CanvasLayer
 
 func _on_fold():
-	Global.folded.append(0) # Change needed in mp
+	Global.fold_list.append(0) # Change needed in mp
 	$".".visible = false
 	GlobalSignal.fold.emit(0)
 

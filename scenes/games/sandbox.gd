@@ -5,6 +5,7 @@ signal card_entered(Area2D, int)
 
 func _ready():
 	$Hands.change_card_overlap(40)
+	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 
 func _on_area_entered(object, area):
 	if object is not Card:

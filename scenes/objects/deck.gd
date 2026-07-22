@@ -1,9 +1,6 @@
 extends GameObject2D
 class_name Deck
 
-signal hand_deal
-signal table_deal
-
 var card_scene = preload("res://scenes/objects/card.tscn")
 var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
 
@@ -12,6 +9,7 @@ var logic
 func _ready():
 	logic = load("res://scripts/deck_logic.gd").new()
 	$Sprite.texture = back_sprite
+	@warning_ignore("integer_division")
 	for i in range(1, len(logic.deck)/6 + 1):
 		var card_padding = $Sprite.duplicate()
 		card_padding.position += Vector2(i*2, i*2)
@@ -65,8 +63,8 @@ func deal_burst():
 
 func deal_player(player):
 	var card = deal("direct")
-	hand_deal.emit(card, player)
-	
+	GlobalSignal.hand_deal.emit(card, player)
+
 
 func deck_deal(card, motion: bool = false):
 	get_parent().add_child(card)
@@ -82,7 +80,7 @@ func deck_deal(card, motion: bool = false):
 		card.speed = 1000
 		card.get_node("StopMotion").start()
 	else:
-		table_deal.emit(card)
+		GlobalSignal.table_deal.emit(card)
 
 func deck_shuffle():
 	logic.shuffle()
@@ -94,6 +92,7 @@ func deck_shuffle():
 # Cosmetic, adds additional cards to the bottom to make illusion of card stack
 func card_stack():
 	var stack_count = $AdditionalSprites.get_child_count()
+	@warning_ignore("integer_division")
 	if stack_count > len(logic.deck) / stack_count or len(logic.deck) == 1:
 		$AdditionalSprites.get_child(-1).queue_free()
 

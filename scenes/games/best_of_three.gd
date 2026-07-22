@@ -8,6 +8,7 @@ var ai_score = 0
 
 func _ready():
 	$Hands.change_card_overlap(120)
+	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
 	for card in range(3): # Card amount
@@ -55,7 +56,7 @@ func _on_hands_card_selected(human_card):
 var first = true
 var game_over = false
 func ai_play():
-	var ai_hand = $Hands/P1_Hand/HandContainer.get_children()
+	var ai_hand = $Hands/HandP1/HandContainer.get_children()
 	print(ai_hand)
 	# Temporary solution to our invisible card
 	if first:

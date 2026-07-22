@@ -88,6 +88,6 @@ anchor_bottom = 0.75
 offset_bottom = -80.0
 grow_vertical = 1
 
-[connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
-[connection signal="table_deal" from="Deck" to="." method="_on_deck_table_deal"]
-[connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
+[node name="Countdown" type="Timer" parent="." unique_id=1075979618]
+
+[connection signal="timeout" from="Countdown" to="." method="_on_countdown_timeout"]

@@ -1,6 +1,7 @@
 extends Node2D
 
 var pk_logic = poker_logic.new()
+#var deck_scene = preload("res://scenes/objects/deck.tscn")
 
 var table_cards_physical = []
 var table_cards_data = []
@@ -11,14 +12,21 @@ var card_placement: Vector2
 var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 
 var min_bet = 400
-var round_bet = 0
+var round_bet = 400
 var pot = 0
 var raise_amount = min_bet
+
+var intermission = 0
 
 func _ready():
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	$Hands.change_card_overlap(120)
-	
+
+	$ExtraLayer/RoundLabel.text = ""
+
+	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
+	GlobalSignal.table_deal.connect(_on_deck_table_deal)
+
 	GlobalSignal.fold.connect(_on_fold)
 	GlobalSignal.call.connect(_on_call)
 	GlobalSignal.raise.connect(_on_raise)
@@ -29,17 +37,23 @@ func _ready():
 	game_begin(starting_player, 4)
 
 func game_begin(starting_player, player_amount):
-	round_bet = min_bet
+	#var deck = deck_scene.instantiate()
+	#deck.position = Vector2(343, 0)
+	#add_child(deck)
+	#deck.deck_shuffle()
 	$Deck.deck_shuffle()
+
 	await get_tree().create_timer(0.3).timeout
 	for card in range(2): # Card amount
 		for player in range(player_amount): # Player amount
 			player = (starting_player + player) % player_amount
 			await get_tree().create_timer(0.2).timeout
+			#deck.deal_player(player)
 			$Deck.deal_player(player)
 
 	for card in range(5):
 		await get_tree().create_timer(0.2).timeout
+		#deck.deal("table")
 		$Deck.deal("table")
 
 	var blind_halfer = 2
@@ -54,6 +68,7 @@ func game_begin(starting_player, player_amount):
 	print("starting player: ", starting_player)
 	Global.starting_player = starting_player
 	Global.current_turn = 0
+	$ExtraLayer/RoundLabel.text = "Round 1"
 	game_loop((starting_player + 2) % player_amount)
 
 func game_loop(player: int):
@@ -62,6 +77,7 @@ func game_loop(player: int):
 		var escape = pk_logic.turn(player)
 		if len(Global.fold_list) == 3:
 			uncontested_win()
+			game_reset()
 			break
 		elif escape == 0:
 			player_turn()
@@ -70,9 +86,8 @@ func game_loop(player: int):
 			await get_tree().create_timer(0.5).timeout
 			next_phase()
 			break
-		elif escape == -2:
-			pass
-		player = (player + 1) % 4
+		else: # Either -2 or 1, 2, 3 (AI_players)
+			player = (player + 1) % 4
 
 
 func _on_deck_table_deal(card):
@@ -108,11 +123,11 @@ func next_phase():
 	elif phase == 4:
 		$ExtraLayer/RoundLabel.text = "Showdown"
 		showdown()
+		$Countdown.start()
 		return
 	else:
 		$ExtraLayer/RoundLabel.text = "Error"
 		push_error("Round overflow")
-	# var starting_player = (Global.starting_player + 2) % 4
 	game_loop(Global.starting_player)
 
 
@@ -171,8 +186,9 @@ func round_bet_reset():
 	for player in range(4):
 		$Hands.get_node("HandP" + str(player)).round_bet = 0
 
-func money_display_update(player):
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"
+func money_display_update(player = null):
+	if player != null:
+		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"
 	$ExtraLayer/PotLabel.text = "Pot: " + str(pot) + " €"
 
 
@@ -223,3 +239,27 @@ func uncontested_win():
 			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
 			$Hands.get_node("HandP" + str(player)).win(pot)
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).money) + " €"
+
+
+func game_reset():
+	pot = 0
+	round_bet = min_bet
+
+	Global.fold_list.clear()
+
+	money_display_update()
+	indicator_reset()
+	
+
+func _on_countdown_timeout():
+	print(intermission)
+	var break_secs = 6	
+	if intermission >= 3 and intermission <= break_secs:
+		$ExtraLayer/RoundLabel.text = "Next round starts in " + str(break_secs - intermission)
+		intermission += 1
+	elif intermission > break_secs:
+		intermission = 0
+		$Countdown.stop()
+		game_reset()
+	else:
+		intermission += 1

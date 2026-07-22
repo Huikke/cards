@@ -13,6 +13,7 @@ func turn(player: int):
 		return player
 	else:
 		ai_turn(player)
+		return player
 
 func ai_turn(player: int):
 	var choice = randi_range(0, 20)
