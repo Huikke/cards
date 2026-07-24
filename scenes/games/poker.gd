@@ -19,7 +19,9 @@ var pot = [0, 0, 0, 0]
 
 var raise_amount = min_bet
 
+var start_mode = "manual"
 var intermission = 0
+var new_game_ready = false
 
 func _ready():
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
@@ -269,19 +271,33 @@ func game_reset():
 
 	balance_display_update()
 	indicator_reset()
+	$ExtraLayer/RoundLabel.text = ""
 
 	starting_player = (starting_player + 1) % player_count
 
 
 func _on_countdown_timeout():
-	var break_secs = 6	
-	if intermission >= 3 and intermission <= break_secs:
-		$ExtraLayer/RoundLabel.text = "Next round starts in " + str(break_secs - intermission)
-		intermission += 1
-	elif intermission > break_secs:
-		intermission = 0
-		$Countdown.stop()
+	if start_mode == "manual":
+		if intermission >= 3:
+			$ExtraLayer/RoundLabel.text = "Press anywhere to continue..."
+			$Countdown.stop()
+			intermission = 0
+			new_game_ready = true
+			return
+	elif start_mode == "automatic":
+		var break_secs = 8
+		if intermission >= 3 and intermission <= break_secs:
+			$ExtraLayer/RoundLabel.text = "Next round starts in " + str(break_secs - intermission)
+		elif intermission > break_secs:
+			$Countdown.stop()
+			intermission = 0
+			game_reset()
+			game_begin()
+			return
+	intermission += 1
+
+func _unhandled_input(event):
+	if event is InputEventMouseButton and event.button_index == 1 and new_game_ready:
+		new_game_ready = false
 		game_reset()
 		game_begin()
-	else:
-		intermission += 1
