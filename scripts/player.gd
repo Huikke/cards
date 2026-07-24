@@ -1,17 +1,22 @@
 extends Node
 class_name Player
 
-var money = 10000
+var balance = 10000
 var round_bet = 0
 
-func print_money():
-	print(money)
+func print_balance():
+	print(balance)
 
 func bet(amount):
 	var difference = amount - round_bet
-	money -= difference
+
+	if balance - difference < 0:
+		difference = balance
+
+	balance -= difference
 	round_bet += difference
+
 	return difference
 
 func win(amount):
-	money += amount
+	balance += amount
