@@ -8,15 +8,17 @@ func print_balance():
 	print(balance)
 
 func bet(amount):
+	var all_in = false
 	var difference = amount - round_bet
 
-	if balance - difference < 0:
+	if balance - difference <= 0:
 		difference = balance
+		all_in = true
 
 	balance -= difference
 	round_bet += difference
 
-	return difference
+	return [difference, all_in]
 
 func win(amount):
 	balance += amount

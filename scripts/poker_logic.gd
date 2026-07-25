@@ -1,15 +1,7 @@
 class_name poker_logic
 
 func turn(player: int):
-	print("Current turn " + str(Global.current_turn))
-	Global.current_turn += 1
-	if Global.current_turn == 5:
-		print("next round")
-		Global.current_turn = 0
-		return -1
-	if player in Global.fold_list:
-		return -2
-	elif player == 0:
+	if player == 0: # Needs change in mp
 		return player
 	else:
 		ai_turn(player)
@@ -19,7 +11,6 @@ func ai_turn(player: int):
 	var choice = randi_range(0, 20)
 	if choice == 0:
 		GlobalSignal.fold.emit(player)
-		Global.fold_list.append(player)
 	elif choice >= 1 and choice <= 2:
 		GlobalSignal.raise.emit(player)
 	else:
