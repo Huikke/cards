@@ -9,7 +9,7 @@ var phase = 0
 
 var starting_player: int
 var player_count: int
-var in_game_list = [0, 1, 2, 3]
+var players_list = [0, 1, 2, 3]
 var fold_list = []
 var all_in_list = []
 
@@ -46,6 +46,11 @@ func _ready():
 	starting_player = randi_range(0, 3)
 	player_count = 4
 
+	# Cheat
+	$Hands.get_node("HandP0").balance = 4000
+	$Hands.get_node("HandP1").balance = 1000
+	$Hands.get_node("HandP2").balance = 2000
+	$Hands.get_node("HandP3").balance = 3000
 	game_begin()
 
 func game_begin():
@@ -83,7 +88,7 @@ func game_loop(player: int):
 		print("Current turn " + str(current_turn))
 		current_turn += 1
 
-		if len(fold_list) == len(in_game_list) - 1:
+		if len(fold_list) == len(players_list) - 1:
 			uncontested_win()
 			$Countdown.start()
 			break
@@ -130,6 +135,7 @@ func next_phase():
 		round_end_process()
 	elif phase == 4:
 		$ExtraLayer/RoundLabel.text = "Showdown"
+		round_end_process()
 		showdown()
 		$Countdown.start()
 		return
@@ -236,9 +242,7 @@ func side_pot_detector():
 	var pot_sizes = []
 	var player = 0
 	for p in pot:
-		# THIS IGNORES THE BIGGEST BET GETS MONEY RETURNED BACK
-		# TO HIM TO MATCH THE SECOND BIGGEST BET
-		if p < pot.max() and player not in fold_list:
+		if p < pot.max() and player in all_in_list:
 			pot_sizes.append(p)
 		player += 1
 	if len(pot_sizes) >= 1:
@@ -254,12 +258,12 @@ func side_pot_display(pot_sizes):
 		var temp_pot = 0
 		for p in pot:
 			if p >= pot_size:
-				temp_pot += pot_size
-			else:
-				temp_pot += pot_size - p
-		temp_pot -= prev_pot
-		prev_pot = temp_pot
+				temp_pot += pot_size - prev_pot
+			elif p not in pot_sizes and p > prev_pot:
+				temp_pot += p
+		prev_pot = pot_size
 		pots.append(temp_pot)
+	balance_display_update()
 
 func balance_display_update(player = null):
 	if player != null:
