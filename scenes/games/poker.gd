@@ -20,6 +20,8 @@ var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", 
 var min_bet = 400
 var round_bet = 400
 var pot = [0, 0, 0, 0]
+var side_pot_bool = false
+var pots = []
 
 var raise_amount = min_bet
 
@@ -85,15 +87,15 @@ func game_loop(player: int):
 			uncontested_win()
 			$Countdown.start()
 			break
-		if player in fold_list:
-			player = (player + 1) % 4
-			continue
 		if current_turn == 5:
 			print("next round")
 			current_turn = 0
 			await get_tree().create_timer(0.5).timeout
 			next_phase()
 			break
+		if player in fold_list or player in all_in_list:
+			player = (player + 1) % 4
+			continue
 
 		await get_tree().create_timer(0.3).timeout
 		var escape = pk_logic.turn(player)
@@ -104,17 +106,6 @@ func game_loop(player: int):
 		else:
 			player = (player + 1) % 4
 
-func _on_deck_table_deal(card):
-	card.position = card_placement
-	card_placement += Vector2(125, 0)
-	table_cards_physical.append(card)
-	table_cards_data.append([card.value, card.suit])
-
-func player_turn():
-	$ButtonsLayer.visible = true
-	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
-	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = $Hands.get_node("HandP" + "0").balance - round_bet + $Hands.get_node("HandP" + "0").round_bet
-
 func next_phase():
 	phase += 1
 	if phase == 1:
@@ -124,16 +115,19 @@ func next_phase():
 		$ExtraLayer/RoundLabel.text = "Round 2"
 		indicator_reset()
 		round_bet_reset()
+		round_end_process()
 	elif phase == 2:
 		table_cards_physical[3].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 3"
 		indicator_reset()
 		round_bet_reset()
+		round_end_process()
 	elif phase == 3:
 		table_cards_physical[4].flip_card()
 		$ExtraLayer/RoundLabel.text = "Round 4"
 		indicator_reset()
 		round_bet_reset()
+		round_end_process()
 	elif phase == 4:
 		$ExtraLayer/RoundLabel.text = "Showdown"
 		showdown()
@@ -142,8 +136,36 @@ func next_phase():
 	else:
 		$ExtraLayer/RoundLabel.text = "Error"
 		push_error("Round overflow")
-	game_loop(starting_player)
 
+	if len(fold_list) + len(all_in_list) >= player_count - 1:
+		next_phase()
+	else:
+		game_loop(starting_player)
+
+func round_end_process():
+	if len(fold_list) + len(all_in_list) >= player_count - 1:
+		var temp_pot = pot.duplicate()
+		temp_pot.sort()
+		temp_pot.reverse()
+		if temp_pot[0] != temp_pot[1]:
+			var player = pot.find(temp_pot[0])
+			$Hands.get_node("HandP" + str(player)).win(temp_pot[0] - temp_pot[1])
+			pot[player] = temp_pot[1]
+			balance_display_update(player)
+
+	side_pot_detector()
+
+
+func player_turn():
+	$ButtonsLayer.visible = true
+	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
+	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = $Hands.get_node("HandP" + "0").balance - round_bet + $Hands.get_node("HandP" + "0").round_bet
+
+func _on_deck_table_deal(card):
+	card.position = card_placement
+	card_placement += Vector2(125, 0)
+	table_cards_physical.append(card)
+	table_cards_data.append([card.value, card.suit])
 
 func _on_fold(player):
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
@@ -210,11 +232,50 @@ func round_bet_reset():
 func pot_sum():
 	return pot.reduce(func(accum, number): return accum + number, 0)
 
+func side_pot_detector():
+	var pot_sizes = []
+	var player = 0
+	for p in pot:
+		# THIS IGNORES THE BIGGEST BET GETS MONEY RETURNED BACK
+		# TO HIM TO MATCH THE SECOND BIGGEST BET
+		if p < pot.max() and player not in fold_list:
+			pot_sizes.append(p)
+		player += 1
+	if len(pot_sizes) >= 1:
+		side_pot_bool = true
+		pot_sizes.append(pot.max())
+		pot_sizes.sort()
+		side_pot_display(pot_sizes)
+
+func side_pot_display(pot_sizes):
+	pots.clear()
+	var prev_pot = 0
+	for pot_size in pot_sizes:
+		var temp_pot = 0
+		for p in pot:
+			if p >= pot_size:
+				temp_pot += pot_size
+			else:
+				temp_pot += pot_size - p
+		temp_pot -= prev_pot
+		prev_pot = temp_pot
+		pots.append(temp_pot)
+
 func balance_display_update(player = null):
 	if player != null:
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
-	$ExtraLayer/PotLabel.text = "Pot: " + str(pot_sum()) + " €"
 
+	if side_pot_bool == false:
+		$ExtraLayer/PotLabel.text = "Pot: " + str(pot_sum()) + " €"
+	else:
+		var pot_label_text = ""
+		for p in pots:
+			if pot_label_text == "":
+				pot_label_text = "Main Pot: " + str(p) + " €"
+			else:
+				pot_label_text += "\nSide Pot: " + str(p) + " €"
+		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
+		$ExtraLayer/PotLabel.text = pot_label_text
 
 func showdown():
 	var poker_hand_list = []
@@ -291,6 +352,7 @@ func game_reset():
 	pot = [0, 0, 0, 0]
 	round_bet_reset()
 	round_bet = min_bet
+	side_pot_bool = false
 
 	balance_display_update()
 	indicator_reset()
