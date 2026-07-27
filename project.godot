@@ -20,6 +20,10 @@ config/icon="res://assets/icon.svg"
 Global="*uid://baac12ljyh3ts"
 GlobalSignal="*uid://cwgm7rs0ae85v"
 
+[debug]
+
+gdscript/warnings/integer_division=0
+
 [display]
 
 window/size/viewport_width=1280

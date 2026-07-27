@@ -1,12 +1,5 @@
 class_name poker_logic
 
-func turn(player: int):
-	if player == 0: # Needs change in mp
-		return player
-	else:
-		ai_turn(player)
-		return player
-
 func ai_turn(player: int):
 	var choice = randi_range(0, 20)
 	if choice == 0:

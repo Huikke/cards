@@ -7,7 +7,7 @@ var table_cards_data = []
 var current_turn: int
 var phase = 0
 
-var starting_player: int
+var starting_slot: int
 var player_count: int
 var players_list = [0, 1, 2, 3]
 var fold_list = []
@@ -43,8 +43,8 @@ func _ready():
 	GlobalSignal.raise.connect(_on_raise)
 	GlobalSignal.raise_slider_value_changed.connect(_on_raise_slider_value_changed)
 
-	starting_player = randi_range(0, 3)
-	player_count = 4
+	player_count = len(players_list)
+	starting_slot = randi_range(0, player_count-1)
 
 	# Cheat
 	$Hands.get_node("HandP0").balance = 4000
@@ -54,12 +54,13 @@ func _ready():
 	game_begin()
 
 func game_begin():
+	print(players_list)
 	$Deck.deck_shuffle()
 
 	await get_tree().create_timer(0.3).timeout
-	for card in range(2): # Card amount
-		for player in range(player_count): # Player amount
-			player = (starting_player + player) % player_count
+	for card in range(2):
+		for i in range(player_count):
+			var player = players_list[(starting_slot + i) % player_count]
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal_player(player)
 
@@ -69,9 +70,8 @@ func game_begin():
 
 	var blind_halfer = 2
 	for i in range(2):
-		var player = (starting_player + i) % player_count
+		var player = players_list[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
-		@warning_ignore("integer_division")
 		var bet_result =  $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
 		pot[player] += bet_result[0]
 		if bet_result[1] == true:
@@ -81,35 +81,35 @@ func game_begin():
 
 	current_turn = 0
 	$ExtraLayer/RoundLabel.text = "Round 1"
-	game_loop((starting_player + 2) % player_count)
+	game_loop(players_list[(starting_slot + 2) % player_count])
 
 func game_loop(player: int):
 	while true:
 		print("Current turn " + str(current_turn))
+		print("Player: " + str(player))
 		current_turn += 1
 
 		if len(fold_list) == len(players_list) - 1:
 			uncontested_win()
 			$Countdown.start()
 			break
-		if current_turn == 5:
+		if current_turn == player_count + 1:
 			print("next round")
 			current_turn = 0
-			await get_tree().create_timer(0.5).timeout
+			await get_tree().create_timer(1).timeout
 			next_phase()
 			break
 		if player in fold_list or player in all_in_list:
-			player = (player + 1) % 4
+			player = players_list[(players_list.find(player) + 1) % player_count]
 			continue
 
-		await get_tree().create_timer(0.3).timeout
-		var escape = pk_logic.turn(player)
-
-		if escape == 0:
+		await get_tree().create_timer(0.4).timeout
+		if player == 0: # Needs change in mp
 			player_turn()
 			break
 		else:
-			player = (player + 1) % 4
+			pk_logic.ai_turn(player)
+			player = players_list[(players_list.find(player) + 1) % player_count]
 
 func next_phase():
 	phase += 1
@@ -137,7 +137,6 @@ func next_phase():
 		$ExtraLayer/RoundLabel.text = "Showdown"
 		round_end_process()
 		showdown()
-		$Countdown.start()
 		return
 	else:
 		$ExtraLayer/RoundLabel.text = "Error"
@@ -146,7 +145,7 @@ func next_phase():
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
 		next_phase()
 	else:
-		game_loop(starting_player)
+		game_loop(players_list[starting_slot])
 
 func round_end_process():
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
@@ -178,9 +177,9 @@ func _on_fold(player):
 	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Fold"
 	fold_list.append(player)
 
-	if player == 0:
+	if player == 0: # Change needed in mp
 		raise_amount = min_bet
-		game_loop(1) # Change needed in mp
+		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_call(player):
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
@@ -197,15 +196,18 @@ func _on_call(player):
 	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Call"
 	balance_display_update(player)
 
-	if player == 0:
+	if player == 0: # Change needed in mp
 		raise_amount = min_bet
-		game_loop(1) # Change needed in mp
+		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_raise(player):
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
 	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Raise"
 
-	round_bet += raise_amount
+	if $Hands.get_node("HandP" + str(player)).balance < raise_amount:
+		round_bet += $Hands.get_node("HandP" + str(player)).balance
+	else:
+		round_bet += raise_amount
 	current_turn = 1
 
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
@@ -214,25 +216,27 @@ func _on_raise(player):
 		all_in_list.append(player)
 	balance_display_update(player)
 
-	if player == 0:
+	if player == 0: # Change needed in mp
 		raise_amount = min_bet
-		game_loop(1) # Change needed in mp
+		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_raise_slider_value_changed(value):
 	raise_amount = int(value)
 
 func indicator_reset():
-	for player in range(4):
+	for player in players_list:
 		if player not in fold_list:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
 			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
+		if player in all_in_list:
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
 
 
 func round_bet_reset():
 	round_bet = 0
 
-	for player in range(4):
+	for player in players_list:
 		$Hands.get_node("HandP" + str(player)).round_bet = 0
 
 func pot_sum():
@@ -284,7 +288,7 @@ func balance_display_update(player = null):
 func showdown():
 	var poker_hand_list = []
 
-	for player in range(4):
+	for player in players_list:
 		if player not in fold_list:
 			if player != 0: # Change needed in mp
 				$Hands.flip_hand(player)
@@ -332,9 +336,22 @@ func showdown():
 			$Hands.get_node("HandP" + str(player)).win(pot_sum() / len(winners))
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
 
+	# Remove players that ran out of chips
+	for player in players_list.duplicate():
+		if $Hands.get_node("HandP" + str(player)).balance == 0:
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Black")
+			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
+			players_list.erase(player)
+			player_count -= 1
+
+	if len(players_list) == 1:
+		game_end()
+	else:
+		$Countdown.start()
+
 
 func uncontested_win():
-	for player in range(4):
+	for player in players_list:
 		if player not in fold_list:
 			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
 			$Hands.get_node("HandP" + str(player)).win(pot_sum())
@@ -362,7 +379,7 @@ func game_reset():
 	indicator_reset()
 	$ExtraLayer/RoundLabel.text = ""
 
-	starting_player = (starting_player + 1) % player_count
+	starting_slot = (starting_slot + 1) % player_count
 
 
 func _on_countdown_timeout():
@@ -391,3 +408,6 @@ func _unhandled_input(event):
 		new_game_ready = false
 		game_reset()
 		game_begin()
+
+func game_end():
+	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_list[0] + 1) + "!"
