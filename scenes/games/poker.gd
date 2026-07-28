@@ -19,7 +19,7 @@ var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", 
 
 var min_bet = 400
 var round_bet = 400
-var pot = [0, 0, 0, 0]
+var pot_p = [0, 0, 0, 0]
 var side_pot_bool = false
 var pots = []
 
@@ -47,10 +47,10 @@ func _ready():
 	starting_slot = randi_range(0, player_count-1)
 
 	# Cheat
-	$Hands.get_node("HandP0").balance = 4000
-	$Hands.get_node("HandP1").balance = 1000
-	$Hands.get_node("HandP2").balance = 2000
-	$Hands.get_node("HandP3").balance = 3000
+	#$Hands.get_node("HandP0").balance = 4000
+	#$Hands.get_node("HandP1").balance = 2000
+	#$Hands.get_node("HandP2").balance = 1000
+	#$Hands.get_node("HandP3").balance = 3000
 	game_begin()
 
 func game_begin():
@@ -73,7 +73,7 @@ func game_begin():
 		var player = players_list[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
 		var bet_result =  $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
-		pot[player] += bet_result[0]
+		pot_p[player] += bet_result[0]
 		if bet_result[1] == true:
 			all_in_list.append(player)
 		balance_display_update(player)
@@ -148,17 +148,18 @@ func next_phase():
 		game_loop(players_list[starting_slot])
 
 func round_end_process():
+	# Return overbet amount back to player
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
-		var temp_pot = pot.duplicate()
-		temp_pot.sort()
-		temp_pot.reverse()
-		if temp_pot[0] != temp_pot[1]:
-			var player = pot.find(temp_pot[0])
-			$Hands.get_node("HandP" + str(player)).win(temp_pot[0] - temp_pot[1])
-			pot[player] = temp_pot[1]
+		var temp_pot_p = pot_p.duplicate()
+		temp_pot_p.sort()
+		temp_pot_p.reverse()
+		if temp_pot_p[0] != temp_pot_p[1]:
+			var player = pot_p.find(temp_pot_p[0])
+			$Hands.get_node("HandP" + str(player)).win(temp_pot_p[0] - temp_pot_p[1])
+			pot_p[player] = temp_pot_p[1]
 			balance_display_update(player)
 
-	side_pot_detector()
+	side_pot_handler()
 
 
 func player_turn():
@@ -183,7 +184,7 @@ func _on_fold(player):
 
 func _on_call(player):
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
-	pot[player] += bet_result[0]
+	pot_p[player] += bet_result[0]
 	if bet_result[1] == true:
 		all_in_list.append(player)
 
@@ -211,7 +212,7 @@ func _on_raise(player):
 	current_turn = 1
 
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
-	pot[player] += bet_result[0]
+	pot_p[player] += bet_result[0]
 	if bet_result[1] == true:
 		all_in_list.append(player)
 	balance_display_update(player)
@@ -240,54 +241,61 @@ func round_bet_reset():
 		$Hands.get_node("HandP" + str(player)).round_bet = 0
 
 func pot_sum():
-	return pot.reduce(func(accum, number): return accum + number, 0)
+	return pot_p.reduce(func(accum, number): return accum + number, 0)
 
-func side_pot_detector():
-	var pot_sizes = []
-	var player = 0
-	for p in pot:
-		if p < pot.max() and player in all_in_list:
-			pot_sizes.append(p)
-		player += 1
-	if len(pot_sizes) >= 1:
-		side_pot_bool = true
-		pot_sizes.append(pot.max())
-		pot_sizes.sort()
-		side_pot_display(pot_sizes)
-
-func side_pot_display(pot_sizes):
+func side_pot_handler():
 	pots.clear()
-	var prev_pot = 0
-	for pot_size in pot_sizes:
-		var temp_pot = 0
-		for p in pot:
-			if p >= pot_size:
-				temp_pot += pot_size - prev_pot
-			elif p not in pot_sizes and p > prev_pot:
-				temp_pot += p
-		prev_pot = pot_size
-		pots.append(temp_pot)
-	balance_display_update()
+	var pot_sizes = [pot_p.max()]
+	for player in players_list:
+		if player in all_in_list and pot_p[player] not in pot_sizes:
+			pot_sizes.append(pot_p[player])
+	pot_sizes.sort()
+	print("Pot sizes: " + str(pot_sizes))
+	print("Pot: " + str(pot_p))
+	if len(pot_sizes) == 1:
+		side_pot_bool = false
+		pots.append(pot_sum())
+	else:
+		side_pot_bool = true
+		var prev_pot = 0
+		for pot_size in pot_sizes:
+			var temp_pot = 0
+			var pot_participants = []
+			for player in players_list:
+				print("p: " + str(pot_p[player]), " pot_size: " + str(pot_size))
+				if pot_p[player] >= pot_size:
+					temp_pot += pot_size - prev_pot
+					pot_participants.append(player)
+			prev_pot = pot_size
+			pots.append([temp_pot, pot_participants])
+		balance_display_update()
+	print("Pots: " + str(pots))
 
 func balance_display_update(player = null):
-	if player != null:
+	# Player
+	if player == -1:
+		for p in range(4):
+			$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(p)).balance) + " €"
+	elif player != null:
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
 
+	# Pot
 	if side_pot_bool == false:
 		$ExtraLayer/PotLabel.text = "Pot: " + str(pot_sum()) + " €"
 	else:
 		var pot_label_text = ""
 		for p in pots:
 			if pot_label_text == "":
-				pot_label_text = "Main Pot: " + str(p) + " €"
+				pot_label_text = "Main Pot: " + str(p[0]) + " €"
 			else:
-				pot_label_text += "\nSide Pot: " + str(p) + " €"
+				pot_label_text += "\nSide Pot: " + str(p[0]) + " €"
 		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
 		$ExtraLayer/PotLabel.text = pot_label_text
 
 func showdown():
 	var poker_hand_list = []
-
+	
+	# Get poker hand
 	for player in players_list:
 		if player not in fold_list:
 			if player != 0: # Change needed in mp
@@ -305,36 +313,64 @@ func showdown():
 		else:
 			poker_hand_list.append([0, null, player])
 
-	var placement = []
+	# Rank poker hand
+	var placements = []
 	for poker_hand in poker_hand_list:
-		if placement.is_empty():
-			placement.append([poker_hand])
+		if placements.is_empty():
+			placements.append([poker_hand])
 		else:
 			var i = 0
-			for entry in placement:
+			for entry in placements:
 				var result = pk_logic.compare_hand(entry[0], poker_hand)
 				if result == 2:
-					placement.insert(i, [poker_hand])
+					placements.insert(i, [poker_hand])
 					break
 				elif result == 0:
-					placement[i].append(poker_hand)
+					placements[i].append(poker_hand)
 				i += 1
-				if result == 1 and len(placement) == i:
-					placement.append([poker_hand])
+				if result == 1 and len(placements) == i:
+					placements.append([poker_hand])
 
-
+	# Distribute the pot
 	await get_tree().create_timer(1).timeout
-	if len(placement[0]) == 1:
-		var player = placement[0][0][2]
-		$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
-		$Hands.get_node("HandP" + str(player)).win(pot_sum())
-		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
-	else:
-		var winners = placement[0].map(func(hand): return hand[2])
-		$ExtraLayer/RoundLabel.text = "It's a tie! Winners: " + str(winners)
-		for player in winners:
-			$Hands.get_node("HandP" + str(player)).win(pot_sum() / len(winners))
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
+	for placement in placements:
+		if len(placement) == 1:
+			var player = placement[0][2]
+			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
+			if side_pot_bool == false:
+				$Hands.get_node("HandP" + str(player)).win(pot_sum())
+				$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
+				break
+			else:
+				for pot in pots:
+					if player in pot[1]:
+						$Hands.get_node("HandP" + str(player)).win(pot[0])
+						pot[0] = 0
+				if pots.reduce(func(accum, pot): return accum + pot[0], 0) == 0:
+					balance_display_update(-1)
+					break
+		else:
+			var winners = placement.map(func(hand): return hand[2])
+			$ExtraLayer/RoundLabel.text = "It's a tie! Winners: " + str(winners)
+			if side_pot_bool == false:
+				for placement_tied in placement:
+					for player in winners:
+						$Hands.get_node("HandP" + str(player)).win(pot_sum() / len(winners))
+						$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
+			else:
+				for pot in pots:
+					var pot_getter = winners.reduce(func(accum, winner): return accum + 1 if winner in pot[1] else accum, 0)
+					var pot_claimed = false
+					for winner in winners:
+						if winner in pot[1]:
+							$Hands.get_node("HandP" + str(winner)).win(pot[0] / pot_getter)
+							pot_claimed = true
+					if pot_claimed:
+						pot[0] = 0
+
+				if pots.reduce(func(accum, pot): return accum + pot[0], 0) == 0:
+					balance_display_update(-1)
+					break
 
 	# Remove players that ran out of chips
 	for player in players_list.duplicate():
@@ -370,7 +406,7 @@ func game_reset():
 	table_cards_data.clear()
 	phase = 0
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
-	pot = [0, 0, 0, 0]
+	pot_p = [0, 0, 0, 0]
 	round_bet_reset()
 	round_bet = min_bet
 	side_pot_bool = false
