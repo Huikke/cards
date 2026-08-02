@@ -8,7 +8,6 @@ var logic = DeckLogic.new()
 
 func _ready():
 	$Sprite.texture = back_sprite
-	@warning_ignore("integer_division")
 	for i in range(1, len(logic.deck)/6 + 1):
 		var card_padding = $Sprite.duplicate()
 		card_padding.position += Vector2(i*2, i*2)
@@ -91,7 +90,6 @@ func deck_shuffle():
 # Cosmetic, adds additional cards to the bottom to make illusion of card stack
 func card_stack():
 	var stack_count = $AdditionalSprites.get_child_count()
-	@warning_ignore("integer_division")
 	if stack_count > len(logic.deck) / stack_count or len(logic.deck) == 1:
 		$AdditionalSprites.get_child(-1).queue_free()
 

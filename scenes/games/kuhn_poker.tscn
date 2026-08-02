@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://drudod41cqsny"]
+
+[ext_resource type="Script" uid="uid://gh1l8tg4ueav" path="res://scenes/games/kuhn_poker.gd" id="1_7nd1m"]
+[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="2_rqdjo"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="3_mpjaf"]
+[ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="4_uryfc"]
+[ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_u6pjw"]
+[ext_resource type="PackedScene" uid="uid://vt3aar4cejpm" path="res://scenes/user_interface/poker_stats.tscn" id="6_rqdjo"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_mpjaf"]
+font_size = 50
+
+[sub_resource type="LabelSettings" id="LabelSettings_uryfc"]
+font_size = 40
+
+[node name="KuhnPoker" type="Node2D" unique_id=2068947259]
+script = ExtResource("1_7nd1m")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1964062633]
+script = ExtResource("2_rqdjo")
+
+[node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("3_mpjaf")]
+position = Vector2(450, -3)
+
+[node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("4_uryfc")]
+
+[node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_u6pjw")]
+visible = false
+
+[node name="ExtraLayer" type="CanvasLayer" parent="." unique_id=244388080]
+
+[node name="RoundLabel" type="Label" parent="ExtraLayer" unique_id=643800221]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.5
+offset_top = -200.0
+offset_right = 32.5
+offset_bottom = -181.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Round 1"
+label_settings = SubResource("LabelSettings_mpjaf")
+
+[node name="PotLabel" type="Label" parent="ExtraLayer" unique_id=1839438762]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 153.5
+offset_top = 157.0
+offset_right = 308.5
+offset_bottom = 203.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Pot: 0 €"
+label_settings = SubResource("LabelSettings_uryfc")
+metadata/_edit_use_anchors_ = true
+
+[node name="StatsP0" parent="ExtraLayer" unique_id=1693016226 instance=ExtResource("6_rqdjo")]
+
+[node name="StatsP2" parent="ExtraLayer" unique_id=1952660424 instance=ExtResource("6_rqdjo")]
+anchors_preset = -1
+anchor_left = 0.6
+anchor_top = 0.1
+anchor_right = 0.6
+anchor_bottom = 0.1
+grow_vertical = 1

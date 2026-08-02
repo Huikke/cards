@@ -12,7 +12,7 @@ func _ready():
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
 	for card in range(3): # Card amount
-		for player in range(2): # Player amount
+		for player in range(0, 3, 2): # Player amount
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal_player(player)
 
@@ -31,9 +31,10 @@ func _on_hands_card_selected(human_card):
 		
 		var center = get_viewport().get_camera_2d().position
 		var position_nudge = [Vector2(0, 200), Vector2(0,-200)]
-		for card in [human_card, ai_card]:
+		var cards = [human_card, ai_card]
+		for card in cards:
 			var wild_card = card_scene.instantiate() as Area2D
-			wild_card.position = center + position_nudge[card.pnum]
+			wild_card.position = center + position_nudge[cards.find(card)]
 			wild_card.value = card.value
 			wild_card.suit = card.suit
 			add_child(wild_card)
@@ -56,8 +57,7 @@ func _on_hands_card_selected(human_card):
 var first = true
 var game_over = false
 func ai_play():
-	var ai_hand = $Hands/HandP1/HandContainer.get_children()
-	print(ai_hand)
+	var ai_hand = $Hands/HandP2/HandContainer.get_children()
 	# Temporary solution to our invisible card
 	if first:
 		ai_hand.pop_front()

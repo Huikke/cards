@@ -4,8 +4,11 @@ class_name Player
 var balance = 10000
 var round_bet = 0
 
-func print_balance():
-	print(balance)
+func get_balance():
+	return balance
+
+func set_balance(amount: int):
+	balance = amount
 
 func bet(amount):
 	var all_in = false
@@ -19,6 +22,11 @@ func bet(amount):
 	round_bet += difference
 
 	return [difference, all_in]
+
+# For Kuhn Poker
+func bet_simple(amount):
+	balance -= amount
+	return amount
 
 func win(amount):
 	balance += amount

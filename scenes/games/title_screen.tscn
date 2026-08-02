@@ -45,6 +45,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Best of Three"
 
+[node name="GameButton4" type="Button" parent="GameMenu" unique_id=925371372]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Kuhn Poker"
+
 [node name="GameButton2" type="Button" parent="GameMenu" unique_id=2016909215]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
@@ -65,6 +71,7 @@ text = "Back"
 
 [connection signal="pressed" from="FirstMenu/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="GameMenu/GameButton1" to="." method="_on_game_button_1_pressed"]
+[connection signal="pressed" from="GameMenu/GameButton4" to="." method="_on_game_button_4_pressed"]
 [connection signal="pressed" from="GameMenu/GameButton2" to="." method="_on_game_button_2_pressed"]
 [connection signal="pressed" from="GameMenu/GameButton3" to="." method="_on_game_button_3_pressed"]
 [connection signal="pressed" from="GameMenu/BackButton" to="." method="_on_back_button_pressed"]

@@ -23,6 +23,7 @@ var pot_p = [0, 0, 0, 0]
 var side_pot_bool = false
 var pots = []
 
+# For visuals only
 var raise_amount = min_bet
 
 var start_mode = "manual"
@@ -54,7 +55,6 @@ func _ready():
 	game_begin()
 
 func game_begin():
-	print(players_list)
 	$Deck.deck_shuffle()
 
 	await get_tree().create_timer(0.3).timeout
@@ -72,7 +72,7 @@ func game_begin():
 	for i in range(2):
 		var player = players_list[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
-		var bet_result =  $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
+		var bet_result = $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
 		pot_p[player] += bet_result[0]
 		if bet_result[1] == true:
 			all_in_list.append(player)
