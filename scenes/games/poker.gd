@@ -73,6 +73,7 @@ func game_begin():
 		var player = players_list[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
 		var bet_result = $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
+		balance_change_animation(player, bet_result[0])
 		pot_p[player] += bet_result[0]
 		if bet_result[1] == true:
 			all_in_list.append(player)
@@ -184,6 +185,7 @@ func _on_fold(player):
 
 func _on_call(player):
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
+	balance_change_animation(player, bet_result[0])
 	pot_p[player] += bet_result[0]
 	if bet_result[1] == true:
 		all_in_list.append(player)
@@ -212,6 +214,7 @@ func _on_raise(player):
 	current_turn = 1
 
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
+	balance_change_animation(player, bet_result[0])
 	pot_p[player] += bet_result[0]
 	if bet_result[1] == true:
 		all_in_list.append(player)
@@ -232,7 +235,6 @@ func indicator_reset():
 			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 		if player in all_in_list:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
-
 
 func round_bet_reset():
 	round_bet = 0
@@ -447,3 +449,22 @@ func _unhandled_input(event):
 
 func game_end():
 	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_list[0] + 1) + "!"
+
+
+
+func balance_change_animation(player, amount):
+	if amount == 0:
+		return
+
+	var the_node = get_node("ExtraLayer/StatsP" + str(player) + "/BCMC")
+	the_node.visible = true
+	the_node.get_child(0).text = str(amount) + " €"
+	the_node.position = get_node("ExtraLayer/StatsP" + str(player) + "/HBC").position
+
+	var yd = -66
+	if player == 2 or player == 3:
+		yd *= -1
+
+	var tween = create_tween()
+	tween.tween_property(the_node, "modulate:a", 1, 0.2)
+	tween.parallel().tween_property(the_node, "position", the_node.position + Vector2(0, yd), 0.3)

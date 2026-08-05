@@ -3,6 +3,9 @@
 [sub_resource type="LabelSettings" id="LabelSettings_bqnes"]
 font_size = 40
 
+[sub_resource type="LabelSettings" id="LabelSettings_vr13r"]
+font_size = 40
+
 [node name="PokerStats" type="Control" unique_id=1693016226]
 layout_mode = 3
 anchors_preset = 2
@@ -39,3 +42,23 @@ label_settings = SubResource("LabelSettings_bqnes")
 custom_minimum_size = Vector2(66, 66)
 layout_mode = 2
 color = Color(0.6797427, 0.67084867, 0.68869585, 1)
+
+[node name="BCMC" type="MarginContainer" parent="." unique_id=602591501]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -66.0
+offset_right = 172.0
+grow_vertical = 0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="BalanceChangeLabel" type="Label" parent="BCMC" unique_id=1185379886]
+layout_mode = 2
+text = "10000 €"
+label_settings = SubResource("LabelSettings_vr13r")
+horizontal_alignment = 1
