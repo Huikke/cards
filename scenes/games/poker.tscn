@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
 [ext_resource type="PackedScene" uid="uid://vt3aar4cejpm" path="res://scenes/user_interface/poker_stats.tscn" id="6_y74yl"]
+[ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="7_jyp7r"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2teuh"]
 font_size = 50
@@ -15,6 +16,12 @@ font_size = 40
 
 [node name="Poker" type="Node2D" unique_id=1075910118]
 script = ExtResource("1_dhslg")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1710330860]
+texture_repeat = 2
+texture = ExtResource("7_jyp7r")
+region_enabled = true
+region_rect = Rect2(0, 0, 1280, 800)
 
 [node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("1_gbg6l")]
 position = Vector2(343, 0)

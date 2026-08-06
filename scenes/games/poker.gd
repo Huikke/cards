@@ -468,3 +468,5 @@ func balance_change_animation(player, amount):
 	var tween = create_tween()
 	tween.tween_property(the_node, "modulate:a", 1, 0.2)
 	tween.parallel().tween_property(the_node, "position", the_node.position + Vector2(0, yd), 0.3)
+	# Causes visual bug
+	tween.tween_property(the_node, "modulate:a", 0, 0.2).set_delay(2)
