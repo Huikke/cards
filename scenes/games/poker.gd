@@ -19,8 +19,8 @@ var card_placement: Vector2
 
 var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 
-var min_bet = 400
-var round_bet = 400
+var min_bet = 200
+var round_bet = 200
 var pot_p = [0, 0, 0, 0]
 var side_pot_bool = false
 var pots = []

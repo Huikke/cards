@@ -5,13 +5,13 @@ signal card_selected
 var texture_path = "res://assets/cards/front/perfectionism/"
 
 
-func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
-	var node_str = "HandP" + str(p)
+func _on_card_to_hand(card_i, player): # card_i = card_incoming, p = player
+	var node_str = "HandP" + str(player)
 	var hand_content = get_node(node_str).get_child(0)
 	var card_o = hand_content.get_child(0).duplicate()
 	card_o.visible = true
 
-	if p == 0:
+	if player == 0:
 		card_o.get_child(0).texture = load(texture_path + str(card_i.value) + "_" + card_i.suit + ".svg")
 		card_o.face_up = true
 	else:
@@ -19,8 +19,15 @@ func _on_card_to_hand(card_i, p): # card_i = card_incoming, p = player
 		card_o.face_up = false
 	card_o.value = card_i.value
 	card_o.suit = card_i.suit
-	card_o.pnum = p # Prevents playing other people's cards
+	card_o.pnum = player # Prevents playing other people's cards
 	card_o.back_sprite = card_i.back_sprite
+	
+	# Card Animation
+	var card_sprite = card_o.get_node("CardSprite")
+	var tween = create_tween()
+	card_sprite.position += Vector2(0, 84)
+	tween.tween_property(card_sprite, "position", card_sprite.position - Vector2(0, 84), 0.2)
+	
 
 	hand_content.add_child(card_o)
 	hand_content.move_child(get_node(node_str + "/HandContainer/FrontCardPadding"), -1)
