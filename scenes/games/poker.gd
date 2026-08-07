@@ -19,6 +19,7 @@ var card_placement: Vector2
 
 var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 var round_names = ["Pre-Round", "Pre-Flop", "Flop", "Turn", "River", "Showdown", "Post-Round"]
+var player_role_names = ["Small Blind", "Big Blind", "Under the Gun", "Dealer"]
 
 var min_bet = 200
 var round_bet = 200
@@ -65,6 +66,8 @@ func game_begin():
 	$Deck.deck_shuffle()
 
 	await get_tree().create_timer(0.3).timeout
+	for i in range(player_count):
+		$Hands.get_node("HandP" + str(players_list[(starting_slot + i) % player_count]) + "/LabelPanel/PlayerLabel").text = player_role_names[i]
 	for card in range(2):
 		for i in range(player_count):
 			var player = players_list[(starting_slot + i) % player_count]
@@ -440,6 +443,10 @@ func showdown():
 			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 			players_list.erase(player)
 			player_count -= 1
+			if player_count == 3:
+				player_role_names.erase("Under the Gun")
+			if player_count == 2:
+				player_role_names.erase("Dealer")
 
 	if len(players_list) == 1:
 		game_end()
