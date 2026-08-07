@@ -10,6 +10,9 @@ func get_balance():
 func set_balance(amount: int):
 	balance = amount
 
+func get_round_bet():
+	return round_bet
+
 func bet(amount):
 	var all_in = false
 	var difference = amount - round_bet

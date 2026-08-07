@@ -1,6 +1,7 @@
 extends Node2D
 
 var pk_logic = poker_logic.new()
+var llm_gemini = poker_ai_llm_online.new("gemini-3.5-flash-lite")
 
 var table_cards_physical = []
 var table_cards_data = []
@@ -47,6 +48,8 @@ func _ready():
 
 	player_count = len(players_list)
 	starting_slot = randi_range(0, player_count-1)
+	
+	add_child(llm_gemini)
 
 	# Cheat
 	#$Hands.get_node("HandP0").balance = 4000
@@ -77,11 +80,11 @@ func game_begin():
 		await get_tree().create_timer(0.2).timeout
 		var bet_result = $Hands.get_node("HandP" + str(player)).bet(min_bet/blind_halfer)
 		players_balance_update(player)
+		balance_display_update(player)
 		balance_change_animation(player, -bet_result[0])
 		pot_p[player] += bet_result[0]
 		if bet_result[1] == true:
-			all_in_list.append(player)
-		balance_display_update(player)
+			all_in_list.append(player)		
 		blind_halfer = 1
 
 	current_turn = 0
@@ -113,8 +116,11 @@ func game_loop(player: int):
 		if player == 0: # Needs change in mp
 			player_turn()
 			break
-		else:
+		elif player == 1 or player == 3 or player == 2:
 			pk_logic.ai_turn(player)
+			player = players_list[(players_list.find(player) + 1) % player_count]
+		elif player == 2:
+			llm_gemini.test()
 			player = players_list[(players_list.find(player) + 1) % player_count]
 
 func next_phase():
@@ -172,8 +178,21 @@ func round_end_process():
 
 func player_turn():
 	$ButtonsLayer.visible = true
+	var player = 0
+
+	if $Hands.get_node("HandP" + str(player)).get_round_bet() != round_bet:
+		$ButtonsLayer/ButtonsContainer/Call.text = "Call"
+	else:
+		$ButtonsLayer/ButtonsContainer/Call.text = "Check"
+
+	if round_bet != 0:
+		$ButtonsLayer.bet_or_raise = "Raise"
+	else:
+		$ButtonsLayer.bet_or_raise = "Bet"
+
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = $Hands.get_node("HandP" + "0").balance - round_bet + $Hands.get_node("HandP" + "0").round_bet
+
 
 func _on_deck_table_deal(card):
 	card.position = card_placement
@@ -182,8 +201,7 @@ func _on_deck_table_deal(card):
 	table_cards_data.append([card.value, card.suit])
 
 func _on_fold(player):
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Fold"
+	move_display_update(0, player)
 	fold_list.append(player)
 
 	if player == 0: # Change needed in mp
@@ -191,29 +209,21 @@ func _on_fold(player):
 		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_call(player):
+	move_display_update(1, player)
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
 	players_balance_update(player)
+	balance_display_update(player)
 	balance_change_animation(player, -bet_result[0])
 	pot_p[player] += bet_result[0]
 	if bet_result[1] == true:
-		all_in_list.append(player)
-
-	# Display updates
-	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
-	if indicator.color != Color("Lime_Green"):
-		indicator.color = Color("Lime_Green")
-	else:
-		indicator.modulate *= 1.5
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Call"
-	balance_display_update(player)
+		all_in_list.append(player)	
 
 	if player == 0: # Change needed in mp
 		raise_amount = min_bet
 		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_raise(player):
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Raise"
+	move_display_update(2, player)
 
 	if $Hands.get_node("HandP" + str(player)).balance < raise_amount:
 		round_bet += $Hands.get_node("HandP" + str(player)).balance
@@ -222,12 +232,12 @@ func _on_raise(player):
 	current_turn = 1
 
 	var bet_result = $Hands.get_node("HandP" + str(player)).bet(round_bet)
-	players_balance_update(player)
-	balance_change_animation(player, -bet_result[0])
 	pot_p[player] += bet_result[0]
+	players_balance_update(player)
+	balance_display_update(player)
+	balance_change_animation(player, -bet_result[0])
 	if bet_result[1] == true:
 		all_in_list.append(player)
-	balance_display_update(player)
 
 	if player == 0: # Change needed in mp
 		raise_amount = min_bet
@@ -309,6 +319,32 @@ func balance_display_update(player = null):
 				pot_label_text += "\nSide Pot: " + str(p[0]) + " €"
 		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
 		$ExtraLayer/PotLabel.text = pot_label_text
+
+func move_display_update(move: int, player: int):
+	var move_text: String
+	var move_color: Color
+	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
+
+	if move == 0:
+		move_text = "Fold"
+		indicator.color = Color("Red")
+	elif move == 1:
+		if $Hands.get_node("HandP" + str(player)).get_round_bet() != round_bet:
+			move_text = "Call"
+		else:
+			move_text = "Check"
+		if indicator.color == Color("Lime_Green"):
+			indicator.modulate *= 1.5
+		else:
+			indicator.color = Color("Lime_Green")
+	elif move == 2:
+		if round_bet != 0:
+			move_text = "Raise"
+		else:
+			move_text = "Bet"
+		indicator.color = Color("Blue")
+
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = move_text
 
 func showdown():
 	var poker_hand_list = []
