@@ -6,7 +6,7 @@ var llm_gemini = poker_ai_llm_online.new("gemini-3.5-flash-lite")
 var table_cards_physical = []
 var table_cards_data = []
 var current_turn: int
-var phase = 0
+var phase = 0 # Better known as "round"
 
 var starting_slot: int
 var player_count: int
@@ -18,6 +18,7 @@ var all_in_list = []
 var card_placement: Vector2
 
 var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
+var round_names = ["Pre-Round", "Pre-Flop", "Flop", "Turn", "River", "Showdown", "Post-Round"]
 
 var min_bet = 200
 var round_bet = 200
@@ -70,10 +71,6 @@ func game_begin():
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal_player(player)
 
-	for card in range(5):
-		await get_tree().create_timer(0.2).timeout
-		$Deck.deal("table")
-
 	var blind_halfer = 2
 	for i in range(2):
 		var player = players_list[(starting_slot + i) % player_count]
@@ -88,7 +85,7 @@ func game_begin():
 		blind_halfer = 1
 
 	current_turn = 0
-	$ExtraLayer/RoundLabel.text = "Round 1"
+	$ExtraLayer/RoundLabel.text = round_names[1]
 	game_loop(players_list[(starting_slot + 2) % player_count])
 
 func game_loop(player: int):
@@ -123,30 +120,31 @@ func game_loop(player: int):
 			llm_gemini.test()
 			player = players_list[(players_list.find(player) + 1) % player_count]
 
+# Better known as "next_round"
 func next_phase():
 	phase += 1
 	if phase == 1:
-		table_cards_physical[0].flip_card()
-		table_cards_physical[1].flip_card()
-		table_cards_physical[2].flip_card()
-		$ExtraLayer/RoundLabel.text = "Round 2"
+		for i in range(3):
+			await get_tree().create_timer(0.2).timeout
+			$Deck.deal("table")
+		$ExtraLayer/RoundLabel.text = round_names[2]
 		indicator_reset()
 		round_bet_reset()
 		round_end_process()
 	elif phase == 2:
-		table_cards_physical[3].flip_card()
-		$ExtraLayer/RoundLabel.text = "Round 3"
+		$Deck.deal("table")
+		$ExtraLayer/RoundLabel.text = round_names[3]
 		indicator_reset()
 		round_bet_reset()
 		round_end_process()
 	elif phase == 3:
-		table_cards_physical[4].flip_card()
-		$ExtraLayer/RoundLabel.text = "Round 4"
+		$Deck.deal("table")
+		$ExtraLayer/RoundLabel.text = round_names[4]
 		indicator_reset()
 		round_bet_reset()
 		round_end_process()
 	elif phase == 4:
-		$ExtraLayer/RoundLabel.text = "Showdown"
+		$ExtraLayer/RoundLabel.text = round_names[5]
 		round_end_process()
 		showdown()
 		return
@@ -193,13 +191,6 @@ func player_turn():
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = $Hands.get_node("HandP" + "0").balance - round_bet + $Hands.get_node("HandP" + "0").round_bet
 
-
-func _on_deck_table_deal(card):
-	card.position = card_placement
-	card_placement += Vector2(125, 0)
-	table_cards_physical.append(card)
-	table_cards_data.append([card.value, card.suit])
-
 func _on_fold(player):
 	move_display_update(0, player)
 	fold_list.append(player)
@@ -245,6 +236,15 @@ func _on_raise(player):
 
 func _on_raise_slider_value_changed(value):
 	raise_amount = int(value)
+
+func _on_deck_table_deal(card):
+	card.position = card_placement
+	card_placement += Vector2(125, 0)
+	table_cards_physical.append(card)
+	table_cards_data.append([card.value, card.suit])
+
+	await get_tree().create_timer(0.6).timeout
+	card.flip_card()
 
 func players_balance_update(player):
 	if player != -1:
@@ -322,7 +322,6 @@ func balance_display_update(player = null):
 
 func move_display_update(move: int, player: int):
 	var move_text: String
-	var move_color: Color
 	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
 
 	if move == 0:
