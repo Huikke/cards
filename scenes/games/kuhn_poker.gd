@@ -2,6 +2,7 @@ extends Node2D
 
 var kuhn_deck = [[11, "heart"], [12, "heart"], [13, "heart"]]
 var players = [0, 2]
+var players_balance = [10, 0, 10]
 var starting_slot = 1
 
 var turn = 0
@@ -18,8 +19,7 @@ func _ready():
 	$ButtonsLayer/ButtonsContainer/Raise.text = "Bet"
 	$ExtraLayer/RoundLabel.text = "Betting Round"
 
-	$Hands.get_node("HandP0").set_balance(5)
-	$Hands.get_node("HandP2").set_balance(5)
+	players_balance = [5, 0, 5]
 
 	GlobalSignal.fold.connect(_on_fold)
 	GlobalSignal.call.connect(_on_call)
@@ -34,7 +34,8 @@ func game_begin():
 	for player in players:
 		await get_tree().create_timer(0.2).timeout
 		$Deck.deal_player(player)
-		pot += $Hands.get_node("HandP" + str(player)).bet_simple(1)
+		pot += 1
+		players_balance[player] -= 1
 
 	balance_display_update()
 	betting_phase(players[starting_slot])
@@ -68,27 +69,27 @@ func betting_phase(player):
 func showdown_phase():
 	$Hands.flip_hand(2)
 	if $Hands.get_hand_content(0)[0][0] > $Hands.get_hand_content(2)[0][0]:
-		$Hands.get_node("HandP" + str(0)).win(pot)
+		players_balance[0] += pot
 		$ExtraLayer/RoundLabel.text = "Showdown Round, Player 1 wins!"
 	else:
-		$Hands.get_node("HandP" + str(2)).win(pot)
+		players_balance[2] += pot
 		$ExtraLayer/RoundLabel.text = "Showdown Round, Player 2 wins!"
 
 	balance_display_update()
-	if $Hands.get_node("HandP" + str(0)).get_balance() < 0:
+	if players_balance[0] < 0:
 		game_end(2)
-	elif $Hands.get_node("HandP" + str(2)).get_balance() < 0:
+	elif players_balance[2] < 0:
 		game_end(0)
 	else:
 		new_game_ready = true
 
 func uncontested_win(player):
-	$Hands.get_node("HandP" + str(player)).win(pot)
+	players_balance[player] += pot
 
 	balance_display_update()
-	if $Hands.get_node("HandP" + str(0)).get_balance() == 0:
+	if players_balance[0] < 0:
 		game_end(2)
-	elif $Hands.get_node("HandP" + str(2)).get_balance() == 0:
+	elif players_balance[2] < 0:
 		game_end(0)
 	else:
 		new_game_ready = true
@@ -102,8 +103,6 @@ func game_reset():
 	turn = 0
 	bet_bool = false
 
-	for player in players:
-		$Hands.get_node("HandP" + str(player)).round_bet = 0
 	starting_slot = (starting_slot + 1) % 2
 
 	balance_display_update()
@@ -124,7 +123,8 @@ func _on_fold(player):
 
 func _on_call(player):
 	if bet_bool == true:
-		pot += $Hands.get_node("HandP" + str(player)).bet_simple(1)
+		pot += 1
+		players_balance[player] -= 1
 
 	# Display updates
 	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
@@ -146,7 +146,8 @@ func _on_raise(player):
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
 	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Raise"
 
-	pot += $Hands.get_node("HandP" + str(player)).bet_simple(1)
+	pot += 1
+	players_balance[player] -= 1
 	bet_bool = true
 
 	turn = 1
@@ -156,7 +157,7 @@ func _on_raise(player):
 
 func balance_display_update():
 	for p in players:
-		$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(p)).get_balance()) + " €"
+		$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str(players_balance[p]) + " €"
 
 	$ExtraLayer/PotLabel.text = "Pot: " + str(pot) + " €"
 
