@@ -386,12 +386,12 @@ func pot_distribution(placements: Array) -> void:
 			var winners = placement.map(func(hand): return hand[2])
 			$ExtraLayer/RoundLabel.text = "It's a tie! Winners: " + str(winners)
 			if side_pot_bool == false:
-				for placement_tied in placement:
-					for player in winners:
-						$Hands.get_node("HandP" + str(player)).win(pot_sum() / len(winners))
-						players_balance_update(player)
-						balance_change_animation(player, pot_sum() / len(winners))
-						$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
+				for player in winners:
+					$Hands.get_node("HandP" + str(player)).win(pot_sum() / len(winners))
+					players_balance_update(player)
+					balance_change_animation(player, pot_sum() / len(winners))
+					$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).get_balance()) + " €"
+				break
 			else:
 				for pot in pots:
 					var pot_getter = winners.reduce(func(accum, winner): return accum + 1 if winner in pot[1] else accum, 0)
