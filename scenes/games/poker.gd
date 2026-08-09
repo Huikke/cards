@@ -92,10 +92,7 @@ func game_begin():
 	game_loop(players_list[(starting_slot + 2) % player_count])
 
 func game_loop(player: int):
-	print(players_balance)
 	while true:
-		print("Current turn " + str(current_turn))
-		print("Player: " + str(player))
 		current_turn += 1
 
 		if len(fold_list) == len(players_list) - 1:
@@ -103,7 +100,6 @@ func game_loop(player: int):
 			$Countdown.start()
 			break
 		if current_turn == player_count + 1:
-			print("next round")
 			current_turn = 0
 			await get_tree().create_timer(1).timeout
 			next_phase()
@@ -259,15 +255,6 @@ func players_balance_update(player):
 func pot_sum():
 	return pot_p.reduce(func(accum, number): return accum + number, 0)
 
-func indicator_reset():
-	for player in players_list:
-		if player not in fold_list:
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
-			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
-		if player in all_in_list:
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
-
 func round_bet_reset():
 	round_bet = 0
 
@@ -281,8 +268,6 @@ func side_pot_handler():
 		if player in all_in_list and pot_p[player] not in pot_sizes:
 			pot_sizes.append(pot_p[player])
 	pot_sizes.sort()
-	print("Pot sizes: " + str(pot_sizes))
-	print("Pot: " + str(pot_p))
 	if len(pot_sizes) == 1:
 		side_pot_bool = false
 		pots.append(pot_sum())
@@ -293,84 +278,73 @@ func side_pot_handler():
 			var temp_pot = 0
 			var pot_participants = []
 			for player in players_list:
-				print("p: " + str(pot_p[player]), " pot_size: " + str(pot_size))
 				if pot_p[player] >= pot_size:
 					temp_pot += pot_size - prev_pot
 					pot_participants.append(player)
 			prev_pot = pot_size
 			pots.append([temp_pot, pot_participants])
 		balance_display_update()
-	print("Pots: " + str(pots))
 
-func balance_display_update(player = null):
-	# Player
-	if player == -1:
-		for p in range(4):
-			$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(p)).balance) + " €"
-	elif player != null:
-		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
 
-	# Pot
-	if side_pot_bool == false:
-		$ExtraLayer/PotLabel.text = "Pot: " + str(pot_sum()) + " €"
-	else:
-		var pot_label_text = ""
-		for p in pots:
-			if pot_label_text == "":
-				pot_label_text = "Main Pot: " + str(p[0]) + " €"
-			else:
-				pot_label_text += "\nSide Pot: " + str(p[0]) + " €"
-		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
-		$ExtraLayer/PotLabel.text = pot_label_text
-
-func move_display_update(move: int, player: int):
-	var move_text: String
-	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
-
-	if move == 0:
-		move_text = "Fold"
-		indicator.color = Color("Red")
-	elif move == 1:
-		if $Hands.get_node("HandP" + str(player)).get_round_bet() != round_bet:
-			move_text = "Call"
-		else:
-			move_text = "Check"
-		if indicator.color == Color("Lime_Green"):
-			indicator.modulate *= 1.5
-		else:
-			indicator.color = Color("Lime_Green")
-	elif move == 2:
-		if round_bet != 0:
-			move_text = "Raise"
-		else:
-			move_text = "Bet"
-		indicator.color = Color("Blue")
-
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = move_text
+func uncontested_win():
+	for player in players_list:
+		if player not in fold_list:
+			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
+			$Hands.get_node("HandP" + str(player)).win(pot_sum())
+			players_balance_update(player)
+			balance_change_animation(player, pot_sum())
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
 
 func showdown():
 	var poker_hand_list = []
 	
-	# Get poker hand
+	# Get players' poker hands
 	for player in players_list:
 		if player not in fold_list:
 			if player != 0: # Change needed in mp
 				$Hands.flip_hand(player)
 
-			var hand_and_river = $Hands.get_hand_content(player) + table_cards_data
-			var poker_hand = pk_logic.check_hand(hand_and_river)
-
-			poker_hand.append(player)
-
-			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = hand_types[poker_hand[0]]
-
-			poker_hand_list.append(poker_hand)
-			print(poker_hand)
+			poker_hand_list.append(get_player_hand(player))
 		else:
 			poker_hand_list.append([0, null, player])
 
-	# Rank poker hand
+	# Rank players' poker hands
 	var placements = []
+	rank_hands(poker_hand_list, placements)
+
+	# Distribute the pot
+	await get_tree().create_timer(1).timeout
+	pot_distribution(placements)
+
+	# Remove players that ran out of chips
+	for player in players_list.duplicate():
+		if $Hands.get_node("HandP" + str(player)).balance == 0:
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Black")
+			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
+			players_list.erase(player)
+			player_count -= 1
+			if player_count == 3:
+				player_role_names.erase("Under the Gun")
+			if player_count == 2:
+				player_role_names.erase("Dealer")
+
+	# Game ends, when there is only one remaining player
+	if len(players_list) == 1:
+		game_end()
+	else:
+		$Countdown.start()
+
+func get_player_hand(player: int) -> Array:
+	var hand_and_river = $Hands.get_hand_content(player) + table_cards_data
+	var poker_hand = pk_logic.check_hand(hand_and_river)
+
+	poker_hand.append(player)
+
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = hand_types[poker_hand[0]]
+
+	return poker_hand
+
+func rank_hands(poker_hand_list: Array, placements: Array) -> void:
 	for poker_hand in poker_hand_list:
 		if placements.is_empty():
 			placements.append([poker_hand])
@@ -387,8 +361,7 @@ func showdown():
 				if result == 1 and len(placements) == i:
 					placements.append([poker_hand])
 
-	# Distribute the pot
-	await get_tree().create_timer(1).timeout
+func pot_distribution(placements: Array) -> void:
 	for placement in placements:
 		if len(placement) == 1:
 			var player = placement[0][2]
@@ -435,34 +408,6 @@ func showdown():
 				if pots.reduce(func(accum, pot): return accum + pot[0], 0) == 0:
 					balance_display_update(-1)
 					break
-
-	# Remove players that ran out of chips
-	for player in players_list.duplicate():
-		if $Hands.get_node("HandP" + str(player)).balance == 0:
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Black")
-			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
-			players_list.erase(player)
-			player_count -= 1
-			if player_count == 3:
-				player_role_names.erase("Under the Gun")
-			if player_count == 2:
-				player_role_names.erase("Dealer")
-
-	if len(players_list) == 1:
-		game_end()
-	else:
-		$Countdown.start()
-
-
-func uncontested_win():
-	for player in players_list:
-		if player not in fold_list:
-			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
-			$Hands.get_node("HandP" + str(player)).win(pot_sum())
-			players_balance_update(player)
-			balance_change_animation(player, pot_sum())
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
-
 
 func game_reset():
 	fold_list.clear()
@@ -517,6 +462,64 @@ func _unhandled_input(event):
 
 func game_end():
 	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_list[0] + 1) + "!"
+
+
+## Purely cosmetic functions
+
+func indicator_reset():
+	for player in players_list:
+		if player not in fold_list:
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
+			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
+		if player in all_in_list:
+			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
+
+func balance_display_update(player = null):
+	# Player
+	if player == -1:
+		for p in range(4):
+			$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(p)).balance) + " €"
+	elif player != null:
+		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str($Hands.get_node("HandP" + str(player)).balance) + " €"
+
+	# Pot
+	if side_pot_bool == false:
+		$ExtraLayer/PotLabel.text = "Pot: " + str(pot_sum()) + " €"
+	else:
+		var pot_label_text = ""
+		for p in pots:
+			if pot_label_text == "":
+				pot_label_text = "Main Pot: " + str(p[0]) + " €"
+			else:
+				pot_label_text += "\nSide Pot: " + str(p[0]) + " €"
+		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
+		$ExtraLayer/PotLabel.text = pot_label_text
+
+func move_display_update(move: int, player: int):
+	var move_text: String
+	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
+
+	if move == 0:
+		move_text = "Fold"
+		indicator.color = Color("Red")
+	elif move == 1:
+		if $Hands.get_node("HandP" + str(player)).get_round_bet() != round_bet:
+			move_text = "Call"
+		else:
+			move_text = "Check"
+		if indicator.color == Color("Lime_Green"):
+			indicator.modulate *= 1.5
+		else:
+			indicator.color = Color("Lime_Green")
+	elif move == 2:
+		if round_bet != 0:
+			move_text = "Raise"
+		else:
+			move_text = "Bet"
+		indicator.color = Color("Blue")
+
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = move_text
 
 func balance_change_animation(player, amount):
 	var the_node = get_node("ExtraLayer/StatsP" + str(player) + "/BCMC")
