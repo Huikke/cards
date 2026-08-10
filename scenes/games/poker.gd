@@ -1,7 +1,7 @@
 extends Node2D
 
 var pk_logic = poker_logic.new()
-# var llm_gemini = poker_ai_llm_online.new("gemini-3.5-flash-lite")
+var llm_gemini = poker_ai_llm_online.new("gemini-3.5-flash-lite")
 
 var community_cards_physical = []
 var community_cards_data = []
@@ -13,6 +13,7 @@ var player_count: int
 var players_list = [0, 1, 2, 3]
 var players_balance = [0, 0, 0, 0]
 var players_round_bet = [0, 0, 0, 0]
+var players_roles = []
 var fold_list = []
 var all_in_list = []
 
@@ -28,9 +29,6 @@ var pot_p = [0, 0, 0, 0]
 var side_pot_bool = false
 var pots = []
 var game_log = []
-
-# For visuals only
-var raise_amount = min_bet
 
 var start_mode = "manual"
 var intermission = 0
@@ -48,12 +46,11 @@ func _ready():
 	GlobalSignal.fold.connect(_on_fold)
 	GlobalSignal.call.connect(_on_call)
 	GlobalSignal.raise.connect(_on_raise)
-	GlobalSignal.raise_slider_value_changed.connect(_on_raise_slider_value_changed)
 
 	player_count = len(players_list)
 	starting_slot = randi_range(0, player_count-1)
 	
-	# add_child(llm_gemini)
+	add_child(llm_gemini)
 
 	players_balance = [10000, 10000, 10000, 10000]
 
@@ -65,6 +62,7 @@ func game_begin():
 	await get_tree().create_timer(0.3).timeout
 	for i in range(player_count):
 		$Hands.get_node("HandP" + str(players_list[(starting_slot + i) % player_count]) + "/LabelPanel/PlayerLabel").text = player_role_names[i]
+		players_roles.append("Player " + str(players_list[(starting_slot + i) % player_count] + 1) + ": " + player_role_names[i])
 	for card in range(2):
 		for i in range(player_count):
 			var player = players_list[(starting_slot + i) % player_count]
@@ -105,12 +103,13 @@ func game_loop(player: int):
 		if player == 0: # Needs change in mp
 			player_turn()
 			break
-		elif player == 1 or player == 3 or player == 2:
+		elif player == 1 or player == 3:
 			pk_logic.ai_turn(player)
 			player = players_list[(players_list.find(player) + 1) % player_count]
-		# elif player == 2:
-			# llm_gemini.test()
-			# player = players_list[(players_list.find(player) + 1) % player_count]
+		elif player == 2:
+			var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
+			llm_gemini.ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
+			break
 
 # Better known as "next_round"
 func next_phase():
@@ -178,9 +177,10 @@ func player_turn():
 		$ButtonsLayer/ButtonsContainer/Call.text = "Check"
 
 	if round_bet != 0:
-		$ButtonsLayer.bet_or_raise = "Raise"
+		$ButtonsLayer.raise_text = "Raise"
 	else:
-		$ButtonsLayer.bet_or_raise = "Bet"
+		$ButtonsLayer.raise_text = "Bet"
+	$ButtonsLayer.update_raise_text()
 
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = players_balance[p] - round_bet + players_round_bet[p]
@@ -213,8 +213,7 @@ func _on_fold(player):
 	fold_list.append(player)
 	logger("fold", player)
 
-	if player == 0: # Change needed in mp
-		raise_amount = min_bet
+	if player == 0 or player == 2: # Change needed in mp
 		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_call(player):
@@ -222,28 +221,24 @@ func _on_call(player):
 	var difference = player_bet(player, round_bet)
 	logger("call", player, difference)
 
-	if player == 0: # Change needed in mp
-		raise_amount = min_bet
+	if player == 0 or player == 2: # Change needed in mp
 		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
-func _on_raise(player):
+func _on_raise(player, amount):
 	move_display_update(2, player)
 
-	if players_balance[player] < raise_amount:
+	if players_balance[player] < amount:
 		round_bet += players_balance[player]
 	else:
-		round_bet += raise_amount
+		round_bet += amount
 	current_turn = 1
 
 	player_bet(player, round_bet)
-	logger("raise", player, raise_amount)
+	logger("raise", player, amount)
 
-	if player == 0: # Change needed in mp
-		raise_amount = min_bet
+	if player == 0 or player == 2: # Change needed in mp
 		game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
-func _on_raise_slider_value_changed(value):
-	raise_amount = int(value)
 
 func _on_deck_table_deal(card):
 	card.position = card_placement
@@ -406,6 +401,7 @@ func game_reset():
 
 	community_cards_physical.clear()
 	community_cards_data.clear()
+	players_roles.clear()
 	game_log.clear()
 	$ExtraLayer/GameLog.text = ""
 	phase = 1

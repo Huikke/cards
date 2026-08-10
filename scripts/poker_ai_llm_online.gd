@@ -1,0 +1,90 @@
+extends Node
+class_name poker_ai_llm_online
+
+var http_request = HTTPRequest.new()
+var url: String
+var model_name: String
+
+
+func _init(m_name):
+	model_name = m_name
+
+var payload = {
+	"contents": [
+		{
+			"parts": [
+				{"text": "placeholder"}
+			]
+		}
+	],
+	"systemInstruction": {
+		"parts": [
+		{ "text": "You are poker player. Respond with only action (fold, call, check, bet, raise).
+			If betting or raising, also mention by how much separated by a space." }
+		]
+	}
+}
+
+func _ready():
+	load_env_file()
+	var api_key = OS.get_environment("GEMINI_API_KEY")
+	url = "https://generativelanguage.googleapis.com/v1beta/models/" + str(model_name) + ":generateContent?key=" + str(api_key)
+	add_child(http_request)
+
+func send_request(player):
+	var json = JSON.stringify(payload)
+	var headers = ["Content-Type: application/json"]
+	http_request.request_completed.connect(_http_request_completed.bind(player))
+	http_request.request(url, headers, HTTPClient.METHOD_POST, json)
+
+func ai_move(player, hand, roles, balances, pot, game_log):
+	var input = "You: Player " + str(player+1) + "\n"
+	input += "Your cards: " + hand + "\n\n"
+	input += ", ".join(roles)
+	var p = 1
+	input += "\nBalance:\n"
+	for balance in balances:
+		if p == player+1:
+			input += "Player " + str(p) + " (You): " +  str(balance) + "€ "
+		else:
+			input += "Player " + str(p) + ": " +  str(balance) + "€ "
+		p += 1
+	input += "\n" + "Pot: " + str(pot) + " €"
+	input += "\n\n" + "Poker Hand History:"
+	for info in game_log:
+		input += "\n" + info
+
+	payload["contents"][0]["parts"][0]["text"] = input
+	print(payload)
+
+	send_request(player)
+
+
+@warning_ignore("unused_parameter")
+func _http_request_completed(result, response_code, headers, body, player):
+	var json = JSON.new()
+	json.parse(body.get_string_from_utf8())
+	var response = json.get_data()
+	var output_move: String = response["candidates"][0]["content"]["parts"][0]["text"]
+	print(output_move)
+	output_move = output_move.to_lower()
+	if output_move == "fold":
+		GlobalSignal.fold.emit(player)
+	elif output_move == "call" or output_move == "check":
+		GlobalSignal.call.emit(player)
+	elif output_move.begins_with("raise") or output_move.begins_with("bet"):
+		GlobalSignal.raise.emit(player, int(output_move.split(" ")[1]))
+
+func load_env_file(path: String = "res://.env") -> void:
+	if not FileAccess.file_exists(path):
+		push_error("File not found")
+		return
+
+	var file = FileAccess.open(path, FileAccess.READ)
+	while not file.eof_reached():
+		var line = file.get_line()
+		var parts = line.split("=")
+		if parts.size() == 2:
+			OS.set_environment(parts[0], parts[1])
+		else:
+			push_error("env issues")

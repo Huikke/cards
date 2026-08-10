@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-var bet_or_raise = "Oops"
+var raise_text = "Placeholder"
 
 func _on_fold():
 	$".".visible = false
@@ -12,9 +12,11 @@ func _on_call():
 
 func _on_raise():
 	$".".visible = false
-	GlobalSignal.raise.emit(0)
+	var amount = $ButtonsContainer/RaiseSlider.value
+	GlobalSignal.raise.emit(0, amount)
 
+func update_raise_text():
+	$ButtonsContainer/Raise.text = "\n" + raise_text + "\n" + str(int($ButtonsContainer/RaiseSlider.value)) + " €"
 
 func _on_raise_slider_value_changed(value):
-	$ButtonsContainer/Raise.text = "\n" + bet_or_raise + "\n" + str(int(value)) + " €"
-	GlobalSignal.raise_slider_value_changed.emit(value)
+	$ButtonsContainer/Raise.text = "\n" + raise_text + "\n" + str(int(value)) + " €"

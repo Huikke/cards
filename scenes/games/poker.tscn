@@ -104,6 +104,7 @@ offset_top = 162.0
 offset_right = -113.0
 offset_bottom = 267.0
 grow_horizontal = 0
+placeholder_text = "Game Log"
 
 [node name="Countdown" type="Timer" parent="." unique_id=1075979618]
 

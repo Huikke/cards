@@ -38,14 +38,14 @@ layout_mode = 2
 size_flags_horizontal = 10
 text = "
 Raise
-"
+200 €"
 
 [node name="RaiseSlider" type="VSlider" parent="ButtonsContainer" unique_id=1309020332]
 layout_mode = 2
 min_value = 200.0
 max_value = 1000.0
 step = 100.0
-value = 400.0
+value = 200.0
 
 [connection signal="button_up" from="ButtonsContainer/Fold" to="." method="_on_fold"]
 [connection signal="button_up" from="ButtonsContainer/Call" to="." method="_on_call"]
