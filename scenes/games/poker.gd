@@ -3,10 +3,10 @@ extends Node2D
 var pk_logic = poker_logic.new()
 # var llm_gemini = poker_ai_llm_online.new("gemini-3.5-flash-lite")
 
-var table_cards_physical = []
-var table_cards_data = []
+var community_cards_physical = []
+var community_cards_data = []
 var current_turn: int
-var phase = 0 # Better known as "round"
+var phase = 1 # Better known as "round"
 
 var starting_slot: int
 var player_count: int
@@ -27,7 +27,7 @@ var round_bet = 200
 var pot_p = [0, 0, 0, 0]
 var side_pot_bool = false
 var pots = []
-var game_history = []
+var game_log = []
 
 # For visuals only
 var raise_amount = min_bet
@@ -76,7 +76,9 @@ func game_begin():
 		var player = players_list[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
 		player_bet(player, min_bet/blind_halfer)
+		logger("blind", player, min_bet/blind_halfer)
 		blind_halfer = 1
+
 
 	current_turn = 0
 	$ExtraLayer/RoundLabel.text = round_names[1]
@@ -113,25 +115,28 @@ func game_loop(player: int):
 # Better known as "next_round"
 func next_phase():
 	phase += 1
-	if phase == 1:
+	if phase == 2:
 		for i in range(3):
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = round_names[2]
-		indicator_reset()
-		round_end_process()
-	elif phase == 2:
-		$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = round_names[3]
+		$ExtraLayer/RoundLabel.text = round_names[phase]
+		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 3:
 		$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = round_names[4]
+		$ExtraLayer/RoundLabel.text = round_names[phase]
+		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 4:
-		$ExtraLayer/RoundLabel.text = round_names[5]
+		$Deck.deal("table")
+		$ExtraLayer/RoundLabel.text = round_names[phase]
+		logger("phase")
+		indicator_reset()
+		round_end_process()
+	elif phase == 5:
+		$ExtraLayer/RoundLabel.text = round_names[phase]
 		round_end_process()
 		showdown()
 		return
@@ -194,6 +199,8 @@ func player_bet(p: int, amount: int):
 	balance_display_update(p)
 	balance_change_animation(p, -difference)
 
+	return difference
+
 func player_award(p: int, amount: int):
 	players_balance[p] += amount
 
@@ -204,6 +211,7 @@ func player_award(p: int, amount: int):
 func _on_fold(player):
 	move_display_update(0, player)
 	fold_list.append(player)
+	logger("fold", player)
 
 	if player == 0: # Change needed in mp
 		raise_amount = min_bet
@@ -211,7 +219,8 @@ func _on_fold(player):
 
 func _on_call(player):
 	move_display_update(1, player)
-	player_bet(player, round_bet)
+	var difference = player_bet(player, round_bet)
+	logger("call", player, difference)
 
 	if player == 0: # Change needed in mp
 		raise_amount = min_bet
@@ -227,6 +236,7 @@ func _on_raise(player):
 	current_turn = 1
 
 	player_bet(player, round_bet)
+	logger("raise", player, raise_amount)
 
 	if player == 0: # Change needed in mp
 		raise_amount = min_bet
@@ -238,8 +248,8 @@ func _on_raise_slider_value_changed(value):
 func _on_deck_table_deal(card):
 	card.position = card_placement
 	card_placement += Vector2(125, 0)
-	table_cards_physical.append(card)
-	table_cards_data.append([card.value, card.suit])
+	community_cards_physical.append(card)
+	community_cards_data.append([card.value, card.suit])
 
 	await get_tree().create_timer(0.6).timeout
 	card.flip_card()
@@ -318,7 +328,7 @@ func showdown():
 		$Countdown.start()
 
 func get_player_hand(player: int) -> Array:
-	var hand_and_river = $Hands.get_hand_content(player) + table_cards_data
+	var hand_and_river = $Hands.get_hand_content(player) + community_cards_data
 	var poker_hand = pk_logic.check_hand(hand_and_river)
 
 	poker_hand.append(player)
@@ -351,11 +361,13 @@ func pot_distribution(placements: Array) -> void:
 			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
 			if side_pot_bool == false:
 				player_award(player, pot_sum())
+				logger("win", player, pot_sum())
 				break
 			else:
 				for pot in pots:
 					if player in pot[1]:
 						player_award(player, pot[0])
+						logger("win", player, pot_sum())
 						pot[0] = 0
 				if pots.reduce(func(accum, pot): return accum + pot[0], 0) == 0:
 					balance_display_update(-1)
@@ -366,14 +378,16 @@ func pot_distribution(placements: Array) -> void:
 			if side_pot_bool == false:
 				for player in winners:
 					player_award(player, pot_sum() / len(winners))
+					logger("win", player, pot_sum())
 				break
 			else:
 				for pot in pots:
-					var pot_getter = winners.reduce(func(accum, winner): return accum + 1 if winner in pot[1] else accum, 0)
+					var pot_getter = winners.reduce(func(accum, player): return accum + 1 if player in pot[1] else accum, 0)
 					var pot_claimed = false
-					for winner in winners:
-						if winner in pot[1]:
-							player_award(winner, pot[0] / pot_getter)
+					for player in winners:
+						if player in pot[1]:
+							player_award(player, pot[0] / pot_getter)
+							logger("win", player, pot_sum())
 							pot_claimed = true
 					if pot_claimed:
 						pot[0] = 0
@@ -387,12 +401,14 @@ func game_reset():
 	all_in_list.clear()
 	$Deck.reset_deck()
 	$Hands.clear_hands()
-	for card in table_cards_physical:
+	for card in community_cards_physical:
 		card.queue_free()
 
-	table_cards_physical.clear()
-	table_cards_data.clear()
-	phase = 0
+	community_cards_physical.clear()
+	community_cards_data.clear()
+	game_log.clear()
+	$ExtraLayer/GameLog.text = ""
+	phase = 1
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	pot_p = [0, 0, 0, 0]
 	players_round_bet = [0, 0, 0, 0]
@@ -437,7 +453,40 @@ func game_end():
 	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_list[0] + 1) + "!"
 
 
-## Purely cosmetic functions
+## Mostly cosmetic functions
+func logger(action: String, p: int = -1, amount: int = -1) -> void:
+	if action == "fold":
+		game_log.append("Player " + str(p + 1) + " folds")
+	elif action == "call" and amount != 0:
+		game_log.append("Player " + str(p + 1) + " calls " + str(amount) + " €")
+	elif action == "call" and amount == 0:
+		game_log.append("Player " + str(p + 1) + " checks")
+	elif action == "raise" and amount != round_bet:
+		game_log.append("Player " + str(p + 1) + " raises " + str(amount) + " €")
+	elif action == "raise" and amount == round_bet:
+		game_log.append("Player " + str(p + 1) + " bets " + str(amount) + " €")
+	elif action == "blind" and amount != round_bet:
+		game_log.append("Player " + str(p + 1) + " posts small blind " + str(amount) + " €")
+	elif action == "blind" and amount == round_bet:
+		game_log.append("Player " + str(p + 1) + " posts big blind " + str(amount) + " €")
+	elif action == "phase":
+		var mapped_c_cards = community_cards_data.map(cards_data_to_str)
+		game_log.append(round_names[phase] + ": " + " ".join(mapped_c_cards))
+	elif action == "win":
+		game_log.append("Player " + str(p + 1) + " wins " + str(amount) + " €")
+	$ExtraLayer/GameLog.text += game_log[-1] + "\n"
+
+func cards_data_to_str(card):
+	if card[0] == 11:
+		return "J" + card[1][0]
+	elif card[0] == 12:
+		return "Q" + card[1][0]
+	elif card[0] == 13:
+		return "K" + card[1][0]
+	elif card[0] == 1:
+		return "A" + card[1][0]
+	else:
+		return str(card[0]) + card[1][0]
 
 func indicator_reset():
 	for player in players_list:
