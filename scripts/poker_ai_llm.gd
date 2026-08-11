@@ -1,5 +1,5 @@
 extends Node
-class_name poker_ai_llm_online
+class_name PokerAiLLM
 
 var http_request = HTTPRequest.new()
 var url: String
@@ -70,10 +70,12 @@ func _http_request_completed(result, response_code, headers, body, player):
 	output_move = output_move.to_lower()
 	if output_move == "fold":
 		GlobalSignal.fold.emit(player)
-	elif output_move == "call" or output_move == "check":
+	elif output_move.begins_with("call") or output_move == "check":
 		GlobalSignal.call.emit(player)
 	elif output_move.begins_with("raise") or output_move.begins_with("bet"):
 		GlobalSignal.raise.emit(player, int(output_move.split(" ")[1]))
+	else:
+		push_error("LLM output didn't meet requirements")
 
 func load_env_file(path: String = "res://.env") -> void:
 	if not FileAccess.file_exists(path):

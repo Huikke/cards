@@ -31,47 +31,205 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -50.0
-offset_right = 100.0
-offset_bottom = 50.0
+offset_left = -150.0
+offset_top = -314.0
+offset_right = 493.0
+offset_bottom = 314.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 32
 
-[node name="GameButton1" type="Button" parent="GameMenu" unique_id=1664165260]
+[node name="Game1Button" type="Button" parent="GameMenu" unique_id=1664165260]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "Best of Three"
 
-[node name="GameButton4" type="Button" parent="GameMenu" unique_id=925371372]
+[node name="Game2Button" type="Button" parent="GameMenu" unique_id=925371372]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "Kuhn Poker"
 
-[node name="GameButton2" type="Button" parent="GameMenu" unique_id=2016909215]
+[node name="GM2" type="HBoxContainer" parent="GameMenu" unique_id=1070633936]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="Game3Button" type="Button" parent="GameMenu/GM2" unique_id=2016909215]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Poker"
 
-[node name="GameButton3" type="Button" parent="GameMenu" unique_id=126181324]
+[node name="Game3Setting" type="Button" parent="GameMenu/GM2" unique_id=2114886032]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "⚙️"
+
+[node name="Game4Button" type="Button" parent="GameMenu" unique_id=126181324]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "Sandbox"
 
 [node name="BackButton" type="Button" parent="GameMenu" unique_id=624750407]
-custom_minimum_size = Vector2(200, 100)
+custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Back"
+
+[node name="Game3SettingMenu" type="VBoxContainer" parent="." unique_id=1562726164]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -292.0
+offset_top = -280.0
+offset_right = 292.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 40
+
+[node name="PanelContainer" type="PanelContainer" parent="Game3SettingMenu" unique_id=1970695256]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Label" type="Label" parent="Game3SettingMenu/PanelContainer" unique_id=843419564]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="Player0" type="HBoxContainer" parent="Game3SettingMenu" unique_id=1136323872]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player0" unique_id=721327226]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Player 1"
+
+[node name="Left" type="Button" parent="Game3SettingMenu/Player0" unique_id=1192732911]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⬅️"
+
+[node name="Right" type="Button" parent="Game3SettingMenu/Player0" unique_id=1309270114]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "➡️"
+
+[node name="Mode" type="Label" parent="Game3SettingMenu/Player0" unique_id=1947095498]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Mode"
+
+[node name="Player1" type="HBoxContainer" parent="Game3SettingMenu" unique_id=156186496]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player1" unique_id=1324808978]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Player 2"
+
+[node name="Left" type="Button" parent="Game3SettingMenu/Player1" unique_id=2123107737]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⬅️"
+
+[node name="Right" type="Button" parent="Game3SettingMenu/Player1" unique_id=1280079636]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "➡️"
+
+[node name="Mode" type="Label" parent="Game3SettingMenu/Player1" unique_id=1545820664]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Mode"
+
+[node name="Player2" type="HBoxContainer" parent="Game3SettingMenu" unique_id=878551674]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player2" unique_id=886029827]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Player 3"
+
+[node name="Left" type="Button" parent="Game3SettingMenu/Player2" unique_id=617186834]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⬅️"
+
+[node name="Right" type="Button" parent="Game3SettingMenu/Player2" unique_id=1135143712]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "➡️"
+
+[node name="Mode" type="Label" parent="Game3SettingMenu/Player2" unique_id=29880735]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Mode"
+
+[node name="Player3" type="HBoxContainer" parent="Game3SettingMenu" unique_id=940794263]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player3" unique_id=2048025402]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Player 4"
+
+[node name="Left" type="Button" parent="Game3SettingMenu/Player3" unique_id=1200106123]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⬅️"
+
+[node name="Right" type="Button" parent="Game3SettingMenu/Player3" unique_id=1564764261]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "➡️"
+
+[node name="Mode" type="Label" parent="Game3SettingMenu/Player3" unique_id=2036183609]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Mode"
+
+[node name="SettingBackButton" type="Button" parent="Game3SettingMenu" unique_id=518391399]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
 text = "Back"
 
 [connection signal="pressed" from="FirstMenu/PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="pressed" from="GameMenu/GameButton1" to="." method="_on_game_button_1_pressed"]
-[connection signal="pressed" from="GameMenu/GameButton4" to="." method="_on_game_button_4_pressed"]
-[connection signal="pressed" from="GameMenu/GameButton2" to="." method="_on_game_button_2_pressed"]
-[connection signal="pressed" from="GameMenu/GameButton3" to="." method="_on_game_button_3_pressed"]
+[connection signal="pressed" from="GameMenu/Game1Button" to="." method="_on_game_1_button_pressed"]
+[connection signal="pressed" from="GameMenu/Game2Button" to="." method="_on_game_2_button_pressed"]
+[connection signal="pressed" from="GameMenu/GM2/Game3Button" to="." method="_on_game_3_button_pressed"]
+[connection signal="pressed" from="GameMenu/GM2/Game3Setting" to="." method="_on_game_3_setting_pressed"]
+[connection signal="pressed" from="GameMenu/Game4Button" to="." method="_on_game_4_button_pressed"]
 [connection signal="pressed" from="GameMenu/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Game3SettingMenu/Player0/Left" to="." method="_on_left_pressed" binds= [0]]
+[connection signal="pressed" from="Game3SettingMenu/Player0/Right" to="." method="_on_right_pressed" binds= [0]]
+[connection signal="pressed" from="Game3SettingMenu/Player1/Left" to="." method="_on_left_pressed" binds= [1]]
+[connection signal="pressed" from="Game3SettingMenu/Player1/Right" to="." method="_on_right_pressed" binds= [1]]
+[connection signal="pressed" from="Game3SettingMenu/Player2/Left" to="." method="_on_left_pressed" binds= [2]]
+[connection signal="pressed" from="Game3SettingMenu/Player2/Right" to="." method="_on_right_pressed" binds= [2]]
+[connection signal="pressed" from="Game3SettingMenu/Player3/Left" to="." method="_on_left_pressed" binds= [3]]
+[connection signal="pressed" from="Game3SettingMenu/Player3/Right" to="." method="_on_right_pressed" binds= [3]]
+[connection signal="pressed" from="Game3SettingMenu/SettingBackButton" to="." method="_on_setting_back_button_pressed"]

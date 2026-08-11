@@ -1,7 +1,8 @@
 extends Node2D
 
-var pk_logic = poker_logic.new()
-var llm_gemini = poker_ai_llm_online.new("gemini-3.5-flash-lite")
+var pk_logic = PokerLogic.new()
+var players_mode = Global.player_poker_modes
+var players_mode_class = [null, null, null, null]
 
 var community_cards_physical = []
 var community_cards_data = []
@@ -35,6 +36,7 @@ var intermission = 0
 var new_game_ready = false
 
 func _ready():
+	print(players_mode)
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	$Hands.change_card_overlap(120)
 
@@ -50,7 +52,10 @@ func _ready():
 	player_count = len(players_list)
 	starting_slot = randi_range(0, player_count-1)
 	
-	add_child(llm_gemini)
+	for i in range(4):
+		if players_mode[i] == 2:
+			players_mode_class[i] = PokerAiLLM.new("gemini-3.5-flash-lite")
+			add_child(players_mode_class[i])
 
 	players_balance = [10000, 10000, 10000, 10000]
 
@@ -100,16 +105,14 @@ func game_loop(player: int):
 			continue
 
 		await get_tree().create_timer(0.4).timeout
-		if player == 0: # Needs change in mp
+		if players_mode[player] == 0: # Needs change in mp
 			player_turn()
-			break
-		elif player == 1 or player == 3:
-			pk_logic.ai_turn(player)
-			player = players_list[(players_list.find(player) + 1) % player_count]
-		elif player == 2:
+		elif players_mode[player] == 1:
+			pk_logic.ai_random(player)
+		elif players_mode[player] == 2:
 			var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
-			llm_gemini.ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
-			break
+			players_mode_class[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
+		break
 
 # Better known as "next_round"
 func next_phase():
@@ -213,16 +216,14 @@ func _on_fold(player):
 	fold_list.append(player)
 	logger("fold", player)
 
-	if player == 0 or player == 2: # Change needed in mp
-		game_loop(players_list[(players_list.find(player) + 1) % player_count])
+	game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_call(player):
 	move_display_update(1, player)
 	var difference = player_bet(player, round_bet)
 	logger("call", player, difference)
 
-	if player == 0 or player == 2: # Change needed in mp
-		game_loop(players_list[(players_list.find(player) + 1) % player_count])
+	game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 func _on_raise(player, amount):
 	move_display_update(2, player)
@@ -236,8 +237,7 @@ func _on_raise(player, amount):
 	player_bet(player, round_bet)
 	logger("raise", player, amount)
 
-	if player == 0 or player == 2: # Change needed in mp
-		game_loop(players_list[(players_list.find(player) + 1) % player_count])
+	game_loop(players_list[(players_list.find(player) + 1) % player_count])
 
 
 func _on_deck_table_deal(card):
@@ -308,7 +308,6 @@ func showdown():
 	for player in players_list.duplicate():
 		if players_balance[player] == 0:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Black")
-			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 			players_list.erase(player)
 			player_count -= 1
 			if player_count == 3:
@@ -489,9 +488,11 @@ func indicator_reset():
 		if player not in fold_list:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
-			$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 		if player in all_in_list:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
+	# Rework when adding more players
+	for player in range(4):
+		$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 
 func balance_display_update(player = null):
 	# Player

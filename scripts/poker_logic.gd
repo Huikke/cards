@@ -1,11 +1,12 @@
-class_name poker_logic
+extends Node
+class_name PokerLogic
 
-func ai_turn(player: int):
+func ai_random(player: int):
 	var choice = randi_range(0, 20)
 	if choice == 0:
 		GlobalSignal.fold.emit(player)
 	elif choice >= 1 and choice <= 2:
-		GlobalSignal.raise.emit(player)
+		GlobalSignal.raise.emit(player, 200)
 	else:
 		GlobalSignal.call.emit(player)
 
