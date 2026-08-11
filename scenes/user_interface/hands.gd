@@ -3,6 +3,7 @@ extends CanvasLayer
 signal card_selected
 
 var texture_path = "res://assets/cards/front/perfectionism/"
+var player_cards_face_up_list = [true, false, false, false]
 
 
 func _on_card_to_hand(card_i, player): # card_i = card_incoming, p = player
@@ -11,7 +12,7 @@ func _on_card_to_hand(card_i, player): # card_i = card_incoming, p = player
 	var card_o = hand_content.get_child(0).duplicate()
 	card_o.visible = true
 
-	if player == 0:
+	if player_cards_face_up_list[player]:
 		card_o.get_child(0).texture = load(texture_path + str(card_i.value) + "_" + card_i.suit + ".svg")
 		card_o.face_up = true
 	else:
@@ -96,4 +97,5 @@ func _on_card_size_slider_changed(value):
 
 # Sandbox only
 func _on_flipper_pressed():
-	flip_hand(0)
+	for i in range(4):
+		flip_hand(i)

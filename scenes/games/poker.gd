@@ -36,9 +36,14 @@ var intermission = 0
 var new_game_ready = false
 
 func _ready():
-	print(players_mode)
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	$Hands.change_card_overlap(120)
+	# Player's card is up
+	for i in range(4):
+		if players_mode[i] == 0:
+			$Hands.player_cards_face_up_list[i] = true
+		else:
+			$Hands.player_cards_face_up_list[i] = false
 
 	$ExtraLayer/RoundLabel.text = ""
 
@@ -105,8 +110,8 @@ func game_loop(player: int):
 			continue
 
 		await get_tree().create_timer(0.4).timeout
-		if players_mode[player] == 0: # Needs change in mp
-			player_turn()
+		if players_mode[player] == 0:
+			player_turn(player)
 		elif players_mode[player] == 1:
 			pk_logic.ai_random(player)
 		elif players_mode[player] == 2:
@@ -170,11 +175,11 @@ func round_end_process():
 	side_pot_handler()
 
 
-func player_turn():
+func player_turn(player):
+	$ButtonsLayer.set_player(player)
 	$ButtonsLayer.visible = true
-	var p = 0
 
-	if players_round_bet[p] != round_bet:
+	if players_round_bet[player] != round_bet:
 		$ButtonsLayer/ButtonsContainer/Call.text = "Call"
 	else:
 		$ButtonsLayer/ButtonsContainer/Call.text = "Check"
@@ -186,7 +191,7 @@ func player_turn():
 	$ButtonsLayer.update_raise_text()
 
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
-	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = players_balance[p] - round_bet + players_round_bet[p]
+	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = players_balance[player] - round_bet + players_round_bet[player]
 
 func player_bet(p: int, amount: int):
 	var difference = amount - players_round_bet[p]
@@ -289,7 +294,7 @@ func showdown():
 	# Get players' poker hands
 	for player in players_list:
 		if player not in fold_list:
-			if player != 0: # Change needed in mp
+			if players_mode[player] != 0:
 				$Hands.flip_hand(player)
 
 			poker_hand_list.append(get_player_hand(player))
