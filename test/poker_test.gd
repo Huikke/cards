@@ -1,6 +1,6 @@
 extends Node2D
 
-var pk_logic = poker_logic.new()
+var pk_logic = PokerLogic.new()
 
 func _ready():
 	var hand = []

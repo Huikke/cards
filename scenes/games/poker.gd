@@ -61,6 +61,9 @@ func _ready():
 		if players_mode[i] == 2:
 			players_mode_class[i] = PokerAiLLM.new("gemini-3.5-flash-lite")
 			add_child(players_mode_class[i])
+		if players_mode[i] == 3:
+			players_mode_class[i] = PokerAiLLM.new("ai/llama3.2")
+			add_child(players_mode_class[i])
 
 	players_balance = [10000, 10000, 10000, 10000]
 
@@ -114,7 +117,7 @@ func game_loop(player: int):
 			player_turn(player)
 		elif players_mode[player] == 1:
 			pk_logic.ai_random(player)
-		elif players_mode[player] == 2:
+		elif players_mode[player] == 2 or players_mode[player] == 3:
 			var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
 			players_mode_class[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
 		break
