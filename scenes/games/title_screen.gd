@@ -48,3 +48,8 @@ func _on_left_pressed(p):
 func _on_right_pressed(p):
 	players_mode[p] = (players_mode[p] + 1) % len(modes)
 	$Game3SettingMenu.get_node("Player" + str(p) + "/Mode").text = modes[players_mode[p]]
+
+
+func _on_multiplayer_button_pressed() -> void:
+	$FirstMenu.visible = false
+	$NetworkHandler.visible = true

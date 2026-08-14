@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cwd2yy57cefeb"]
 
 [ext_resource type="Script" uid="uid://dlqu2uxdbiw3d" path="res://scenes/games/title_screen.gd" id="1_oer8j"]
+[ext_resource type="PackedScene" uid="uid://8tmpnv8wvf2m" path="res://network/network_handler.tscn" id="2_7oqx1"]
 
 [node name="TitleScreen" type="CanvasLayer" unique_id=1766476421]
 script = ExtResource("1_oer8j")
@@ -17,12 +18,20 @@ offset_right = 100.0
 offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 32
 
 [node name="PlayButton" type="Button" parent="FirstMenu" unique_id=57258428]
 custom_minimum_size = Vector2(200, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Play"
+
+[node name="MultiplayerButton" type="Button" parent="FirstMenu" unique_id=1486536357]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Multiplayer
+Poker"
 
 [node name="GameMenu" type="VBoxContainer" parent="." unique_id=1393832728]
 visible = false
@@ -217,7 +226,11 @@ size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
 text = "Back"
 
+[node name="NetworkHandler" parent="." unique_id=798366590 instance=ExtResource("2_7oqx1")]
+visible = false
+
 [connection signal="pressed" from="FirstMenu/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="FirstMenu/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
 [connection signal="pressed" from="GameMenu/Game1Button" to="." method="_on_game_1_button_pressed"]
 [connection signal="pressed" from="GameMenu/Game2Button" to="." method="_on_game_2_button_pressed"]
 [connection signal="pressed" from="GameMenu/GM2/Game3Button" to="." method="_on_game_3_button_pressed"]

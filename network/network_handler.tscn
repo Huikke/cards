@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://8tmpnv8wvf2m"]
+
+[ext_resource type="Script" uid="uid://ch50mbakhh1ua" path="res://network/network_handler.gd" id="1_5oklt"]
+
+[node name="NetworkHandler" type="Control" unique_id=798366590]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5oklt")
+
+[node name="MultiplayerMenu" type="VBoxContainer" parent="." unique_id=267712981]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 32
+
+[node name="Host" type="Button" parent="MultiplayerMenu" unique_id=571266474]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Host"
+
+[node name="Join" type="Button" parent="MultiplayerMenu" unique_id=1226421775]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Join"
+
+[node name="Start" type="Button" parent="MultiplayerMenu" unique_id=1140445314]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Start"
+
+[node name="ChatContainer" type="VBoxContainer" parent="." unique_id=1046709407]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -471.0
+offset_top = -312.0
+offset_right = -71.0
+offset_bottom = -81.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="ChatWindow" type="TextEdit" parent="ChatContainer" unique_id=1932018865]
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 2
+placeholder_text = "Chat"
+
+[node name="HBC" type="HBoxContainer" parent="ChatContainer" unique_id=48906514]
+layout_mode = 2
+
+[node name="TypeWindow" type="LineEdit" parent="ChatContainer/HBC" unique_id=1894113365]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Type"
+
+[node name="Send" type="Button" parent="ChatContainer/HBC" unique_id=981791174]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Send"
+
+[connection signal="pressed" from="MultiplayerMenu/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="MultiplayerMenu/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="MultiplayerMenu/Start" to="." method="_on_start_pressed"]
+[connection signal="text_submitted" from="ChatContainer/HBC/TypeWindow" to="." method="_on_type_window_text_submitted"]
+[connection signal="pressed" from="ChatContainer/HBC/Send" to="." method="_on_send_pressed"]

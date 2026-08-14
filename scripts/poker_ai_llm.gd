@@ -86,6 +86,10 @@ func _http_request_completed(result, response_code, headers, body, player):
 	json.parse(body.get_string_from_utf8())
 	var response = json.get_data()
 	
+	if response_code == 403 or response_code == 404 or response == null:
+		push_error("Wrong response type: " + str(response_code))
+		return
+	
 	var output_move: String
 	if model_name.contains("gemini"):
 		output_move = response["candidates"][0]["content"]["parts"][0]["text"]
