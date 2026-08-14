@@ -2,18 +2,23 @@
 
 [ext_resource type="Script" uid="uid://dpgdr5yyanh1n" path="res://scenes/games/best_of_three.gd" id="1_qp27h"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_h3kue"]
+[ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_i64jm"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_6ndmv"]
-[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_h3kue"]
 [ext_resource type="PackedScene" uid="uid://rjb3uf1yi6jp" path="res://scenes/user_interface/score_display.tscn" id="5_6ndmv"]
 
 [node name="BestOfThree" type="Node2D" unique_id=1520870245]
 script = ExtResource("1_qp27h")
 
+[node name="Background" type="Sprite2D" parent="." unique_id=457217937]
+texture_repeat = 2
+texture = ExtResource("2_i64jm")
+region_enabled = true
+region_rect = Rect2(0, 0, 1280, 800)
+
 [node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("2_h3kue")]
 position = Vector2(450, -3)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1648973163]
-script = ExtResource("3_h3kue")
 
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_6ndmv")]
 
@@ -39,5 +44,4 @@ polygon = PackedVector2Array(1019, 134, 1001, 343, 743, 329, 732, 746, 560, 746,
 
 [node name="ScoreDisplay" parent="." unique_id=807158604 instance=ExtResource("5_6ndmv")]
 
-[connection signal="hand_deal" from="Deck" to="Hands" method="_on_card_to_hand"]
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]

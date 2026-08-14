@@ -2,17 +2,10 @@
 
 [ext_resource type="Script" uid="uid://ch50mbakhh1ua" path="res://network/network_handler.gd" id="1_5oklt"]
 
-[node name="NetworkHandler" type="Control" unique_id=798366590]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="NetworkHandler" type="CanvasLayer" unique_id=1640858865]
 script = ExtResource("1_5oklt")
 
 [node name="MultiplayerMenu" type="VBoxContainer" parent="." unique_id=267712981]
-layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -38,15 +31,21 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Join"
 
-[node name="Start" type="Button" parent="MultiplayerMenu" unique_id=1140445314]
+[node name="Play" type="Button" parent="MultiplayerMenu" unique_id=1140445314]
 custom_minimum_size = Vector2(200, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
-text = "Start"
+disabled = true
+text = "Play"
+
+[node name="Back" type="Button" parent="MultiplayerMenu" unique_id=490139743]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Back"
 
 [node name="ChatContainer" type="VBoxContainer" parent="." unique_id=1046709407]
 custom_minimum_size = Vector2(300, 100)
-layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -79,6 +78,7 @@ text = "Send"
 
 [connection signal="pressed" from="MultiplayerMenu/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="MultiplayerMenu/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="MultiplayerMenu/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="MultiplayerMenu/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="MultiplayerMenu/Back" to="." method="_on_back_pressed"]
 [connection signal="text_submitted" from="ChatContainer/HBC/TypeWindow" to="." method="_on_type_window_text_submitted"]
 [connection signal="pressed" from="ChatContainer/HBC/Send" to="." method="_on_send_pressed"]

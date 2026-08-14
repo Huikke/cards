@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/games/sandbox.gd" id="1_a8pr3"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_j6lu3"]
+[ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_rltwk"]
 [ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_8j86d"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_tpt06"]
 [ext_resource type="PackedScene" uid="uid://dlyxqijksc6ws" path="res://scenes/user_interface/extra_gui.tscn" id="5_sboq1"]
@@ -11,6 +12,12 @@ size = Vector2(718.75, 119)
 
 [node name="Sandbox" type="Node2D" unique_id=1836876014]
 script = ExtResource("1_a8pr3")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1980969956]
+texture_repeat = 2
+texture = ExtResource("2_rltwk")
+region_enabled = true
+region_rect = Rect2(0, 0, 1280, 800)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1655721103]
 script = ExtResource("3_8j86d")

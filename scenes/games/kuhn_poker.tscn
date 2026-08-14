@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://drudod41cqsny"]
 
 [ext_resource type="Script" uid="uid://gh1l8tg4ueav" path="res://scenes/games/kuhn_poker.gd" id="1_7nd1m"]
-[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="2_rqdjo"]
+[ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_mpjaf"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="3_mpjaf"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="4_uryfc"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_u6pjw"]
@@ -16,8 +16,13 @@ font_size = 40
 [node name="KuhnPoker" type="Node2D" unique_id=2068947259]
 script = ExtResource("1_7nd1m")
 
+[node name="Background" type="Sprite2D" parent="." unique_id=1514064689]
+texture_repeat = 2
+texture = ExtResource("2_mpjaf")
+region_enabled = true
+region_rect = Rect2(0, 0, 1280, 800)
+
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1964062633]
-script = ExtResource("2_rqdjo")
 
 [node name="Deck" parent="." unique_id=1594890157 instance=ExtResource("3_mpjaf")]
 position = Vector2(450, -3)

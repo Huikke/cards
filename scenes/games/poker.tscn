@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://c6ex16e5a1a1m" path="res://scenes/games/poker.gd" id="1_dhslg"]
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_gbg6l"]
-[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="2_dhslg"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
 [ext_resource type="PackedScene" uid="uid://vt3aar4cejpm" path="res://scenes/user_interface/poker_stats.tscn" id="6_y74yl"]
@@ -27,7 +26,6 @@ region_rect = Rect2(0, 0, 1280, 800)
 position = Vector2(343, 0)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1633113562]
-script = ExtResource("2_dhslg")
 
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
 

@@ -1,5 +1,10 @@
 extends CanvasLayer
 
+var base_file_location = "res://scenes/games/"
+var game_scenes = ["best_of_three.tscn", "kuhn_poker.tscn", "poker.tscn", "sandbox.tscn"]
+
+# The switch for multiplayer
+var mp_enabled = false
 
 func _on_play_button_pressed():
 	$FirstMenu.visible = false
@@ -10,21 +15,14 @@ func _on_back_button_pressed():
 	$FirstMenu.visible = true
 	$GameMenu.visible = false
 
+func _on_game_button_pressed(game_id: int) -> void:
+	if mp_enabled == true:
+		mp_change_scene.rpc(game_id)
+	get_tree().change_scene_to_file(base_file_location + game_scenes[game_id])
 
-func _on_game_1_button_pressed():
-	get_tree().change_scene_to_file("res://scenes/games/best_of_three.tscn")
-
-
-func _on_game_2_button_pressed():
-	get_tree().change_scene_to_file("res://scenes/games/kuhn_poker.tscn")
-
-
-func _on_game_3_button_pressed():
-	get_tree().change_scene_to_file("res://scenes/games/poker.tscn")
-
-
-func _on_game_4_button_pressed():
-	get_tree().change_scene_to_file("res://scenes/games/sandbox.tscn")
+@rpc("authority")
+func mp_change_scene(game_id: int) -> void:
+	get_tree().change_scene_to_file(base_file_location + game_scenes[game_id])
 
 var game_settings_first = true
 var modes = Global.poker_mode_names

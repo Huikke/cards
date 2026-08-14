@@ -62,6 +62,7 @@ func _on_peer_connected(id: int) -> void:
 	# Trigger an RPC call to test communication
 	if multiplayer.is_server():
 		send_chat_message.rpc("Welcome to the server!")
+		$MultiplayerMenu/Play.disabled = false
 
 func _on_peer_disconnected(id: int) -> void:
 	print("Peer disconnected: ", id)
@@ -78,14 +79,22 @@ func _on_server_disconnected() -> void:
 
 func _on_host_pressed() -> void:
 	host_game()
+	$MultiplayerMenu/Back.disabled = true
 
 
 func _on_join_pressed() -> void:
 	join_game()
+	$MultiplayerMenu/Back.disabled = true
 
 
-func _on_start_pressed() -> void:
+func _on_play_pressed() -> void:
 	send_chat_message.rpc("Ready!")
+	$MultiplayerMenu.visible = false
+	$"../GameMenu".visible = true
+	$"../".mp_enabled = true
+	for game in $"../GameMenu".get_children():
+		if game.name != "Game3HBC":
+			game.disabled = true
 
 
 func _on_send_pressed() -> void:
@@ -95,3 +104,8 @@ func _on_send_pressed() -> void:
 
 func _on_type_window_text_submitted(_new_text: String) -> void:
 	_on_send_pressed()
+
+
+func _on_back_pressed() -> void:
+	$".".visible = false
+	$"../FirstMenu".visible = true
