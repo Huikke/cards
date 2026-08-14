@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://ck7mtho4xw5yq" path="res://scenes/user_interface/hands.gd" id="1_vghik"]
 [ext_resource type="PackedScene" uid="uid://ile8r5dimjpv" path="res://scenes/user_interface/hand.tscn" id="2_f5ih3"]
-[ext_resource type="Texture2D" uid="uid://c1pdqojlw1p68" path="res://assets/cards/back/backman.svg" id="3_xppsm"]
 
 [node name="Hands" type="CanvasLayer" unique_id=1156811625]
 script = ExtResource("1_vghik")
@@ -21,9 +20,6 @@ rotation = 1.5707964
 pivot_offset_ratio = Vector2(0, 0.5)
 metadata/_edit_use_anchors_ = true
 
-[node name="CardSprite" parent="HandP1/HandContainer/PhysicalCard" parent_id_path=PackedInt32Array(479539659, 1653592494) index="0" unique_id=1935730928]
-texture = ExtResource("3_xppsm")
-
 [node name="HandP2" parent="." unique_id=825960371 instance=ExtResource("2_f5ih3")]
 anchors_preset = -1
 anchor_top = 0.0
@@ -33,9 +29,6 @@ grow_vertical = 1
 rotation = 3.1415927
 pivot_offset_ratio = Vector2(0.5, 0)
 metadata/_edit_use_anchors_ = true
-
-[node name="CardSprite" parent="HandP2/HandContainer/PhysicalCard" parent_id_path=PackedInt32Array(825960371, 1653592494) index="0" unique_id=1935730928]
-texture = ExtResource("3_xppsm")
 
 [node name="HandP3" parent="." unique_id=1894932184 instance=ExtResource("2_f5ih3")]
 anchors_preset = -1
@@ -48,16 +41,3 @@ offset_bottom = -400.0
 grow_vertical = 2
 rotation = 4.712389
 pivot_offset_ratio = Vector2(0.5, 0.5)
-
-[node name="CardSprite" parent="HandP3/HandContainer/PhysicalCard" parent_id_path=PackedInt32Array(1894932184, 1653592494) index="0" unique_id=1935730928]
-texture = ExtResource("3_xppsm")
-
-[connection signal="gui_input" from="HandP0/HandContainer/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
-[connection signal="gui_input" from="HandP1/HandContainer/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
-[connection signal="gui_input" from="HandP2/HandContainer/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
-[connection signal="gui_input" from="HandP3/HandContainer/PhysicalCard" to="." method="_on_card_gui_input" flags=18]
-
-[editable path="HandP0"]
-[editable path="HandP1"]
-[editable path="HandP2"]
-[editable path="HandP3"]

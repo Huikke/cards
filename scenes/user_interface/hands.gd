@@ -4,34 +4,36 @@ signal card_selected
 
 var texture_path = "res://assets/cards/front/perfectionism/"
 var player_cards_face_up_list = [true, false, false, false]
+var ui_card = preload("res://scenes/user_interface/ui_card.tscn").instantiate()
+var card_size = Vector2(120, 168)
 
 
-func _on_card_to_hand(card_i, player): # card_i = card_incoming, p = player
-	var node_str = "HandP" + str(player)
-	var hand_content = get_node(node_str).get_child(0)
-	var card_o = hand_content.get_child(0).duplicate()
-	card_o.visible = true
+func _on_card_to_hand(card_i: Object, player: int) -> void:
+	var hand_scene = "HandP" + str(player)
+	var hand_content = get_node(hand_scene).get_child(0)
 
+	var card_o = ui_card.duplicate()
+	card_o.value = card_i.value
+	card_o.suit = card_i.suit
+	card_o.pnum = player # Prevents playing other people's cards
+	card_o.back_sprite = card_i.back_sprite
 	if player_cards_face_up_list[player]:
 		card_o.get_child(0).texture = load(texture_path + str(card_i.value) + "_" + card_i.suit + ".svg")
 		card_o.face_up = true
 	else:
 		card_o.get_child(0).texture = card_i.back_sprite
 		card_o.face_up = false
-	card_o.value = card_i.value
-	card_o.suit = card_i.suit
-	card_o.pnum = player # Prevents playing other people's cards
-	card_o.back_sprite = card_i.back_sprite
-	
+	card_o.gui_input.connect(_on_card_gui_input.bind(card_o))
+
 	# Card Animation
 	var card_sprite = card_o.get_node("CardSprite")
 	var tween = create_tween()
 	card_sprite.position += Vector2(0, 84)
 	tween.tween_property(card_sprite, "position", card_sprite.position - Vector2(0, 84), 0.2)
-	
+
 
 	hand_content.add_child(card_o)
-	hand_content.move_child(get_node(node_str + "/HandContainer/FrontCardPadding"), -1)
+	hand_content.move_child(get_node(hand_scene + "/HandContainer/CardPadding"), -1)
 
 func _on_card_gui_input(event, card_ui):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
@@ -42,23 +44,22 @@ func get_hand_content(player: int):
 	var hand = get_node(node_str).get_child(0).get_children()
 	var hand_list = []
 	for card in hand:
-		if card is PhysicalCard and card.value != 0:
+		if card is UiCard and card.value != 0:
 			hand_list.append([card.value, card.suit])
 	return hand_list
 
 func change_card_overlap(custom_size):
+	# Changes size for future cards
+	ui_card.custom_minimum_size.x = custom_size
+
+	# Changes size for current cards
 	for hand in get_children():
-		var first = true
-		var invisible_card
 		for card in hand.get_child(0).get_children():
-			if card is PhysicalCard:
+			if card is UiCard:
 				card.custom_minimum_size.x = custom_size
-			if first:
-				invisible_card = card
-				first = false
-			if card is CardPadding:
+			if card.name == "CardPadding":
 				# -4 is BoxContainer leftover space
-				var free_space = invisible_card.get_child(0).size.x - custom_size - 4
+				var free_space = card_size.x - custom_size - 4
 				if free_space > 0:
 					card.visible = true
 					card.custom_minimum_size.x = free_space
@@ -69,9 +70,9 @@ func flip_hand(player: int):
 	var node_str = "HandP" + str(player) + "/HandContainer"
 	var hand_cards = get_node(node_str).get_children()
 	for card in hand_cards:
-		if card is CardPadding:
+		if card.name == "CardPadding":
 			pass
-		elif card.visible == true:
+		elif card is UiCard:
 			if card.face_up == false:
 				card.get_child(0).texture = load(texture_path + str(card.value) + "_" + card.suit + ".svg")
 				card.face_up = true
@@ -83,7 +84,7 @@ func clear_hand(player):
 	var node_str = "HandP" + str(player)
 	var hand = get_node(node_str).get_child(0).get_children()
 	for card in hand:
-		if card is PhysicalCard and card.value != 0:
+		if card is UiCard and card.value != 0:
 			card.queue_free()
 
 func clear_hands():

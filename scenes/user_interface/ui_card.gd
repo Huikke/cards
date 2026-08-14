@@ -1,5 +1,5 @@
 extends Control
-class_name PhysicalCard
+class_name UiCard
 
 var value: int
 var suit: String

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cwiohrxmh6rdo"]
+
+[ext_resource type="Script" uid="uid://c4bf1458icnj3" path="res://scenes/user_interface/ui_card.gd" id="1_d60s1"]
+[ext_resource type="Texture2D" uid="uid://bhuld2kb13lov" path="res://assets/cards/back/stargazer.svg" id="1_fr070"]
+
+[node name="UiCard" type="Control" unique_id=225836767]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_d60s1")
+
+[node name="CardSprite" type="TextureRect" parent="." unique_id=991547285]
+layout_mode = 0
+offset_right = 120.0
+offset_bottom = 168.0
+texture = ExtResource("1_fr070")
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
