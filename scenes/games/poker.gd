@@ -122,7 +122,10 @@ func game_begin():
 		var player = players_live[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
 		player_bet(player, min_bet/blind_halfer)
-		logger("blind", player, min_bet/blind_halfer)
+		if i == 0:
+			logger("small blind", player, players_game_bet[player])
+		elif i == 1:
+			logger("big blind", player, players_game_bet[player])
 		blind_halfer = 1
 	round_bet = min_bet
 
@@ -157,7 +160,7 @@ func game_loop(player: int) -> void:
 		player_turn(player)
 	elif players_agent[player] == 1:
 		await get_tree().create_timer(0.5).timeout
-		PokerLogic.ai_random(player)
+		PokerAiRandom.ai_random(player)
 	elif players_agent[player] == 2 or players_agent[player] == 3:
 		var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
 		player_agent_ai[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
@@ -330,8 +333,6 @@ func _on_raise(player, amount):
 
 	# If player does not have enough money to raise/bet, move it to calling
 	if players_balance[player] <= round_bet - players_round_bet[player] + amount:
-		print(players_balance[player])
-		print(round_bet - players_round_bet[player] + amount)
 		_on_call(player)
 		return
 
@@ -542,9 +543,9 @@ func logger(action: String, p: int = -1, amount: int = -1) -> void:
 		game_log.append("Player " + str(p + 1) + " raises " + str(amount) + " €")
 	elif action == "raise" and amount == round_bet:
 		game_log.append("Player " + str(p + 1) + " bets " + str(amount) + " €")
-	elif action == "blind" and amount != round_bet:
+	elif action == "small blind":
 		game_log.append("Player " + str(p + 1) + " posts small blind " + str(amount) + " €")
-	elif action == "blind" and amount == round_bet:
+	elif action == "big blind":
 		game_log.append("Player " + str(p + 1) + " posts big blind " + str(amount) + " €")
 	elif action == "phase":
 		var mapped_c_cards = community_cards_data.map(cards_data_to_str)
