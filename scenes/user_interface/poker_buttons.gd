@@ -23,4 +23,7 @@ func update_raise_text():
 	$ButtonsContainer/Raise.text = "\n" + raise_text + "\n" + str(int($ButtonsContainer/RaiseSlider.value)) + " €"
 
 func _on_raise_slider_value_changed(value):
-	$ButtonsContainer/Raise.text = "\n" + raise_text + "\n" + str(int(value)) + " €"
+	if $ButtonsContainer/RaiseSlider.value == $ButtonsContainer/RaiseSlider.max_value:
+		$ButtonsContainer/Raise.text = "\n" + "All In" + "\n" + str(int(value)) + " €"
+	else:
+		$ButtonsContainer/Raise.text = "\n" + raise_text + "\n" + str(int(value)) + " €"

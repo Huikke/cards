@@ -3,8 +3,6 @@ extends CanvasLayer
 var base_file_location = "res://scenes/games/"
 var game_scenes = ["best_of_three.tscn", "kuhn_poker.tscn", "poker.tscn", "sandbox.tscn"]
 
-# The switch for multiplayer
-var mp_enabled = false
 
 func _on_play_button_pressed():
 	$FirstMenu.visible = false
@@ -16,7 +14,7 @@ func _on_back_button_pressed():
 	$GameMenu.visible = false
 
 func _on_game_button_pressed(game_id: int) -> void:
-	if mp_enabled == true:
+	if Global.mp_enabled == true:
 		mp_change_scene.rpc(game_id)
 	get_tree().change_scene_to_file(base_file_location + game_scenes[game_id])
 

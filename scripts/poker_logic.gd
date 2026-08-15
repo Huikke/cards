@@ -1,16 +1,16 @@
-extends Node
+extends RefCounted
 class_name PokerLogic
 
-func ai_random(player: int):
+static func ai_random(player: int):
 	var choice = randi_range(0, 20)
-	if choice == 0:
+	if choice in range(5, 8):
 		GlobalSignal.fold.emit(player)
-	elif choice >= 1 and choice <= 2:
+	elif choice in range(2, 4):
 		GlobalSignal.raise.emit(player, 200)
 	else:
 		GlobalSignal.call.emit(player)
 
-func check_hand(cards: Array):
+static func check_hand(cards: Array):
 	# Ace is the best
 	for card in cards:
 		if card[0] == 1:
@@ -136,7 +136,7 @@ func check_hand(cards: Array):
 	else:
 		return [1, stack_hand]
 
-func straight_calculator(card, prev_rank, straight_hand, first_card):
+static func straight_calculator(card, prev_rank, straight_hand, first_card):
 	var rank = card[0]
 	if prev_rank - rank == 0 or len(straight_hand) == 5:
 		pass
@@ -155,7 +155,7 @@ func straight_calculator(card, prev_rank, straight_hand, first_card):
 		prev_rank = rank
 		return [prev_rank, false]
 
-func compare_hand(hand1, hand2):
+static func compare_hand(hand1, hand2):
 	if hand1[0] > hand2[0]:
 		return 1
 	elif hand1[0] < hand2[0]:

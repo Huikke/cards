@@ -1,152 +1,192 @@
 extends Node2D
 
-var pk_logic = PokerLogic.new()
-var players_mode = Global.player_poker_modes
-var players_mode_class = [null, null, null, null]
+# Constants
+const HAND_TYPES: Array[String] = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
+const ROUND_NAMES: Array[String] = ["Pre-Round", "Pre-Flop", "Flop", "Turn", "River", "Showdown", "Post-Round"]
+var POKER_POSITIONS: Array[String] = ["Button", "Small Blind", "Big Blind", "Under the Gun"]
 
-var community_cards_physical = []
-var community_cards_data = []
-var current_turn: int
-var phase = 1 # Better known as "round"
+# Pre-Game variables
+var players_agent: Array = Global.player_poker_modes
+var starting_player_count: int
+var player_agent_ai: Array = [] # AI Object goes here
+var starting_balance = 10000
+var starting_bet = 200
 
+# Round (Phase) and Game (Hand) specific variables
 var starting_slot: int
+var min_bet: int
+var current_turn: int = 0
+var round_bet = 200
+var phase: int = 1 # Better known as "round"
+var community_cards_physical: Array = []
+var community_cards_data: Array = []
+
+# Player variables
+var players_live: Array[int]
 var player_count: int
-var players_list = [0, 1, 2, 3]
-var players_balance = [0, 0, 0, 0]
-var players_round_bet = [0, 0, 0, 0]
+var players_balance: Array[int] = []
+var players_round_bet: Array[int] = []
+var players_game_bet: Array[int] = []
 var players_roles = []
 var fold_list = []
 var all_in_list = []
 
-var card_placement: Vector2
-
-var hand_types = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
-var round_names = ["Pre-Round", "Pre-Flop", "Flop", "Turn", "River", "Showdown", "Post-Round"]
-var player_role_names = ["Small Blind", "Big Blind", "Under the Gun", "Dealer"]
-
-var min_bet = 200
-var round_bet = 200
-var pot_p = [0, 0, 0, 0]
+# Side Pot specific variables
 var side_pot_bool = false
 var pots = []
-var game_log = []
 
+# Other
+@onready var card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 var start_mode = "manual"
 var intermission = 0
 var new_game_ready = false
+var game_log = []
+
+# ==============================================================================
+# LIFECYCLE & INITIALIZATION
+# ==============================================================================
 
 func _ready():
-	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
+	starting_player_count = len(players_agent)
+
+	# Visuals
 	$Hands.change_card_overlap(120)
+	$ExtraLayer/RoundLabel.text = ""
 	# Player's card is up
-	for i in range(4):
-		if players_mode[i] == 0:
+	for i in range(starting_player_count):
+		if players_agent[i] == 0:
 			$Hands.player_cards_face_up_list[i] = true
 		else:
 			$Hands.player_cards_face_up_list[i] = false
 
-	$ExtraLayer/RoundLabel.text = ""
-
+	# Connect Signals
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 	GlobalSignal.table_deal.connect(_on_deck_table_deal)
-
 	GlobalSignal.fold.connect(_on_fold)
 	GlobalSignal.call.connect(_on_call)
 	GlobalSignal.raise.connect(_on_raise)
 
-	player_count = len(players_list)
+	# Game starting values (starting player is random)
+	for i in range(starting_player_count):
+		players_live.append(i)
+	players_round_bet.resize(starting_player_count)
+	players_game_bet.resize(starting_player_count)
+	players_balance.resize(starting_player_count)
+	players_balance.fill(starting_balance)
 	starting_slot = randi_range(0, player_count-1)
-	
-	for i in range(4):
-		if players_mode[i] == 2:
-			players_mode_class[i] = PokerAiLLM.new("gemini-3.5-flash-lite")
-			add_child(players_mode_class[i])
-		if players_mode[i] == 3:
-			players_mode_class[i] = PokerAiLLM.new("ai/llama3.2")
-			add_child(players_mode_class[i])
+	min_bet = starting_bet
+	player_count = len(players_live)
 
-	players_balance = [10000, 10000, 10000, 10000]
+	# Initiate ai_agents
+	for i in range(len(players_agent)):
+		if players_agent[i] == 2:
+			player_agent_ai.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
+			add_child(player_agent_ai[i])
+		elif players_agent[i] == 3:
+			player_agent_ai.append(PokerAiLLM.new("ai/llama3.2"))
+			add_child(player_agent_ai[i])
+		else:
+			player_agent_ai.append(null)
 
+	# Debug
+	#players_balance = [4000, 2000, 1000, 3000]
+
+	# Start the game
 	game_begin()
 
+# ==============================================================================
+# CORE GAME FLOW
+# ==============================================================================
+
 func game_begin():
+	# Shuffle Deck
 	$Deck.deck_shuffle()
 
 	await get_tree().create_timer(0.3).timeout
-	for i in range(player_count):
-		$Hands.get_node("HandP" + str(players_list[(starting_slot + i) % player_count]) + "/LabelPanel/PlayerLabel").text = player_role_names[i]
-		players_roles.append("Player " + str(players_list[(starting_slot + i) % player_count] + 1) + ": " + player_role_names[i])
+	# Assigning roles to players
+	if player_count != 2:
+		for i in range(player_count):
+			assign_player_position(i, POKER_POSITIONS[i])
+	else:
+		assign_player_position(1, POKER_POSITIONS[0] + " / " + POKER_POSITIONS[1])
+		assign_player_position(2, POKER_POSITIONS[2])
+	# Deal cards to players
 	for card in range(2):
 		for i in range(player_count):
-			var player = players_list[(starting_slot + i) % player_count]
+			var player = players_live[(starting_slot + i) % player_count]
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal_player(player)
 
+	# Post blinds
 	var blind_halfer = 2
 	for i in range(2):
-		var player = players_list[(starting_slot + i) % player_count]
+		var player = players_live[(starting_slot + i) % player_count]
 		await get_tree().create_timer(0.2).timeout
 		player_bet(player, min_bet/blind_halfer)
 		logger("blind", player, min_bet/blind_halfer)
 		blind_halfer = 1
 
+	# Preflop begins
+	$ExtraLayer/RoundLabel.text = ROUND_NAMES[1]
+	game_loop(players_live[(starting_slot + 2) % player_count])
 
-	current_turn = 0
-	$ExtraLayer/RoundLabel.text = round_names[1]
-	game_loop(players_list[(starting_slot + 2) % player_count])
+func game_loop(player: int) -> void:
+	current_turn += 1
+	
+	# Player wins, if everyone else has folded
+	if len(fold_list) == player_count - 1:
+		uncontested_win()
+		$Countdown.start()
+		return
 
-func game_loop(player: int):
-	while true:
-		current_turn += 1
+	# Advance to the next round
+	if current_turn == player_count + 1:
+		current_turn = 0
+		await get_tree().create_timer(1).timeout
+		next_phase()
+		return
 
-		if len(fold_list) == len(players_list) - 1:
-			uncontested_win()
-			$Countdown.start()
-			break
-		if current_turn == player_count + 1:
-			current_turn = 0
-			await get_tree().create_timer(1).timeout
-			next_phase()
-			break
-		if player in fold_list or player in all_in_list:
-			player = players_list[(players_list.find(player) + 1) % player_count]
-			continue
+	# Skip players who cannot act (folded / all-in)
+	if player in fold_list or player in all_in_list:
+		game_loop(players_live[(players_live.find(player) + 1) % player_count])
+		return
 
-		await get_tree().create_timer(0.4).timeout
-		if players_mode[player] == 0:
-			player_turn(player)
-		elif players_mode[player] == 1:
-			pk_logic.ai_random(player)
-		elif players_mode[player] == 2 or players_mode[player] == 3:
-			var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
-			players_mode_class[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
-		break
+	# Player action based on agent type
+	await get_tree().create_timer(0.4).timeout
+	if players_agent[player] == 0:
+		player_turn(player)
+	elif players_agent[player] == 1:
+		PokerLogic.ai_random(player)
+	elif players_agent[player] == 2 or players_agent[player] == 3:
+		var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
+		player_agent_ai[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
 
 # Better known as "next_round"
 func next_phase():
+	# Advance to the next round
 	phase += 1
 	if phase == 2:
 		for i in range(3):
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = round_names[phase]
+		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
 		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 3:
 		$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = round_names[phase]
+		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
 		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 4:
 		$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = round_names[phase]
+		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
 		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 5:
-		$ExtraLayer/RoundLabel.text = round_names[phase]
+		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
 		round_end_process()
 		showdown()
 		return
@@ -154,29 +194,36 @@ func next_phase():
 		$ExtraLayer/RoundLabel.text = "Error"
 		push_error("Round overflow")
 
+	# Fast forward streets if conditions are right
+	# or start the next round
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
+		await get_tree().create_timer(1.5).timeout
 		next_phase()
 	else:
-		game_loop(players_list[starting_slot])
+		game_loop(players_live[starting_slot])
 
+## Cleans up per-round bets, calculates side pots, and refunds uncalled overbets.
 func round_end_process():
 	# Reset round_bet
 	round_bet = 0
-	players_round_bet = [0, 0, 0, 0]
+	players_round_bet.fill(0)
 
-	# Return overbet amount back to player
+	# Refund uncalled bets amount back to player
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
-		var temp_pot_p = pot_p.duplicate()
-		temp_pot_p.sort()
-		temp_pot_p.reverse()
-		if temp_pot_p[0] != temp_pot_p[1]:
-			var player = pot_p.find(temp_pot_p[0])
-			var return_amount = temp_pot_p[0] - temp_pot_p[1]
+		var temp_players_game_bet = players_game_bet.duplicate()
+		temp_players_game_bet.sort()
+		temp_players_game_bet.reverse()
+		if temp_players_game_bet[0] != temp_players_game_bet[1]:
+			var player = players_game_bet.find(temp_players_game_bet[0])
+			var return_amount = temp_players_game_bet[0] - temp_players_game_bet[1]
 			player_award(player, return_amount)
-			pot_p[player] -= return_amount
+			players_game_bet[player] -= return_amount
 
 	side_pot_handler()
 
+# ==============================================================================
+# BETTING & POT MANAGEMENT
+# ==============================================================================
 
 func player_turn(player):
 	$ButtonsLayer.set_player(player)
@@ -189,6 +236,8 @@ func player_turn(player):
 
 	if round_bet != 0:
 		$ButtonsLayer.raise_text = "Raise"
+	elif players_balance[player] <= round_bet + min_bet:
+		$ButtonsLayer.raise_text = "All In"
 	else:
 		$ButtonsLayer.raise_text = "Bet"
 	$ButtonsLayer.update_raise_text()
@@ -204,7 +253,7 @@ func player_bet(p: int, amount: int):
 		all_in_list.append(p)
 	players_balance[p] -= difference
 	players_round_bet[p] += difference
-	pot_p[p] += difference
+	players_game_bet[p] += difference
 
 	# Visuals
 	balance_display_update(p)
@@ -219,19 +268,51 @@ func player_award(p: int, amount: int):
 	balance_display_update(p)
 	balance_change_animation(p, amount)
 
+
+func pot_sum():
+	return players_game_bet.reduce(func(accum, number): return accum + number, 0)
+
+func side_pot_handler():
+	pots.clear()
+	var pot_sizes = [players_game_bet.max()]
+	for player in players_live:
+		if player in all_in_list and players_game_bet[player] not in pot_sizes:
+			pot_sizes.append(players_game_bet[player])
+	pot_sizes.sort()
+	if len(pot_sizes) == 1:
+		side_pot_bool = false
+		pots.append(pot_sum())
+	else:
+		side_pot_bool = true
+		var prev_pot = 0
+		for pot_size in pot_sizes:
+			var temp_pot = 0
+			var pot_participants = []
+			for player in players_live:
+				if players_game_bet[player] >= pot_size:
+					temp_pot += pot_size - prev_pot
+					pot_participants.append(player)
+			prev_pot = pot_size
+			pots.append([temp_pot, pot_participants])
+		balance_display_update()
+
+# ==============================================================================
+# PLAYER ACTIONS (SIGNAL HANDLERS)
+# ==============================================================================
+
 func _on_fold(player):
 	move_display_update(0, player)
 	fold_list.append(player)
 	logger("fold", player)
 
-	game_loop(players_list[(players_list.find(player) + 1) % player_count])
+	game_loop(players_live[(players_live.find(player) + 1) % player_count])
 
 func _on_call(player):
 	move_display_update(1, player)
 	var difference = player_bet(player, round_bet)
 	logger("call", player, difference)
 
-	game_loop(players_list[(players_list.find(player) + 1) % player_count])
+	game_loop(players_live[(players_live.find(player) + 1) % player_count])
 
 func _on_raise(player, amount):
 	move_display_update(2, player)
@@ -240,12 +321,13 @@ func _on_raise(player, amount):
 		round_bet += players_balance[player]
 	else:
 		round_bet += amount
+	# Bug: shouldn't reset the turn if the player is doing all in without raising
 	current_turn = 1
 
 	player_bet(player, round_bet)
 	logger("raise", player, amount)
 
-	game_loop(players_list[(players_list.find(player) + 1) % player_count])
+	game_loop(players_live[(players_live.find(player) + 1) % player_count])
 
 
 func _on_deck_table_deal(card):
@@ -257,36 +339,12 @@ func _on_deck_table_deal(card):
 	await get_tree().create_timer(0.6).timeout
 	card.flip_card()
 
-func pot_sum():
-	return pot_p.reduce(func(accum, number): return accum + number, 0)
-
-func side_pot_handler():
-	pots.clear()
-	var pot_sizes = [pot_p.max()]
-	for player in players_list:
-		if player in all_in_list and pot_p[player] not in pot_sizes:
-			pot_sizes.append(pot_p[player])
-	pot_sizes.sort()
-	if len(pot_sizes) == 1:
-		side_pot_bool = false
-		pots.append(pot_sum())
-	else:
-		side_pot_bool = true
-		var prev_pot = 0
-		for pot_size in pot_sizes:
-			var temp_pot = 0
-			var pot_participants = []
-			for player in players_list:
-				if pot_p[player] >= pot_size:
-					temp_pot += pot_size - prev_pot
-					pot_participants.append(player)
-			prev_pot = pot_size
-			pots.append([temp_pot, pot_participants])
-		balance_display_update()
-
+# ==============================================================================
+# SHOWDOWN & SCORING
+# ==============================================================================
 
 func uncontested_win():
-	for player in players_list:
+	for player in players_live:
 		if player not in fold_list:
 			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
 			player_award(player, pot_sum())
@@ -295,9 +353,9 @@ func showdown():
 	var poker_hand_list = []
 
 	# Get players' poker hands
-	for player in players_list:
+	for player in players_live:
 		if player not in fold_list:
-			if players_mode[player] != 0:
+			if players_agent[player] != 0:
 				$Hands.flip_hand(player)
 
 			poker_hand_list.append(get_player_hand(player))
@@ -313,29 +371,25 @@ func showdown():
 	pot_distribution(placements)
 
 	# Remove players that ran out of chips
-	for player in players_list.duplicate():
+	for player in players_live.duplicate():
 		if players_balance[player] == 0:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Black")
-			players_list.erase(player)
+			players_live.erase(player)
 			player_count -= 1
-			if player_count == 3:
-				player_role_names.erase("Under the Gun")
-			if player_count == 2:
-				player_role_names.erase("Dealer")
 
 	# Game ends, when there is only one remaining player
-	if len(players_list) == 1:
+	if len(players_live) == 1:
 		game_end()
 	else:
 		$Countdown.start()
 
 func get_player_hand(player: int) -> Array:
 	var hand_and_river = $Hands.get_hand_content(player) + community_cards_data
-	var poker_hand = pk_logic.check_hand(hand_and_river)
+	var poker_hand = PokerLogic.check_hand(hand_and_river)
 
 	poker_hand.append(player)
 
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = hand_types[poker_hand[0]]
+	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = HAND_TYPES[poker_hand[0]]
 
 	return poker_hand
 
@@ -346,7 +400,7 @@ func rank_hands(poker_hand_list: Array, placements: Array) -> void:
 		else:
 			var i = 0
 			for entry in placements:
-				var result = pk_logic.compare_hand(entry[0], poker_hand)
+				var result = PokerLogic.compare_hand(entry[0], poker_hand)
 				if result == 2:
 					placements.insert(i, [poker_hand])
 					break
@@ -398,6 +452,10 @@ func pot_distribution(placements: Array) -> void:
 					balance_display_update(-1)
 					break
 
+# ==============================================================================
+# STATE RESET & TRANSITIONS
+# ==============================================================================
+
 func game_reset():
 	fold_list.clear()
 	all_in_list.clear()
@@ -411,10 +469,11 @@ func game_reset():
 	players_roles.clear()
 	game_log.clear()
 	$ExtraLayer/GameLog.text = ""
+	current_turn = 0
 	phase = 1
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
-	pot_p = [0, 0, 0, 0]
-	players_round_bet = [0, 0, 0, 0]
+	players_game_bet.fill(0)
+	players_round_bet.fill(0)
 	round_bet = min_bet
 	side_pot_bool = false
 
@@ -453,10 +512,12 @@ func _unhandled_input(event):
 		game_begin()
 
 func game_end():
-	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_list[0] + 1) + "!"
+	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_live[0] + 1) + "!"
 
+# ==============================================================================
+# Logging & Visuals
+# ==============================================================================
 
-## Mostly cosmetic functions
 func logger(action: String, p: int = -1, amount: int = -1) -> void:
 	if action == "fold":
 		game_log.append("Player " + str(p + 1) + " folds")
@@ -474,7 +535,7 @@ func logger(action: String, p: int = -1, amount: int = -1) -> void:
 		game_log.append("Player " + str(p + 1) + " posts big blind " + str(amount) + " €")
 	elif action == "phase":
 		var mapped_c_cards = community_cards_data.map(cards_data_to_str)
-		game_log.append(round_names[phase] + ": " + " ".join(mapped_c_cards))
+		game_log.append(ROUND_NAMES[phase] + ": " + " ".join(mapped_c_cards))
 	elif action == "win":
 		game_log.append("Player " + str(p + 1) + " wins " + str(amount) + " €")
 	$ExtraLayer/GameLog.text += game_log[-1] + "\n"
@@ -491,21 +552,25 @@ func cards_data_to_str(card):
 	else:
 		return str(card[0]) + card[1][0]
 
+func assign_player_position(i: int, role: String) -> void:
+	$Hands.get_node("HandP" + str(players_live[(starting_slot + i - 1) % player_count]) + "/LabelPanel/PlayerLabel").text = role
+	players_roles.append("Player " + str(players_live[(starting_slot + i - 1) % player_count] + 1) + ": " + role)
+
 func indicator_reset():
-	for player in players_list:
+	for player in players_live:
 		if player not in fold_list:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
 		if player in all_in_list:
 			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
-	# Rework when adding more players
-	for player in range(4):
+	# For clearing players, who have been eliminated
+	for player in range(starting_player_count):
 		$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
 
 func balance_display_update(player = null):
 	# Player
 	if player == -1:
-		for p in range(4):
+		for p in range(starting_player_count):
 			$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str(players_balance[p]) + " €"
 	elif player != null:
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str(players_balance[player]) + " €"

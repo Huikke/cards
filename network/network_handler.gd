@@ -80,18 +80,19 @@ func _on_server_disconnected() -> void:
 func _on_host_pressed() -> void:
 	host_game()
 	$MultiplayerMenu/Back.disabled = true
+	Global.mp_enabled = true
 
 
 func _on_join_pressed() -> void:
 	join_game()
 	$MultiplayerMenu/Back.disabled = true
+	Global.mp_enabled = true
 
 
 func _on_play_pressed() -> void:
 	send_chat_message.rpc("Ready!")
 	$MultiplayerMenu.visible = false
 	$"../GameMenu".visible = true
-	$"../".mp_enabled = true
 	for game in $"../GameMenu".get_children():
 		if game.name != "Game3HBC":
 			game.disabled = true
