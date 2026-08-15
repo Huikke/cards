@@ -7,8 +7,11 @@ var player_cards_face_up_list = [true, false, false, false]
 var ui_card = preload("res://scenes/user_interface/ui_card.tscn").instantiate()
 var card_size = Vector2(120, 168)
 
-
-func _on_card_to_hand(card_i: Object, player: int) -> void:
+@rpc("authority")
+func _on_card_to_hand(card_i, player: int) -> void:
+	if Global.mp_enabled == true and multiplayer.is_server():
+		var card_i_dict = { "value": card_i.value, "suit": card_i.suit, "back_sprite": card_i.back_sprite }
+		_on_card_to_hand.rpc(card_i_dict, player)
 	var hand_scene = "HandP" + str(player)
 	var hand_content = get_node(hand_scene).get_child(0)
 
@@ -21,7 +24,7 @@ func _on_card_to_hand(card_i: Object, player: int) -> void:
 		card_o.get_child(0).texture = load(texture_path + str(card_i.value) + "_" + card_i.suit + ".svg")
 		card_o.face_up = true
 	else:
-		card_o.get_child(0).texture = card_i.back_sprite
+		card_o.get_child(0).texture = load(card_o.back_sprite)
 		card_o.face_up = false
 	card_o.gui_input.connect(_on_card_gui_input.bind(card_o))
 

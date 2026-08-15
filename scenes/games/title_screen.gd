@@ -15,11 +15,11 @@ func _on_back_button_pressed():
 
 func _on_game_button_pressed(game_id: int) -> void:
 	if Global.mp_enabled == true:
-		mp_change_scene.rpc(game_id)
-	get_tree().change_scene_to_file(base_file_location + game_scenes[game_id])
+		change_scene.rpc(game_id)
+	change_scene(game_id)
 
 @rpc("authority")
-func mp_change_scene(game_id: int) -> void:
+func change_scene(game_id: int) -> void:
 	get_tree().change_scene_to_file(base_file_location + game_scenes[game_id])
 
 var game_settings_first = true

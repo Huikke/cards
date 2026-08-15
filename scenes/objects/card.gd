@@ -4,7 +4,7 @@ class_name Card
 # Card Attributes
 @export var value = "troll"
 @export var suit = "face"
-@export var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
+@export var back_sprite = "res://assets/cards/back/" + "chicken.svg"
 var suits = ["spade", "heart", "club", "diamond"]
 var face = false
 
@@ -13,7 +13,7 @@ var face = false
 @export var speed = 0
 
 func _ready():
-	$Sprite.texture = back_sprite
+	$Sprite.texture = load(back_sprite)
 	z_index = 1
 
 func _process(delta):

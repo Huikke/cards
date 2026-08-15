@@ -2,12 +2,12 @@ extends GameObject2D
 class_name Deck
 
 var card_scene = preload("res://scenes/objects/card.tscn")
-var back_sprite = preload("res://assets/cards/back/" + "chicken.svg")
+var back_sprite = "res://assets/cards/back/" + "stargazer.svg"
 
 var logic = DeckLogic.new()
 
 func _ready():
-	$Sprite.texture = back_sprite
+	$Sprite.texture = load(back_sprite)
 	for i in range(1, len(logic.deck)/6 + 1):
 		var card_padding = $Sprite.duplicate()
 		card_padding.position += Vector2(i*2, i*2)

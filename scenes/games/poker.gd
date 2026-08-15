@@ -16,7 +16,7 @@ var starting_bet = 200
 var starting_slot: int
 var min_bet: int
 var current_turn: int = 0
-var round_bet = 200
+var round_bet: int
 var phase: int = 1 # Better known as "round"
 var community_cards_physical: Array = []
 var community_cards_data: Array = []
@@ -88,12 +88,10 @@ func _ready():
 		else:
 			player_agent_ai.append(null)
 
-	# Debug
-	#players_balance = [4000, 2000, 1000, 3000]
-
 	balance_display_update(-1)
 	# Start the game
-	game_begin()
+	if !Global.mp_enabled or multiplayer.is_server():
+		game_begin()
 
 # ==============================================================================
 # CORE GAME FLOW
@@ -126,6 +124,7 @@ func game_begin():
 		player_bet(player, min_bet/blind_halfer)
 		logger("blind", player, min_bet/blind_halfer)
 		blind_halfer = 1
+	round_bet = min_bet
 
 	# Preflop begins
 	$ExtraLayer/RoundLabel.text = ROUND_NAMES[1]
@@ -489,7 +488,6 @@ func game_reset():
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
 	players_game_bet.fill(0)
 	players_round_bet.fill(0)
-	round_bet = min_bet
 	side_pot_bool = false
 
 	balance_display_update()
