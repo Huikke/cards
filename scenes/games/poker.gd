@@ -91,6 +91,7 @@ func _ready():
 	# Debug
 	#players_balance = [4000, 2000, 1000, 3000]
 
+	balance_display_update(-1)
 	# Start the game
 	game_begin()
 
@@ -152,10 +153,11 @@ func game_loop(player: int) -> void:
 		return
 
 	# Player action based on agent type
-	await get_tree().create_timer(0.4).timeout
+	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Orange")
 	if players_agent[player] == 0:
 		player_turn(player)
 	elif players_agent[player] == 1:
+		await get_tree().create_timer(0.5).timeout
 		PokerLogic.ai_random(player)
 	elif players_agent[player] == 2 or players_agent[player] == 3:
 		var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
@@ -236,14 +238,24 @@ func player_turn(player):
 
 	if round_bet != 0:
 		$ButtonsLayer.raise_text = "Raise"
-	elif players_balance[player] <= round_bet + min_bet:
-		$ButtonsLayer.raise_text = "All In"
 	else:
 		$ButtonsLayer.raise_text = "Bet"
-	$ButtonsLayer.update_raise_text()
 
-	$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
+	# If player has less than min_bet, lower the raise/bet limit
+	if players_balance[player] < min_bet + round_bet - players_round_bet[player]:
+		var amount = players_balance[player] - round_bet + players_round_bet[player]
+		if amount < 0:
+			amount = 0
+		$ButtonsLayer/ButtonsContainer/RaiseSlider.min_value = amount
+		$ButtonsLayer/ButtonsContainer/RaiseSlider.value = amount
+		$ButtonsLayer.raise_text = "All In"
+	else:
+		$ButtonsLayer/ButtonsContainer/RaiseSlider.min_value = min_bet
+		$ButtonsLayer/ButtonsContainer/RaiseSlider.value = min_bet
+	# Set bet limit to player's available balance
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.max_value = players_balance[player] - round_bet + players_round_bet[player]
+
+	$ButtonsLayer.update_raise_text()
 
 func player_bet(p: int, amount: int):
 	var difference = amount - players_round_bet[p]
@@ -315,13 +327,16 @@ func _on_call(player):
 	game_loop(players_live[(players_live.find(player) + 1) % player_count])
 
 func _on_raise(player, amount):
-	move_display_update(2, player)
+	move_display_update(2, player, amount)
 
-	if players_balance[player] < amount:
-		round_bet += players_balance[player]
-	else:
-		round_bet += amount
-	# Bug: shouldn't reset the turn if the player is doing all in without raising
+	# If player does not have enough money to raise/bet, move it to calling
+	if players_balance[player] <= round_bet - players_round_bet[player] + amount:
+		print(players_balance[player])
+		print(round_bet - players_round_bet[player] + amount)
+		_on_call(player)
+		return
+
+	round_bet += amount
 	current_turn = 1
 
 	player_bet(player, round_bet)
@@ -588,7 +603,7 @@ func balance_display_update(player = null):
 		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
 		$ExtraLayer/PotLabel.text = pot_label_text
 
-func move_display_update(move: int, player: int):
+func move_display_update(move: int, player: int, amount: int = 0):
 	var move_text: String
 	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
 
@@ -596,7 +611,9 @@ func move_display_update(move: int, player: int):
 		move_text = "Fold"
 		indicator.color = Color("Red")
 	elif move == 1:
-		if players_round_bet[player] != round_bet:
+		if players_balance[player] <= round_bet - players_round_bet[player]:
+			move_text = "All In"
+		elif players_round_bet[player] != round_bet:
 			move_text = "Call"
 		else:
 			move_text = "Check"
@@ -605,7 +622,9 @@ func move_display_update(move: int, player: int):
 		else:
 			indicator.color = Color("Lime_Green")
 	elif move == 2:
-		if round_bet != 0:
+		if players_balance[player] <= round_bet - players_round_bet[player] + amount:
+			move_text = "All In"
+		elif round_bet != 0:
 			move_text = "Raise"
 		else:
 			move_text = "Bet"
