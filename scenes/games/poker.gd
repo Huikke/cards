@@ -88,6 +88,8 @@ func _ready():
 		else:
 			player_agent_ai.append(null)
 
+	# Debug
+	# players_balance = [2000, 500, 300, 400]
 
 	balance_display_update(-1)
 	# Start the game
@@ -330,13 +332,18 @@ func _on_call(player):
 
 	game_loop(players_live[(players_live.find(player) + 1) % player_count])
 
-func _on_raise(player, amount):
-	move_display_update(2, player, amount)
+func _on_raise(player, amount = min_bet):
+	# If player does not have enough money to raise/bet the amount
+	if players_balance[player] < round_bet - players_round_bet[player] + amount:
+		# If player does not have enough money to raise/bet the amount but has money to raise/bet
+		if players_balance[player] > round_bet - players_round_bet[player]:
+			amount = players_round_bet[player] - round_bet + players_balance[player]
+		# Player does not have money to raise/bet, move it to _on_call
+		else:
+			_on_call(player)
+			return
 
-	# If player does not have enough money to raise/bet, move it to calling
-	if players_balance[player] <= round_bet - players_round_bet[player] + amount:
-		_on_call(player)
-		return
+	move_display_update(2, player, amount)
 
 	round_bet += amount
 	current_turn = 1
@@ -586,7 +593,7 @@ func balance_display_update(player = null):
 	# Player
 	if player == -1:
 		for p in range(starting_player_count):
-			label_update("PlayerBalance", str(players_balance[player]), p)
+			label_update("PlayerBalance", str(players_balance[p]), p)
 	elif player != null:
 		label_update("PlayerBalance", str(players_balance[player]), player)
 
