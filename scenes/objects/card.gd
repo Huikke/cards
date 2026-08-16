@@ -30,10 +30,16 @@ func flip_card():
 		get_node("Sprite").texture = load("res://assets/cards/front/perfectionism/" + file_name)
 		face = true
 	elif face:
-		get_node("Sprite").texture = back_sprite
+		get_node("Sprite").texture = load(back_sprite)
 		face = false
 
 # For stopping the dealt card
 func _on_stop_motion_timeout():
 	speed = 0
 	z_index = 0
+
+@rpc("authority")
+func destroy():
+	if Global.mp_enabled and multiplayer.is_server():
+		destroy.rpc()
+	queue_free()

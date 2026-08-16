@@ -7,11 +7,8 @@ var player_cards_face_up_list = [true, false, false, false]
 var ui_card = preload("res://scenes/user_interface/ui_card.tscn").instantiate()
 var card_size = Vector2(120, 168)
 
-@rpc("authority")
+
 func _on_card_to_hand(card_i, player: int) -> void:
-	if Global.mp_enabled == true and multiplayer.is_server():
-		var card_i_dict = { "value": card_i.value, "suit": card_i.suit, "back_sprite": card_i.back_sprite }
-		_on_card_to_hand.rpc(card_i_dict, player)
 	var hand_scene = "HandP" + str(player)
 	var hand_content = get_node(hand_scene).get_child(0)
 
@@ -33,7 +30,6 @@ func _on_card_to_hand(card_i, player: int) -> void:
 	var tween = create_tween()
 	card_sprite.position += Vector2(0, 84)
 	tween.tween_property(card_sprite, "position", card_sprite.position - Vector2(0, 84), 0.2)
-
 
 	hand_content.add_child(card_o)
 	hand_content.move_child(get_node(hand_scene + "/HandContainer/CardPadding"), -1)
@@ -83,11 +79,14 @@ func flip_hand(player: int):
 				card.get_child(0).texture = card.back_sprite
 				card.face_up = false
 
+@rpc("authority")
 func clear_hand(player):
+	if Global.mp_enabled and multiplayer.is_server():
+		clear_hand.rpc(player)
 	var node_str = "HandP" + str(player)
 	var hand = get_node(node_str).get_child(0).get_children()
 	for card in hand:
-		if card is UiCard and card.value != 0:
+		if card is UiCard:
 			card.queue_free()
 
 func clear_hands():

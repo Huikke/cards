@@ -51,7 +51,7 @@ func _ready():
 
 	# Visuals
 	$Hands.change_card_overlap(120)
-	$ExtraLayer/RoundLabel.text = ""
+	label_update("Main", "")
 	# Player's card is up
 	for i in range(starting_player_count):
 		if players_agent[i] == 0:
@@ -88,9 +88,11 @@ func _ready():
 		else:
 			player_agent_ai.append(null)
 
+
 	balance_display_update(-1)
 	# Start the game
 	if !Global.mp_enabled or multiplayer.is_server():
+		$ExtraLayer/GameLog.visible = true
 		game_begin()
 
 # ==============================================================================
@@ -99,7 +101,7 @@ func _ready():
 
 func game_begin():
 	# Shuffle Deck
-	$Deck.deck_shuffle()
+	$Objects/Deck.deck_shuffle()
 
 	await get_tree().create_timer(0.3).timeout
 	# Assigning roles to players
@@ -114,7 +116,7 @@ func game_begin():
 		for i in range(player_count):
 			var player = players_live[(starting_slot + i) % player_count]
 			await get_tree().create_timer(0.2).timeout
-			$Deck.deal_player(player)
+			$Objects/Deck.deal("player", player)
 
 	# Post blinds
 	var blind_halfer = 2
@@ -130,7 +132,7 @@ func game_begin():
 	round_bet = min_bet
 
 	# Preflop begins
-	$ExtraLayer/RoundLabel.text = ROUND_NAMES[1]
+	label_update("Main", ROUND_NAMES[1])
 	game_loop(players_live[(starting_slot + 2) % player_count])
 
 func game_loop(player: int) -> void:
@@ -155,7 +157,7 @@ func game_loop(player: int) -> void:
 		return
 
 	# Player action based on agent type
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Orange")
+	indicator_color_update(player, Color("Orange"))
 	if players_agent[player] == 0:
 		player_turn(player)
 	elif players_agent[player] == 1:
@@ -172,30 +174,30 @@ func next_phase():
 	if phase == 2:
 		for i in range(3):
 			await get_tree().create_timer(0.2).timeout
-			$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
+			$Objects/Deck.deal("table")
+		label_update("Main", ROUND_NAMES[phase])
 		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 3:
-		$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
+		$Objects/Deck.deal("table")
+		label_update("Main", ROUND_NAMES[phase])
 		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 4:
-		$Deck.deal("table")
-		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
+		$Objects/Deck.deal("table")
+		label_update("Main", ROUND_NAMES[phase])
 		logger("phase")
 		indicator_reset()
 		round_end_process()
 	elif phase == 5:
-		$ExtraLayer/RoundLabel.text = ROUND_NAMES[phase]
+		label_update("Main", ROUND_NAMES[phase])
 		round_end_process()
 		showdown()
 		return
 	else:
-		$ExtraLayer/RoundLabel.text = "Error"
+		label_update("Main", "Error")
 		push_error("Round overflow")
 
 	# Fast forward streets if conditions are right
@@ -361,7 +363,7 @@ func _on_deck_table_deal(card):
 func uncontested_win():
 	for player in players_live:
 		if player not in fold_list:
-			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
+			label_update("Main", "Player " + str(player + 1) + " Wins!")
 			player_award(player, pot_sum())
 
 func showdown():
@@ -388,7 +390,7 @@ func showdown():
 	# Remove players that ran out of chips
 	for player in players_live.duplicate():
 		if players_balance[player] == 0:
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Black")
+			indicator_color_update(player, Color("Black"))
 			players_live.erase(player)
 			player_count -= 1
 
@@ -404,7 +406,7 @@ func get_player_hand(player: int) -> Array:
 
 	poker_hand.append(player)
 
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = HAND_TYPES[poker_hand[0]]
+	label_update("PlayerHeadsUp", HAND_TYPES[poker_hand[0]], player)
 
 	return poker_hand
 
@@ -429,7 +431,7 @@ func pot_distribution(placements: Array) -> void:
 	for placement in placements:
 		if len(placement) == 1:
 			var player = placement[0][2]
-			$ExtraLayer/RoundLabel.text = "Player " + str(player + 1) + " Wins!"
+			label_update("Main", "Player " + str(player + 1) + " Wins!")
 			if side_pot_bool == false:
 				player_award(player, pot_sum())
 				logger("win", player, pot_sum())
@@ -445,7 +447,7 @@ func pot_distribution(placements: Array) -> void:
 					break
 		else:
 			var winners = placement.map(func(hand): return hand[2])
-			$ExtraLayer/RoundLabel.text = "It's a tie! Winners: " + str(winners)
+			label_update("Main", "It's a tie! Winners: " + str(winners))
 			if side_pot_bool == false:
 				for player in winners:
 					player_award(player, pot_sum() / len(winners))
@@ -474,10 +476,10 @@ func pot_distribution(placements: Array) -> void:
 func game_reset():
 	fold_list.clear()
 	all_in_list.clear()
-	$Deck.reset_deck()
+	$Objects/Deck.reset_deck()
 	$Hands.clear_hands()
 	for card in community_cards_physical:
-		card.queue_free()
+		card.destroy()
 
 	community_cards_physical.clear()
 	community_cards_data.clear()
@@ -486,14 +488,14 @@ func game_reset():
 	$ExtraLayer/GameLog.text = ""
 	current_turn = 0
 	phase = 1
-	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
+	card_placement_reset()
 	players_game_bet.fill(0)
 	players_round_bet.fill(0)
 	side_pot_bool = false
 
 	balance_display_update()
 	indicator_reset()
-	$ExtraLayer/RoundLabel.text = ""
+	label_update("Main", "")
 
 	starting_slot = (starting_slot + 1) % player_count
 
@@ -501,7 +503,7 @@ func game_reset():
 func _on_countdown_timeout():
 	if start_mode == "manual":
 		if intermission >= 3:
-			$ExtraLayer/RoundLabel.text = "Press anywhere to continue..."
+			label_update("Main", "Press anywhere to continue...")
 			$Countdown.stop()
 			intermission = 0
 			new_game_ready = true
@@ -509,7 +511,7 @@ func _on_countdown_timeout():
 	elif start_mode == "automatic":
 		var break_secs = 8
 		if intermission >= 3 and intermission <= break_secs:
-			$ExtraLayer/RoundLabel.text = "Next round starts in " + str(break_secs - intermission)
+			label_update("Main", "Next round starts in " + str(break_secs - intermission))
 		elif intermission > break_secs:
 			$Countdown.stop()
 			intermission = 0
@@ -526,7 +528,7 @@ func _unhandled_input(event):
 		game_begin()
 
 func game_end():
-	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(players_live[0] + 1) + "!"
+	label_update("Main", "The winner is Player " + str(players_live[0] + 1) + "!")
 
 # ==============================================================================
 # Logging & Visuals
@@ -567,31 +569,30 @@ func cards_data_to_str(card):
 		return str(card[0]) + card[1][0]
 
 func assign_player_position(i: int, role: String) -> void:
-	$Hands.get_node("HandP" + str(players_live[(starting_slot + i - 1) % player_count]) + "/LabelPanel/PlayerLabel").text = role
+	label_update("PlayerHeadsUp", role, players_live[(starting_slot + i - 1) % player_count])
 	players_roles.append("Player " + str(players_live[(starting_slot + i - 1) % player_count] + 1) + ": " + role)
 
 func indicator_reset():
 	for player in players_live:
 		if player not in fold_list:
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
+			indicator_color_update(player, Color("Gray"))
 		if player in all_in_list:
-			$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Dark_Green")
+			indicator_color_update(player, Color("Dark_Green"))
 	# For clearing players, who have been eliminated
 	for player in range(starting_player_count):
-		$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
+		label_update("PlayerHeadsUp", "", player)
 
 func balance_display_update(player = null):
 	# Player
 	if player == -1:
 		for p in range(starting_player_count):
-			$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str(players_balance[p]) + " €"
+			label_update("PlayerBalance", str(players_balance[player]), p)
 	elif player != null:
-		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/PC/MC/CurrencyLabel").text = str(players_balance[player]) + " €"
+		label_update("PlayerBalance", str(players_balance[player]), player)
 
 	# Pot
 	if side_pot_bool == false:
-		$ExtraLayer/PotLabel.text = "Pot: " + str(pot_sum()) + " €"
+		label_update("Pot", "Pot: " + str(pot_sum()) + " €")
 	else:
 		var pot_label_text = ""
 		for p in pots:
@@ -600,15 +601,14 @@ func balance_display_update(player = null):
 			else:
 				pot_label_text += "\nSide Pot: " + str(p[0]) + " €"
 		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
-		$ExtraLayer/PotLabel.text = pot_label_text
+		label_update("Pot", pot_label_text)
 
 func move_display_update(move: int, player: int, amount: int = 0):
 	var move_text: String
-	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
 
 	if move == 0:
 		move_text = "Fold"
-		indicator.color = Color("Red")
+		indicator_color_update(player, Color("Red"))
 	elif move == 1:
 		if players_balance[player] <= round_bet - players_round_bet[player]:
 			move_text = "All In"
@@ -616,10 +616,7 @@ func move_display_update(move: int, player: int, amount: int = 0):
 			move_text = "Call"
 		else:
 			move_text = "Check"
-		if indicator.color == Color("Lime_Green"):
-			indicator.modulate *= 1.5
-		else:
-			indicator.color = Color("Lime_Green")
+		indicator_color_update(player, Color("Lime_Green"))
 	elif move == 2:
 		if players_balance[player] <= round_bet - players_round_bet[player] + amount:
 			move_text = "All In"
@@ -627,11 +624,40 @@ func move_display_update(move: int, player: int, amount: int = 0):
 			move_text = "Raise"
 		else:
 			move_text = "Bet"
-		indicator.color = Color("Blue")
+		indicator_color_update(player, Color("Blue"))
 
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = move_text
+	label_update("PlayerHeadsUp", move_text, player)
 
-func balance_change_animation(player, amount):
+@rpc("authority")
+func label_update(label_name: String, text: String, number: int = -1) -> void:
+	if Global.mp_enabled and multiplayer.is_server():
+		label_update.rpc(label_name, text, number)
+
+	if label_name == "Main":
+		$ExtraLayer/MainLabel.text = text
+	elif label_name == "Pot":
+		$ExtraLayer/PotLabel.text = text
+	elif label_name == "PlayerBalance":
+		$ExtraLayer.get_node("StatsP" + str(number) + "/HBC/PC/MC/CurrencyLabel").text = text + " €"
+	elif label_name == "PlayerHeadsUp":
+		$Hands.get_node("HandP" + str(number) + "/PlayerHeadsUpLabel").text = text
+
+@rpc("authority")
+func indicator_color_update(player: int, color: Color) -> void:
+	if Global.mp_enabled and multiplayer.is_server():
+		indicator_color_update.rpc(player, color)
+	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = color
+
+@rpc("authority")
+func card_placement_reset():
+	if Global.mp_enabled and multiplayer.is_server():
+		card_placement_reset.rpc()
+	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
+
+@rpc("authority")
+func balance_change_animation(player, amount) -> void:
+	if Global.mp_enabled and multiplayer.is_server():
+		balance_change_animation.rpc(player, amount)
 	var the_node = get_node("ExtraLayer/StatsP" + str(player) + "/BCMC")
 
 	if amount == 0:

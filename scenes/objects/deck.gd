@@ -27,7 +27,7 @@ func mouse3():
 func mouse4():
 	if empty_delete():
 		return
-	deal_player(1)
+	deal("player", 2)
 	if empty_delete():
 		return
 	card_stack()
@@ -35,33 +35,47 @@ func mouse4():
 func mouse5():
 	if empty_delete():
 		return
-	deal_player(0)
+	deal("player", 0)
 	if empty_delete():
 		return
 	card_stack()
 
-func deal(mode: String = "local"):
+
+func deal(mode: String = "local", player: int = -1):
+	var pop_card = logic.deck.pop_front()
+	if mode == "local" or mode == "table":
+		deal_2d(pop_card, back_sprite, mode)
+	elif mode == "player":
+		deal_ui(pop_card, back_sprite, player)
+
+@rpc("authority")
+func deal_2d(pop_card: Array, back_sprite_this: String, mode: String):
+	if Global.mp_enabled == true and multiplayer.is_server():
+		deal_2d.rpc(pop_card, back_sprite_this, mode)
 	var card = card_scene.instantiate()
 	card.position = position
-	var pop_card = logic.deck.pop_front()
 	card.value = pop_card[0]
 	card.suit = pop_card[1]
-	card.back_sprite = back_sprite
+	card.back_sprite = back_sprite_this
 
 	if mode == "local":
 		deck_deal(card, true)
 	if mode == "table":
 		deck_deal(card, false)
-	elif mode == "direct":
-		return card
+
+@rpc("authority")
+func deal_ui(pop_card: Array, back_sprite_this: String, player: int):
+	if Global.mp_enabled == true and multiplayer.is_server():
+		deal_ui.rpc(pop_card, back_sprite_this, player)
+	var card = {}
+	card["value"] = pop_card[0]
+	card["suit"] = pop_card[1]
+	card["back_sprite"] = back_sprite_this
+	GlobalSignal.hand_deal.emit(card, player)
 
 func deal_burst():
 	for i in len(logic.deck):
 		deal()
-
-func deal_player(player):
-	var card = deal("direct")
-	GlobalSignal.hand_deal.emit(card, player)
 
 
 func deck_deal(card, motion: bool = false):

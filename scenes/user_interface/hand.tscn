@@ -31,19 +31,7 @@ custom_minimum_size = Vector2(76, 166)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="LabelPanel" type="Panel" parent="." unique_id=720950606]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_top = -130.0
-offset_bottom = -130.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PlayerLabel" type="Label" parent="LabelPanel" unique_id=1108914018]
+[node name="PlayerHeadsUpLabel" type="Label" parent="." unique_id=1108914018]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -51,9 +39,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -0.5
-offset_top = -23.0
+offset_top = -153.0
 offset_right = 0.5
-offset_bottom = 23.0
+offset_bottom = -107.0
 grow_horizontal = 2
 grow_vertical = 2
 label_settings = SubResource("LabelSettings_manev")
