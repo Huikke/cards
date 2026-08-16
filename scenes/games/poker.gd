@@ -54,7 +54,7 @@ func _ready():
 	label_update("Main", "")
 	# Player's card is up
 	for i in range(starting_player_count):
-		if players_agent[i] == 0:
+		if players_agent[i][0] == 0:
 			$Hands.player_cards_face_up_list[i] = true
 		else:
 			$Hands.player_cards_face_up_list[i] = false
@@ -79,12 +79,13 @@ func _ready():
 
 	# Initiate ai_agents
 	for i in range(len(players_agent)):
-		if players_agent[i] == 2:
-			player_agent_ai.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
-			add_child(player_agent_ai[i])
-		elif players_agent[i] == 3:
-			player_agent_ai.append(PokerAiLLM.new("ai/llama3.2"))
-			add_child(player_agent_ai[i])
+		if players_agent[i][0] == 2:
+			if players_agent[i][1] == 0:
+				player_agent_ai.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
+				add_child(player_agent_ai[i])
+			elif players_agent[i][1] == 1:
+				player_agent_ai.append(PokerAiLLM.new("ai/llama3.2"))
+				add_child(player_agent_ai[i])
 		else:
 			player_agent_ai.append(null)
 
@@ -160,12 +161,12 @@ func game_loop(player: int) -> void:
 
 	# Player action based on agent type
 	indicator_color_update(player, Color("Orange"))
-	if players_agent[player] == 0:
+	if players_agent[player][0] == 0:
 		player_turn(player)
-	elif players_agent[player] == 1:
+	elif players_agent[player][0] == 1:
 		await get_tree().create_timer(0.5).timeout
 		PokerAiRandom.ai_random(player)
-	elif players_agent[player] == 2 or players_agent[player] == 3:
+	elif players_agent[player][0] == 2:
 		var hand = " ".join($Hands.get_hand_content(player).map(cards_data_to_str))
 		player_agent_ai[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
 
@@ -379,7 +380,7 @@ func showdown():
 	# Get players' poker hands
 	for player in players_live:
 		if player not in fold_list:
-			if players_agent[player] != 0:
+			if players_agent[player][0] != 0:
 				$Hands.flip_hand(player)
 
 			poker_hand_list.append(get_player_hand(player))
@@ -447,7 +448,7 @@ func pot_distribution(placements: Array) -> void:
 				for pot in pots:
 					if player in pot[1]:
 						player_award(player, pot[0])
-						logger("win", player, pot_sum())
+						logger("win", player, pot_sum()) # Wrong
 						pot[0] = 0
 				if pots.reduce(func(accum, pot): return accum + pot[0], 0) == 0:
 					balance_display_update(-1)
@@ -458,7 +459,7 @@ func pot_distribution(placements: Array) -> void:
 			if side_pot_bool == false:
 				for player in winners:
 					player_award(player, pot_sum() / len(winners))
-					logger("win", player, pot_sum())
+					logger("win", player, pot_sum()) # Wrong
 				break
 			else:
 				for pot in pots:
@@ -467,7 +468,7 @@ func pot_distribution(placements: Array) -> void:
 					for player in winners:
 						if player in pot[1]:
 							player_award(player, pot[0] / pot_getter)
-							logger("win", player, pot_sum())
+							logger("win", player, pot_sum()) # Wrong
 							pot_claimed = true
 					if pot_claimed:
 						pot[0] = 0

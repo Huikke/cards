@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dlqu2uxdbiw3d" path="res://scenes/games/title_screen.gd" id="1_oer8j"]
 [ext_resource type="PackedScene" uid="uid://8tmpnv8wvf2m" path="res://network/network_handler.tscn" id="2_7oqx1"]
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_gm3ob"]
+[ext_resource type="PackedScene" uid="uid://byur6xmf47xka" path="res://scenes/user_interface/player_settings.tscn" id="3_xn6cn"]
 
 [node name="TitleScreen" type="CanvasLayer" unique_id=1766476421]
 script = ExtResource("1_oer8j")
@@ -15,6 +16,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 1280, 800)
 
 [node name="FirstMenu" type="VBoxContainer" parent="." unique_id=654923601]
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -99,8 +101,7 @@ size_flags_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "Back"
 
-[node name="Game3SettingMenu" type="VBoxContainer" parent="." unique_id=1562726164]
-visible = false
+[node name="PokerSettingMenu" type="VBoxContainer" parent="." unique_id=1562726164]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -114,119 +115,34 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 40
 
-[node name="PanelContainer" type="PanelContainer" parent="Game3SettingMenu" unique_id=1970695256]
+[node name="PanelContainer" type="PanelContainer" parent="PokerSettingMenu" unique_id=1970695256]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Label" type="Label" parent="Game3SettingMenu/PanelContainer" unique_id=843419564]
+[node name="Label" type="Label" parent="PokerSettingMenu/PanelContainer" unique_id=843419564]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="Player0" type="HBoxContainer" parent="Game3SettingMenu" unique_id=1136323872]
+[node name="PlayerSettingsBox" type="VBoxContainer" parent="PokerSettingMenu" unique_id=1941372671]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 20
 
-[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player0" unique_id=721327226]
-custom_minimum_size = Vector2(150, 0)
+[node name="PlayerSettings0" parent="PokerSettingMenu/PlayerSettingsBox" unique_id=526247330 instance=ExtResource("3_xn6cn")]
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 32
-text = "Player 1"
 
-[node name="Left" type="Button" parent="Game3SettingMenu/Player0" unique_id=1192732911]
-custom_minimum_size = Vector2(40, 40)
+[node name="PlayerSettings1" parent="PokerSettingMenu/PlayerSettingsBox" unique_id=1988390446 instance=ExtResource("3_xn6cn")]
 layout_mode = 2
-text = "⬅️"
 
-[node name="Right" type="Button" parent="Game3SettingMenu/Player0" unique_id=1309270114]
-custom_minimum_size = Vector2(40, 40)
+[node name="PlayerSettings2" parent="PokerSettingMenu/PlayerSettingsBox" unique_id=1788287546 instance=ExtResource("3_xn6cn")]
 layout_mode = 2
-text = "➡️"
 
-[node name="Mode" type="Label" parent="Game3SettingMenu/Player0" unique_id=1947095498]
+[node name="PlayerSettings3" parent="PokerSettingMenu/PlayerSettingsBox" unique_id=206319446 instance=ExtResource("3_xn6cn")]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Mode"
 
-[node name="Player1" type="HBoxContainer" parent="Game3SettingMenu" unique_id=156186496]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player1" unique_id=1324808978]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Player 2"
-
-[node name="Left" type="Button" parent="Game3SettingMenu/Player1" unique_id=2123107737]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-text = "⬅️"
-
-[node name="Right" type="Button" parent="Game3SettingMenu/Player1" unique_id=1280079636]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-text = "➡️"
-
-[node name="Mode" type="Label" parent="Game3SettingMenu/Player1" unique_id=1545820664]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Mode"
-
-[node name="Player2" type="HBoxContainer" parent="Game3SettingMenu" unique_id=878551674]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player2" unique_id=886029827]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Player 3"
-
-[node name="Left" type="Button" parent="Game3SettingMenu/Player2" unique_id=617186834]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-text = "⬅️"
-
-[node name="Right" type="Button" parent="Game3SettingMenu/Player2" unique_id=1135143712]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-text = "➡️"
-
-[node name="Mode" type="Label" parent="Game3SettingMenu/Player2" unique_id=29880735]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Mode"
-
-[node name="Player3" type="HBoxContainer" parent="Game3SettingMenu" unique_id=940794263]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PlayerNro" type="Label" parent="Game3SettingMenu/Player3" unique_id=2048025402]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Player 4"
-
-[node name="Left" type="Button" parent="Game3SettingMenu/Player3" unique_id=1200106123]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-text = "⬅️"
-
-[node name="Right" type="Button" parent="Game3SettingMenu/Player3" unique_id=1564764261]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-text = "➡️"
-
-[node name="Mode" type="Label" parent="Game3SettingMenu/Player3" unique_id=2036183609]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Mode"
-
-[node name="SettingBackButton" type="Button" parent="Game3SettingMenu" unique_id=518391399]
+[node name="SettingBackButton" type="Button" parent="PokerSettingMenu" unique_id=518391399]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -244,12 +160,4 @@ visible = false
 [connection signal="pressed" from="GameMenu/Game3HBC/Game3Setting" to="." method="_on_game_3_setting_pressed"]
 [connection signal="pressed" from="GameMenu/Game4Button" to="." method="_on_game_button_pressed" binds= [3]]
 [connection signal="pressed" from="GameMenu/BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="Game3SettingMenu/Player0/Left" to="." method="_on_left_pressed" binds= [0]]
-[connection signal="pressed" from="Game3SettingMenu/Player0/Right" to="." method="_on_right_pressed" binds= [0]]
-[connection signal="pressed" from="Game3SettingMenu/Player1/Left" to="." method="_on_left_pressed" binds= [1]]
-[connection signal="pressed" from="Game3SettingMenu/Player1/Right" to="." method="_on_right_pressed" binds= [1]]
-[connection signal="pressed" from="Game3SettingMenu/Player2/Left" to="." method="_on_left_pressed" binds= [2]]
-[connection signal="pressed" from="Game3SettingMenu/Player2/Right" to="." method="_on_right_pressed" binds= [2]]
-[connection signal="pressed" from="Game3SettingMenu/Player3/Left" to="." method="_on_left_pressed" binds= [3]]
-[connection signal="pressed" from="Game3SettingMenu/Player3/Right" to="." method="_on_right_pressed" binds= [3]]
-[connection signal="pressed" from="Game3SettingMenu/SettingBackButton" to="." method="_on_setting_back_button_pressed"]
+[connection signal="pressed" from="PokerSettingMenu/SettingBackButton" to="." method="_on_setting_back_button_pressed"]

@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://byur6xmf47xka"]
+
+[node name="PlayerSettings" type="HBoxContainer" unique_id=526247330]
+offset_right = 516.0
+offset_bottom = 40.0
+
+[node name="PlayerNro" type="Label" parent="." unique_id=1811303427]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Player 1"
+
+[node name="Left" type="Button" parent="." unique_id=148720831]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⬅️"
+
+[node name="Right" type="Button" parent="." unique_id=930488807]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "➡️"
+
+[node name="Mode" type="Label" parent="." unique_id=913693837]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Mode"
+horizontal_alignment = 1
+
+[node name="OptionButton" type="OptionButton" parent="." unique_id=686895711]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2

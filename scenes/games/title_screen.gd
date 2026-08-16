@@ -24,27 +24,48 @@ func change_scene(game_id: int) -> void:
 
 var game_settings_first = true
 var modes = Global.poker_mode_names
+var mode_options = Global.poker_mode_options
 var players_mode = Global.player_poker_modes
 
 func _on_game_3_setting_pressed():
 	$GameMenu.visible = false
-	$Game3SettingMenu.visible = true
+	$PokerSettingMenu.visible = true
 	if game_settings_first:
 		for p in range(4):
-			$Game3SettingMenu.get_node("Player" + str(p) + "/Mode").text = modes[players_mode[p]]
+			mode_update(p, false)
+			var left_node = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Left")
+			var right_node = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Right")
+			var option_button = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton")
+			left_node.pressed.connect(_on_left_pressed.bind(p))
+			right_node.pressed.connect(_on_right_pressed.bind(p))
+			option_button.item_selected.connect(_on_option_button_item_selected.bind(p))
+
 
 func _on_setting_back_button_pressed():
-	$Game3SettingMenu.visible = false
+	$PokerSettingMenu.visible = false
 	$GameMenu.visible = true
 
 func _on_left_pressed(p):
-	players_mode[p] = (players_mode[p] - 1) % len(modes)
-	$Game3SettingMenu.get_node("Player" + str(p) + "/Mode").text = modes[players_mode[p]]
+	players_mode[p][0] = (players_mode[p][0] - 1) % len(modes)
+	mode_update(p)
+
 
 func _on_right_pressed(p):
-	players_mode[p] = (players_mode[p] + 1) % len(modes)
-	$Game3SettingMenu.get_node("Player" + str(p) + "/Mode").text = modes[players_mode[p]]
+	players_mode[p][0] = (players_mode[p][0] + 1) % len(modes)
+	mode_update(p)
 
+func _on_option_button_item_selected(i, p):
+	players_mode[p][1] = i
+
+func mode_update(p, clear_option = true):
+	$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/PlayerNro").text = "Player " + str(p+1)
+	$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Mode").text = modes[players_mode[p][0]]
+	$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").clear()
+	if clear_option:
+		players_mode[p][1] = 0
+	for option in mode_options[players_mode[p][0]]:
+		$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").add_item(option)
+	$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").selected = players_mode[p][1]
 
 func _on_multiplayer_button_pressed() -> void:
 	$FirstMenu.visible = false
