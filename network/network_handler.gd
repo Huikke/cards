@@ -63,6 +63,7 @@ func _on_peer_connected(id: int) -> void:
 	if multiplayer.is_server():
 		send_chat_message.rpc("Welcome to the server!")
 		$MultiplayerMenu/Play.disabled = false
+		Global.multiplayer_players.append(id)
 
 func _on_peer_disconnected(id: int) -> void:
 	print("Peer disconnected: ", id)
@@ -81,6 +82,7 @@ func _on_host_pressed() -> void:
 	host_game()
 	$MultiplayerMenu/Back.disabled = true
 	Global.mp_enabled = true
+	Global.multiplayer_players.append(1)
 
 
 func _on_join_pressed() -> void:
@@ -96,6 +98,7 @@ func _on_play_pressed() -> void:
 	for game in $"../GameMenu".get_children():
 		if game.name != "Game3HBC":
 			game.disabled = true
+	print(Global.multiplayer_players)
 
 
 func _on_send_pressed() -> void:

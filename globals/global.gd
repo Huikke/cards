@@ -6,3 +6,4 @@ var mp_enabled = false
 var player_poker_modes = [[0, 0], [1, 0], [1, 1], [1, 0]]
 var poker_mode_names = ["Player", "Random", "LLM"]
 var poker_mode_options = [["Player 1", "Player 2", "Player 3", "Player 4"], ["Random 1", "Random 2"], ["Gemini", "Llama"]]
+var multiplayer_players = []
