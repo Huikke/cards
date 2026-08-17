@@ -33,7 +33,7 @@ func game_begin():
 	await get_tree().create_timer(0.3).timeout
 	for player in players:
 		await get_tree().create_timer(0.2).timeout
-		$Deck.deal_player(player)
+		$Deck.deal("player", player)
 		pot += 1
 		players_balance[player] -= 1
 
@@ -114,7 +114,7 @@ func game_end(winner):
 
 func _on_fold(player):
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Fold"
+	$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = "Fold"
 
 	if player == 0:
 		uncontested_win(2)
@@ -132,19 +132,19 @@ func _on_call(player):
 		indicator.color = Color("Lime_Green")
 	else:
 		indicator.modulate *= 1.5
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Call"
+	$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = "Call"
 	
 	turn += 1
 	if player == 0:
 		betting_phase(2)
 
 
-func _on_raise(player):
+func _on_raise(player, _amount = 1):
 	if bet_bool:
 		_on_call(player)
 		return
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
-	$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = "Raise"
+	$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = "Raise"
 
 	pot += 1
 	players_balance[player] -= 1
@@ -165,7 +165,7 @@ func indicator_reset():
 	for player in players:
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
-		$Hands.get_node("HandP" + str(player) + "/LabelPanel/PlayerLabel").text = ""
+		$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = ""
 
 func _unhandled_input(event):
 	# Click to start next hand

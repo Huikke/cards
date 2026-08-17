@@ -76,7 +76,7 @@ func flip_hand(player: int):
 				card.get_child(0).texture = load(texture_path + str(card.value) + "_" + card.suit + ".svg")
 				card.face_up = true
 			elif card.face_up == true:
-				card.get_child(0).texture = card.back_sprite
+				card.get_child(0).texture = load(card.back_sprite)
 				card.face_up = false
 
 @rpc("authority")

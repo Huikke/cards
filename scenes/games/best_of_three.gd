@@ -14,7 +14,7 @@ func _ready():
 	for card in range(3): # Card amount
 		for player in range(0, 3, 2): # Player amount
 			await get_tree().create_timer(0.2).timeout
-			$Deck.deal_player(player)
+			$Deck.deal("player", player)
 
 
 func _on_hands_card_selected(human_card):
@@ -60,7 +60,6 @@ func ai_play():
 	var ai_hand = $Hands/HandP2/HandContainer.get_children()
 	# Temporary solution to our invisible card
 	if first:
-		ai_hand.pop_front()
 		ai_hand.pop_back()
 	var ai_card = ai_hand.pick_random()
 	if len(ai_hand) == 1: # hand does not go empty before queue free
