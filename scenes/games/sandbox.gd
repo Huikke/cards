@@ -30,3 +30,9 @@ func _on_hands_card_selected(card_ui):
 
 	$Objects.add_child(card_ow)
 	card_ui.queue_free()
+
+func _on_add_player_pressed() -> void:
+	$Hands.set_seat_size(len($Hands.seat_setup) + 1)
+
+func _on_remove_player_pressed() -> void:
+	$Hands.set_seat_size(len($Hands.seat_setup) - 1)

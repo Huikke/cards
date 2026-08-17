@@ -98,6 +98,33 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "Flip Cards"
 
+[node name="PlayerAmountControl" type="HBoxContainer" parent="ExtraGUI" unique_id=2070162314]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -224.0
+offset_top = -93.0
+offset_right = -4.0
+offset_bottom = -43.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="Add" type="Button" parent="ExtraGUI/PlayerAmountControl" unique_id=1864307349]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Add
+Player"
+
+[node name="Remove" type="Button" parent="ExtraGUI/PlayerAmountControl" unique_id=253324611]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Remove
+Player"
+
 [connection signal="card_entered" from="." to="Hands" method="_on_card_to_hand"]
 [connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP3" to="." method="_on_area_entered" flags=18]
@@ -106,5 +133,7 @@ text = "Flip Cards"
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]
 [connection signal="value_changed" from="ExtraGUI/HSlider" to="Hands" method="_on_card_size_slider_changed"]
 [connection signal="pressed" from="ExtraGUI/Flipper" to="Hands" method="_on_flipper_pressed"]
+[connection signal="pressed" from="ExtraGUI/PlayerAmountControl/Add" to="." method="_on_add_player_pressed"]
+[connection signal="pressed" from="ExtraGUI/PlayerAmountControl/Remove" to="." method="_on_remove_player_pressed"]
 
 [editable path="ExtraGUI"]

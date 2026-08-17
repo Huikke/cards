@@ -1,8 +1,8 @@
 extends Node2D
 
 var kuhn_deck = [[11, "heart"], [12, "heart"], [13, "heart"]]
-var players = [0, 2]
-var players_balance = [10, 0, 10]
+var players = [0, 1]
+var players_balance = [10, 10]
 var starting_slot = 1
 
 var turn = 0
@@ -12,6 +12,7 @@ var pot = 0
 var new_game_ready = false
 
 func _ready():
+	$Hands.set_seat_size(2)
 	$Hands.change_card_overlap(120)
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 
@@ -19,7 +20,7 @@ func _ready():
 	$ButtonsLayer/ButtonsContainer/Raise.text = "Bet"
 	$ExtraLayer/RoundLabel.text = "Betting Round"
 
-	players_balance = [5, 0, 5]
+	players_balance = [5, 5]
 
 	GlobalSignal.fold.connect(_on_fold)
 	GlobalSignal.call.connect(_on_call)
@@ -47,7 +48,7 @@ func betting_phase(player):
 		if player == 0:
 			$ButtonsLayer.visible = true
 			return
-		elif player == 2:
+		elif player == 1:
 			var choice = randi_range(0, 1)
 			if bet_bool:
 				if $Hands.get_hand_content(player)[0][0] == 13:
@@ -67,18 +68,18 @@ func betting_phase(player):
 			betting_phase(0)
 
 func showdown_phase():
-	$Hands.flip_hand(2)
-	if $Hands.get_hand_content(0)[0][0] > $Hands.get_hand_content(2)[0][0]:
+	$Hands.flip_hand(1)
+	if $Hands.get_hand_content(0)[0][0] > $Hands.get_hand_content(1)[0][0]:
 		players_balance[0] += pot
 		$ExtraLayer/RoundLabel.text = "Showdown Round, Player 1 wins!"
 	else:
-		players_balance[2] += pot
+		players_balance[1] += pot
 		$ExtraLayer/RoundLabel.text = "Showdown Round, Player 2 wins!"
 
 	balance_display_update()
-	if players_balance[0] < 0:
+	if players_balance[0] <= 0:
 		game_end(2)
-	elif players_balance[2] < 0:
+	elif players_balance[1] <= 0:
 		game_end(0)
 	else:
 		new_game_ready = true
@@ -87,16 +88,16 @@ func uncontested_win(player):
 	players_balance[player] += pot
 
 	balance_display_update()
-	if players_balance[0] < 0:
-		game_end(2)
-	elif players_balance[2] < 0:
+	if players_balance[0] <= 0:
+		game_end(1)
+	elif players_balance[1] <= 0:
 		game_end(0)
 	else:
 		new_game_ready = true
 
 func game_reset():
 	$Deck.reset_deck()
-	$Hands.flip_hand(2)
+	$Hands.flip_hand(1)
 	$Hands.clear_hands()
 
 	pot = 0
@@ -110,14 +111,14 @@ func game_reset():
 	$ExtraLayer/RoundLabel.text = "Betting Round"
 
 func game_end(winner):
-	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(winner) + "!"
+	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(winner+1) + "!"
 
 func _on_fold(player):
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
 	$Hands.change_hand_heads_up_text(player, "Fold")
 
 	if player == 0:
-		uncontested_win(2)
+		uncontested_win(1)
 	else:
 		uncontested_win(0)
 
@@ -136,7 +137,7 @@ func _on_call(player):
 
 	turn += 1
 	if player == 0:
-		betting_phase(2)
+		betting_phase(1)
 
 
 func _on_raise(player, _amount = 1):
@@ -152,7 +153,7 @@ func _on_raise(player, _amount = 1):
 
 	turn = 1
 	if player == 0:
-		betting_phase(2)
+		betting_phase(1)
 
 
 func balance_display_update():

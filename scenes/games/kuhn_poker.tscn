@@ -67,7 +67,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="StatsP0" parent="ExtraLayer" unique_id=1693016226 instance=ExtResource("6_rqdjo")]
 
-[node name="StatsP2" parent="ExtraLayer" unique_id=1952660424 instance=ExtResource("6_rqdjo")]
+[node name="StatsP1" parent="ExtraLayer" unique_id=1952660424 instance=ExtResource("6_rqdjo")]
 anchors_preset = -1
 anchor_left = 0.6
 anchor_top = 0.1

@@ -7,12 +7,13 @@ var human_score = 0
 var ai_score = 0
 
 func _ready():
+	$Hands.set_seat_size(2)
 	$Hands.change_card_overlap(120)
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout
 	for card in range(3): # Card amount
-		for player in range(0, 3, 2): # Player amount
+		for player in range(2): # Player amount
 			await get_tree().create_timer(0.2).timeout
 			$Deck.deal("player", player)
 
@@ -57,10 +58,8 @@ func _on_hands_card_selected(human_card):
 var first = true
 var game_over = false
 func ai_play():
-	var ai_hand = $Hands/H20/HandContainer.get_children()
-	# Temporary solution to our invisible card
-	if first:
-		ai_hand.pop_back()
+	var ai_hand = $Hands.seat_setup[1].get_node("HandContainer").get_children()
+	ai_hand.pop_back()
 	var ai_card = ai_hand.pick_random()
 	if len(ai_hand) == 1: # hand does not go empty before queue free
 		game_over = true

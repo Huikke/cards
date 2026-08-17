@@ -21,10 +21,14 @@ var seat_setup: Array
 ]
 
 func _ready():
-	seat_setup = SEAT_SETUPS[4]
+	set_seat_size(4)
+
+func set_seat_size(size):
+	seat_setup = SEAT_SETUPS[size]
 	player_cards_face_up_list.resize(len(seat_setup))
 	player_cards_face_up_list.fill(false)
-	player_cards_face_up_list[0] = true
+	if !Global.mp_enabled:
+		player_cards_face_up_list[0] = true
 
 
 func _on_card_to_hand(card_i, player: int) -> void:
@@ -108,7 +112,7 @@ func clear_hand(player):
 			card.queue_free()
 
 func clear_hands():
-	for player in range(4):
+	for player in range(2):
 		clear_hand(player)
 
 func change_hand_heads_up_text(player, text):
