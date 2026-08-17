@@ -21,6 +21,11 @@ var phase: int = 1 # Better known as "round"
 var community_cards_physical: Array = []
 var community_cards_data: Array = []
 
+# Raise stakes
+var stakes_mult = 1
+var hands_played = 0
+var raise_stakes_in = 1
+
 # Player variables
 var players_live: Array[int]
 var player_count: int
@@ -68,11 +73,12 @@ func _ready():
 	players_balance.resize(starting_player_count)
 	players_balance.fill(starting_balance)
 	starting_slot = randi_range(0, player_count-1)
-	min_bet = starting_bet
+	min_bet = starting_bet * stakes_mult
 	player_count = len(players_live)
 
 
 	balance_display_update(-1)
+	label_update("Blinds", "Blinds: " + str(min_bet / 2) + " € / " + str(min_bet) + " €")
 	# Start the game
 	if !Global.mp_enabled or multiplayer.is_server():
 		# Initiate ai_agents
@@ -217,7 +223,7 @@ func round_end_process():
 	# Reset round_bet
 	round_bet = 0
 	players_round_bet.fill(0)
-	min_bet = starting_bet
+	min_bet = starting_bet * stakes_mult
 
 	# Refund uncalled bets amount back to player
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
@@ -521,12 +527,17 @@ func game_reset():
 	card_placement_reset()
 	players_game_bet.fill(0)
 	players_round_bet.fill(0)
-	min_bet = starting_bet
 	side_pot_bool = false
 
 	balance_display_update()
 	indicator_reset()
 	label_update("Main", "")
+	
+	hands_played += 1
+	if hands_played % raise_stakes_in == 0:
+		stakes_mult += 1
+	min_bet = starting_bet * stakes_mult
+	label_update("Blinds", "Blinds: " + str(min_bet / 2) + " € / " + str(min_bet) + " €")
 
 	starting_slot = (starting_slot + 1) % player_count
 
@@ -677,6 +688,8 @@ func label_update(label_name: String, text: String, number: int = -1) -> void:
 		$ExtraLayer/MainLabel.text = text
 	elif label_name == "Pot":
 		$ExtraLayer/PotLabel.text = text
+	elif label_name == "Blinds":
+		$ExtraLayer/BlindsLabel.text = text
 	elif label_name == "PlayerBalance":
 		$ExtraLayer.get_node("StatsP" + str(number) + "/HBC/PC/MC/CurrencyLabel").text = text + " €"
 	elif label_name == "PlayerHeadsUp":
@@ -754,12 +767,13 @@ func game_start_import(players_agent, player_agent_core, starting_player_count):
 
 func game_state_export():
 	if Global.mp_enabled and multiplayer.is_server():
-		game_state_import.rpc(players_balance, round_bet, players_round_bet, players_game_bet)
+		game_state_import.rpc(players_balance, round_bet, players_round_bet, players_game_bet, min_bet)
 
 @rpc("authority")
 @warning_ignore("shadowed_variable")
-func game_state_import(players_balance, round_bet, players_round_bet, players_game_bet):
+func game_state_import(players_balance, round_bet, players_round_bet, players_game_bet, min_bet):
 	self.players_balance = players_balance
 	self.round_bet = round_bet
 	self.players_round_bet = players_round_bet
 	self.players_game_bet = players_game_bet
+	self.min_bet = min_bet
