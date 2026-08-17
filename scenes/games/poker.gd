@@ -217,6 +217,7 @@ func round_end_process():
 	# Reset round_bet
 	round_bet = 0
 	players_round_bet.fill(0)
+	min_bet = starting_bet
 
 	# Refund uncalled bets amount back to player
 	if len(fold_list) + len(all_in_list) >= player_count - 1:
@@ -366,6 +367,8 @@ func _on_raise(player, amount = min_bet):
 
 	move_display_update(2, player, amount)
 
+	if amount > min_bet:
+		min_bet = amount
 	round_bet += amount
 	current_turn = 1
 
@@ -518,6 +521,7 @@ func game_reset():
 	card_placement_reset()
 	players_game_bet.fill(0)
 	players_round_bet.fill(0)
+	min_bet = starting_bet
 	side_pot_bool = false
 
 	balance_display_update()
@@ -719,7 +723,7 @@ func balance_change_animation(player, amount) -> void:
 func set_player_face_dir_default():
 	# Player's card is up
 	for p in range(starting_player_count):
-		if players_agent[p][0] == 0 and player_agent_core[p] == multiplayer.get_unique_id():
+		if players_agent[p][0] == 0 and (player_agent_core[p] == multiplayer.get_unique_id() or !Global.mp_enabled):
 			$Hands.face_dir_default(p, true)
 		else:
 			$Hands.face_dir_default(p, false)
