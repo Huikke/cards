@@ -3,6 +3,7 @@
 [node name="PlayerSettings" type="HBoxContainer" unique_id=526247330]
 offset_right = 516.0
 offset_bottom = 40.0
+theme_override_constants/separation = 10
 
 [node name="PlayerNro" type="Label" parent="." unique_id=1811303427]
 custom_minimum_size = Vector2(150, 0)

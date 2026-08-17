@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://dghyo5yd5q7yj"]
+
+[ext_resource type="Script" uid="uid://bsey22qbpgllb" path="res://scenes/user_interface/deck_settings.gd" id="1_s4rjt"]
+[ext_resource type="Texture2D" uid="uid://84m5ih1r3l0r" path="res://assets/cards/back/burgerman.svg" id="2_tonx5"]
+
+[node name="DeckSettings" type="HBoxContainer" unique_id=898123526]
+theme_override_constants/separation = 10
+script = ExtResource("1_s4rjt")
+
+[node name="Label" type="Label" parent="." unique_id=1986669741]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Deck"
+
+[node name="Left" type="Button" parent="." unique_id=290404425]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+text = "⬅️"
+
+[node name="Right" type="Button" parent="." unique_id=859626126]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+text = "➡️"
+
+[node name="DeckPanel" type="PanelContainer" parent="." unique_id=1914893847]
+custom_minimum_size = Vector2(200, 300)
+layout_mode = 2
+
+[node name="VBC" type="VBoxContainer" parent="DeckPanel" unique_id=875476073]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="ReferenceRect" type="ReferenceRect" parent="DeckPanel/VBC" unique_id=1681480757]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="DeckPanel/VBC" unique_id=84492827]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Deck"
+
+[node name="DeckTexture" type="TextureRect" parent="DeckPanel/VBC" unique_id=558966366]
+layout_mode = 2
+texture = ExtResource("2_tonx5")
+stretch_mode = 3
+
+[connection signal="pressed" from="Left" to="." method="_on_left_pressed"]
+[connection signal="pressed" from="Right" to="." method="_on_right_pressed"]

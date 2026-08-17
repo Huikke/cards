@@ -8,10 +8,19 @@ func _on_play_button_pressed():
 	$FirstMenu.visible = false
 	$GameMenu.visible = true
 
+func _on_multiplayer_button_pressed() -> void:
+	$FirstMenu.visible = false
+	$NetworkHandler.visible = true
+
+func _on_settings_button_pressed() -> void:
+	$FirstMenu.visible = false
+	$SettingsMenu.visible = true
+
 
 func _on_back_button_pressed():
 	$FirstMenu.visible = true
 	$GameMenu.visible = false
+	$SettingsMenu.visible = false
 
 func _on_game_button_pressed(game_id: int) -> void:
 	if Global.mp_enabled == true:
@@ -66,7 +75,3 @@ func mode_update(p, clear_option = true):
 	for option in mode_options[players_mode[p][0]]:
 		$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").add_item(option)
 	$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").selected = players_mode[p][1]
-
-func _on_multiplayer_button_pressed() -> void:
-	$FirstMenu.visible = false
-	$NetworkHandler.visible = true
