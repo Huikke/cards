@@ -48,6 +48,7 @@ func _on_game_3_setting_pressed():
 			left_node.pressed.connect(_on_left_pressed.bind(p))
 			right_node.pressed.connect(_on_right_pressed.bind(p))
 			option_button.item_selected.connect(_on_option_button_item_selected.bind(p))
+		game_settings_first = false
 
 
 func _on_setting_back_button_pressed():

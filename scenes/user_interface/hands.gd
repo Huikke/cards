@@ -65,6 +65,9 @@ func change_card_overlap(custom_size):
 				else:
 					card.visible = false
 
+func face_dir_default(player, is_face_up):
+	player_cards_face_up_list[player] = is_face_up
+
 func flip_hand(player: int):
 	var node_str = "HandP" + str(player) + "/HandContainer"
 	var hand_cards = get_node(node_str).get_children()

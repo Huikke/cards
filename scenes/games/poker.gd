@@ -52,12 +52,6 @@ func _ready():
 	# Visuals
 	$Hands.change_card_overlap(120)
 	label_update("Main", "")
-	# Player's card is up
-	for i in range(starting_player_count):
-		if players_agent[i][0] == 0:
-			$Hands.player_cards_face_up_list[i] = true
-		else:
-			$Hands.player_cards_face_up_list[i] = false
 
 	# Connect Signals
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
@@ -77,30 +71,29 @@ func _ready():
 	min_bet = starting_bet
 	player_count = len(players_live)
 
-	# Initiate ai_agents
-	for i in range(len(players_agent)):
-		if players_agent[i][0] == 0 and Global.mp_enabled:
-			player_agent_core.append(null)
-			#player_agent_core.append(Global.multiplayer_players[players_agent[1]])
-		elif players_agent[i][0] == 1:
-			player_agent_core.append(players_agent[i][1])
-		elif players_agent[i][0] == 2:
-			if players_agent[i][1] == 0:
-				player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
-				add_child(player_agent_core[i])
-			elif players_agent[i][1] == 1:
-				player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
-				add_child(player_agent_core[i])
-		else:
-			player_agent_core.append(null)
-
-	# Debug
-	# players_balance = [2000, 500, 300, 400]
 
 	balance_display_update(-1)
 	# Start the game
 	if !Global.mp_enabled or multiplayer.is_server():
+		# Initiate ai_agents
+		for i in range(len(players_agent)):
+			if players_agent[i][0] == 0 and Global.mp_enabled:
+				player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
+			elif players_agent[i][0] == 1:
+				player_agent_core.append(players_agent[i][1])
+			elif players_agent[i][0] == 2:
+				if players_agent[i][1] == 0:
+					player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
+					add_child(player_agent_core[i])
+				elif players_agent[i][1] == 1:
+					player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
+					add_child(player_agent_core[i])
+			else:
+				player_agent_core.append(null)
+
 		$ExtraLayer/GameLog.visible = true
+		game_start_export()
+		set_player_face_dir_default()
 		game_begin()
 
 # ==============================================================================
@@ -167,7 +160,7 @@ func game_loop(player: int) -> void:
 	# Player action based on agent type
 	indicator_color_update(player, Color("Orange"))
 	if players_agent[player][0] == 0:
-		player_turn(player)
+		player_turn(player, player_agent_core[player])
 	elif players_agent[player][0] == 1:
 		await get_tree().create_timer(0.5).timeout
 		if player_agent_core[player] == 0:
@@ -243,10 +236,13 @@ func round_end_process():
 # ==============================================================================
 
 @rpc("authority")
-func player_turn(player):
+func player_turn(player, peer_id):
 	if Global.mp_enabled and multiplayer.is_server():
 		game_state_export()
-		player_turn.rpc(player)
+		player_turn.rpc(player, peer_id)
+	if Global.mp_enabled and multiplayer.get_unique_id() != peer_id:
+		return
+
 	$ButtonsLayer.set_player(player)
 	$ButtonsLayer.visible = true
 
@@ -404,8 +400,7 @@ func showdown():
 	# Get players' poker hands
 	for player in players_live:
 		if player not in fold_list:
-			if players_agent[player][0] != 0:
-				$Hands.flip_hand(player)
+			showdown_card_reveal(player)
 
 			poker_hand_list.append(get_player_hand(player))
 		else:
@@ -721,9 +716,37 @@ func balance_change_animation(player, amount) -> void:
 	# Causes visual bug
 	tween.tween_property(the_node, "modulate:a", 0, 0.2).set_delay(2)
 
+func set_player_face_dir_default():
+	# Player's card is up
+	for p in range(starting_player_count):
+		if players_agent[p][0] == 0 and player_agent_core[p] == multiplayer.get_unique_id():
+			$Hands.face_dir_default(p, true)
+		else:
+			$Hands.face_dir_default(p, false)
+
+@rpc("authority")
+func showdown_card_reveal(player):
+	if Global.mp_enabled and multiplayer.is_server():
+		showdown_card_reveal.rpc(player)
+	if $Hands.player_cards_face_up_list[player] == false:
+		$Hands.flip_hand(player)
+
 # ==============================================================================
 # Multiplayer
 # ==============================================================================
+
+func game_start_export():
+	if Global.mp_enabled and multiplayer.is_server():
+		game_start_import.rpc(players_agent, player_agent_core, starting_player_count)
+
+@rpc("authority")
+@warning_ignore("shadowed_variable")
+func game_start_import(players_agent, player_agent_core, starting_player_count):
+	self.players_agent = players_agent
+	self.starting_player_count = starting_player_count
+	self.player_agent_core = player_agent_core
+
+	set_player_face_dir_default()
 
 func game_state_export():
 	if Global.mp_enabled and multiplayer.is_server():
