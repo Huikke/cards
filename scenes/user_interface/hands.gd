@@ -3,14 +3,32 @@ extends CanvasLayer
 signal card_selected
 
 var texture_path = "res://assets/cards/front/perfectionism/"
-var player_cards_face_up_list = [true, false, false, false]
+var player_cards_face_up_list: Array[bool]
 var ui_card = preload("res://scenes/user_interface/ui_card.tscn").instantiate()
 var card_size = Vector2(120, 168)
 
+var seat_setup: Array
+@onready var SEAT_SETUPS = [
+	[],
+	[$H00],
+	[$H00, $H20],
+	[$H00, $H10, $H20],
+	[$H00, $H10, $H20, $H30],
+	[$H01, $H02, $H10, $H20, $H30],
+	[$H01, $H02, $H10, $H21, $H22, $H30],
+	[$H01, $H02, $H11, $H12, $H21, $H22, $H30],
+	[$H01, $H02, $H11, $H12, $H21, $H22, $H31, $H32]
+]
+
+func _ready():
+	seat_setup = SEAT_SETUPS[4]
+	player_cards_face_up_list.resize(len(seat_setup))
+	player_cards_face_up_list.fill(false)
+	player_cards_face_up_list[0] = true
+
 
 func _on_card_to_hand(card_i, player: int) -> void:
-	var hand_scene = "HandP" + str(player)
-	var hand_content = get_node(hand_scene).get_child(0)
+	var hand_content = seat_setup[player].get_child(0)
 
 	var card_o = ui_card.duplicate()
 	card_o.value = card_i.value
@@ -32,15 +50,14 @@ func _on_card_to_hand(card_i, player: int) -> void:
 	tween.tween_property(card_sprite, "position", card_sprite.position - Vector2(0, 84), 0.2)
 
 	hand_content.add_child(card_o)
-	hand_content.move_child(get_node(hand_scene + "/HandContainer/CardPadding"), -1)
+	hand_content.move_child(seat_setup[player].get_node("HandContainer/CardPadding"), -1)
 
 func _on_card_gui_input(event, card_ui):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		card_selected.emit(card_ui)
 
 func get_hand_content(player: int):
-	var node_str = "HandP" + str(player)
-	var hand = get_node(node_str).get_child(0).get_children()
+	var hand = seat_setup[player].get_child(0).get_children()
 	var hand_list = []
 	for card in hand:
 		if card is UiCard and card.value != 0:
@@ -69,8 +86,7 @@ func face_dir_default(player, is_face_up):
 	player_cards_face_up_list[player] = is_face_up
 
 func flip_hand(player: int):
-	var node_str = "HandP" + str(player) + "/HandContainer"
-	var hand_cards = get_node(node_str).get_children()
+	var hand_cards = seat_setup[player].get_node("HandContainer").get_children()
 	for card in hand_cards:
 		if card.name == "CardPadding":
 			pass
@@ -86,8 +102,7 @@ func flip_hand(player: int):
 func clear_hand(player):
 	if Global.mp_enabled and multiplayer.is_server():
 		clear_hand.rpc(player)
-	var node_str = "HandP" + str(player)
-	var hand = get_node(node_str).get_child(0).get_children()
+	var hand = seat_setup[player].get_child(0).get_children()
 	for card in hand:
 		if card is UiCard:
 			card.queue_free()
@@ -96,6 +111,8 @@ func clear_hands():
 	for player in range(4):
 		clear_hand(player)
 
+func change_hand_heads_up_text(player, text):
+	seat_setup[player].get_node("PlayerHeadsUpLabel").text = text
 
 # Sandbox only
 func _on_card_size_slider_changed(value):

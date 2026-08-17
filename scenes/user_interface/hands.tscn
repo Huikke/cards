@@ -6,21 +6,57 @@
 [node name="Hands" type="CanvasLayer" unique_id=1156811625]
 script = ExtResource("1_vghik")
 
-[node name="HandP0" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]
+[node name="H00" parent="." unique_id=911318685 instance=ExtResource("2_f5ih3")]
 
-[node name="HandP1" parent="." unique_id=479539659 instance=ExtResource("2_f5ih3")]
+[node name="H01" parent="." unique_id=1105204825 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_left = 0.5
+
+[node name="H02" parent="." unique_id=660089685 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_right = 0.5
+
+[node name="H10" parent="." unique_id=438621734 instance=ExtResource("2_f5ih3")]
 anchors_preset = 9
 anchor_top = 0.0
 anchor_right = 0.0
-offset_right = 800.0
-offset_bottom = -800.0
+offset_left = -400.0
+offset_top = 400.0
+offset_right = 400.0
+offset_bottom = -400.0
 grow_horizontal = 1
 grow_vertical = 2
 rotation = 1.5707964
-pivot_offset_ratio = Vector2(0, 0.5)
-metadata/_edit_use_anchors_ = true
+pivot_offset_ratio = Vector2(0.5, 0.5)
 
-[node name="HandP2" parent="." unique_id=825960371 instance=ExtResource("2_f5ih3")]
+[node name="H11" parent="." unique_id=592215621 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 0.0
+offset_left = -200.0
+offset_top = 200.0
+offset_right = 200.0
+offset_bottom = -200.0
+grow_horizontal = 1
+grow_vertical = 2
+rotation = 1.5707964
+pivot_offset_ratio = Vector2(0.5, 0.5)
+
+[node name="H12" parent="." unique_id=480185880 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 200.0
+offset_right = 200.0
+offset_bottom = -200.0
+grow_horizontal = 1
+grow_vertical = 2
+rotation = 1.5707964
+pivot_offset_ratio = Vector2(0.5, 0.5)
+
+[node name="H20" parent="." unique_id=825960371 instance=ExtResource("2_f5ih3")]
 anchors_preset = -1
 anchor_top = 0.0
 anchor_bottom = 0.0
@@ -30,7 +66,29 @@ rotation = 3.1415927
 pivot_offset_ratio = Vector2(0.5, 0)
 metadata/_edit_use_anchors_ = true
 
-[node name="HandP3" parent="." unique_id=1894932184 instance=ExtResource("2_f5ih3")]
+[node name="H21" parent="." unique_id=2130102661 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+rotation = 3.1415927
+pivot_offset_ratio = Vector2(0.5, 0)
+metadata/_edit_use_anchors_ = true
+
+[node name="H22" parent="." unique_id=1486442847 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+rotation = 3.1415927
+pivot_offset_ratio = Vector2(0.5, 0)
+metadata/_edit_use_anchors_ = true
+
+[node name="H30" parent="." unique_id=1894932184 instance=ExtResource("2_f5ih3")]
 anchors_preset = -1
 anchor_left = 1.0
 anchor_top = 0.0
@@ -38,6 +96,31 @@ offset_left = -400.0
 offset_top = 400.0
 offset_right = 400.0
 offset_bottom = -400.0
+grow_vertical = 2
+rotation = 4.712389
+pivot_offset_ratio = Vector2(0.5, 0.5)
+
+[node name="H31" parent="." unique_id=1186233806 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 200.0
+offset_right = 200.0
+offset_bottom = -200.0
+grow_vertical = 2
+rotation = 4.712389
+pivot_offset_ratio = Vector2(0.5, 0.5)
+
+[node name="H32" parent="." unique_id=622124211 instance=ExtResource("2_f5ih3")]
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.5
+offset_left = -200.0
+offset_top = 200.0
+offset_right = 200.0
+offset_bottom = -200.0
 grow_vertical = 2
 rotation = 4.712389
 pivot_offset_ratio = Vector2(0.5, 0.5)

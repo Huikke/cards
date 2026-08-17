@@ -693,7 +693,7 @@ func label_update(label_name: String, text: String, number: int = -1) -> void:
 	elif label_name == "PlayerBalance":
 		$ExtraLayer.get_node("StatsP" + str(number) + "/HBC/PC/MC/CurrencyLabel").text = text + " €"
 	elif label_name == "PlayerHeadsUp":
-		$Hands.get_node("HandP" + str(number) + "/PlayerHeadsUpLabel").text = text
+		$Hands.change_hand_heads_up_text(number, text)
 
 @rpc("authority")
 func indicator_color_update(player: int, color: Color) -> void:

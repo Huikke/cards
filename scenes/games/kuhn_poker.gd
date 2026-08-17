@@ -114,7 +114,7 @@ func game_end(winner):
 
 func _on_fold(player):
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
-	$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = "Fold"
+	$Hands.change_hand_heads_up_text(player, "Fold")
 
 	if player == 0:
 		uncontested_win(2)
@@ -132,8 +132,8 @@ func _on_call(player):
 		indicator.color = Color("Lime_Green")
 	else:
 		indicator.modulate *= 1.5
-	$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = "Call"
-	
+	$Hands.change_hand_heads_up_text(player, "Call")
+
 	turn += 1
 	if player == 0:
 		betting_phase(2)
@@ -144,7 +144,7 @@ func _on_raise(player, _amount = 1):
 		_on_call(player)
 		return
 	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
-	$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = "Raise"
+	$Hands.change_hand_heads_up_text(player, "Raise")
 
 	pot += 1
 	players_balance[player] -= 1
@@ -165,7 +165,7 @@ func indicator_reset():
 	for player in players:
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
 		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
-		$Hands.get_node("HandP" + str(player) + "/PlayerHeadsUpLabel").text = ""
+		$Hands.change_hand_heads_up_text(player, "")
 
 func _unhandled_input(event):
 	# Click to start next hand

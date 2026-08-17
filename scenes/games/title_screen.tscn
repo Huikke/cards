@@ -174,6 +174,21 @@ layout_mode = 2
 [node name="PlayerSettings3" parent="PokerSettingMenu/PlayerSettingsBox" unique_id=206319446 instance=ExtResource("3_xn6cn")]
 layout_mode = 2
 
+[node name="PlayerAmountControl" type="HBoxContainer" parent="PokerSettingMenu" unique_id=219674309]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="Add" type="Button" parent="PokerSettingMenu/PlayerAmountControl" unique_id=152385844]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Add"
+
+[node name="Remove" type="Button" parent="PokerSettingMenu/PlayerAmountControl" unique_id=1129008859]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Remove"
+
 [node name="SettingBackButton" type="Button" parent="PokerSettingMenu" unique_id=518391399]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
@@ -194,4 +209,6 @@ visible = false
 [connection signal="pressed" from="GameMenu/Game4Button" to="." method="_on_game_button_pressed" binds= [3]]
 [connection signal="pressed" from="GameMenu/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="SettingsMenu/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="PokerSettingMenu/PlayerAmountControl/Add" to="." method="_on_add_pressed"]
+[connection signal="pressed" from="PokerSettingMenu/PlayerAmountControl/Remove" to="." method="_on_remove_pressed"]
 [connection signal="pressed" from="PokerSettingMenu/SettingBackButton" to="." method="_on_setting_back_button_pressed"]

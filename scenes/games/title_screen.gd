@@ -76,3 +76,26 @@ func mode_update(p, clear_option = true):
 	for option in mode_options[players_mode[p][0]]:
 		$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").add_item(option)
 	$PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton").selected = players_mode[p][1]
+
+var player_setting_scene = preload("res://scenes/user_interface/player_settings.tscn")
+func _on_add_pressed() -> void:
+	var new_player = player_setting_scene.instantiate()
+	var p = len(Global.player_poker_modes)
+	new_player.name = "PlayerSettings" + str(p)
+	Global.player_poker_modes.append([0, 0])
+	new_player.get_node("PlayerNro").text = "Player " + str(p)
+	new_player.get_node("Mode").text = modes[0]
+	for option in mode_options[0]:
+		new_player.get_node("OptionButton").add_item(option)
+	new_player.get_node("Left").pressed.connect(_on_left_pressed.bind(p))
+	new_player.get_node("Right").pressed.connect(_on_right_pressed.bind(p))
+	$PokerSettingMenu/PlayerSettingsBox.add_child(new_player)
+	
+	print(Global.player_poker_modes)
+
+
+func _on_remove_pressed() -> void:
+	var last_child = $PokerSettingMenu/PlayerSettingsBox.get_child(-1)
+	$PokerSettingMenu/PlayerSettingsBox.remove_child(last_child)
+	Global.player_poker_modes.remove_at(-1)
+	print(Global.player_poker_modes)
