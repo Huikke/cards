@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_tpt06"]
 [ext_resource type="PackedScene" uid="uid://dlyxqijksc6ws" path="res://scenes/user_interface/extra_gui.tscn" id="5_sboq1"]
 [ext_resource type="PackedScene" uid="uid://5bmjwkuw0yc7" path="res://scenes/objects/japanese_deck.tscn" id="6_wsgvi"]
+[ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="8_wsgvi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
 size = Vector2(718.75, 119)
@@ -149,6 +150,8 @@ text = "⬅️"
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 text = "➡️"
+
+[node name="EscMenu" parent="." unique_id=623134519 instance=ExtResource("8_wsgvi")]
 
 [connection signal="card_entered" from="." to="Hands" method="_on_card_to_hand"]
 [connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]

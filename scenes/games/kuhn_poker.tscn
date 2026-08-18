@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="3_mpjaf"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="4_uryfc"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_u6pjw"]
+[ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="6_rqdjo"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_mpjaf"]
 font_size = 50
@@ -63,3 +64,5 @@ grow_vertical = 2
 text = "Pot: 0 €"
 label_settings = SubResource("LabelSettings_uryfc")
 metadata/_edit_use_anchors_ = true
+
+[node name="EscMenu" parent="." unique_id=623134519 instance=ExtResource("6_rqdjo")]

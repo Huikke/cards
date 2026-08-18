@@ -9,7 +9,7 @@ const POKER_POSITIONS: Array[String] = ["Button", "Small Blind", "Big Blind", "U
 @onready var _main_label = $ExtraLayer/MainPC/MC/MainLabel
 @onready var _pot_label = $ExtraLayer/PotPC/MC/PotLabel
 @onready var _blinds_label = $ExtraLayer/BlindsPC/MC/BlindsLabel
-@onready var _game_log = $ExtraLayer/GameLog
+@onready var _game_log = $EscMenu/VBC/GameLog
 
 # Pre-Game variables
 var players_agent: Array
@@ -77,7 +77,6 @@ func _ready():
 			else:
 				player_agent_core.append(null)
 
-		_game_log.visible = true
 		game_start_export()
 		set_player_face_dir_default()
 		game_begin()
@@ -540,8 +539,7 @@ func game_reset():
 	community_cards_physical.clear()
 	community_cards_data.clear()
 	players_roles.clear()
-	game_log.clear()
-	_game_log.text = ""
+	game_log_reset()
 	current_turn = 0
 	phase = 1
 	card_placement_reset()
@@ -629,7 +627,20 @@ func logger(action: String, p: int = -1, amount: int = -1) -> void:
 		game_log.append(ROUND_NAMES[phase] + ": " + " ".join(mapped_c_cards))
 	elif action == "win":
 		game_log.append("Player " + str(p + 1) + " wins " + str(amount) + " €")
-	_game_log.text += game_log[-1] + "\n"
+	logger_window_update(game_log[-1] + "\n")
+
+@rpc("authority")
+func logger_window_update(text):
+	if Global.mp_enabled and multiplayer.is_server():
+		logger_window_update.rpc(text)
+	_game_log.text += text
+
+@rpc("authority")
+func game_log_reset():
+	if Global.mp_enabled and multiplayer.is_server():
+		game_log_reset.rpc()
+	game_log.clear()
+	_game_log.text = ""
 
 func cards_data_to_str(card):
 	if card[0] == 11:

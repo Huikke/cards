@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_i64jm"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_6ndmv"]
 [ext_resource type="PackedScene" uid="uid://rjb3uf1yi6jp" path="res://scenes/user_interface/score_display.tscn" id="5_6ndmv"]
+[ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="6_i64jm"]
 
 [node name="BestOfThree" type="Node2D" unique_id=1520870245]
 script = ExtResource("1_qp27h")
@@ -43,5 +44,7 @@ color = Color(0.10980392, 0.2, 0.9764706, 1)
 polygon = PackedVector2Array(1019, 134, 1001, 343, 743, 329, 732, 746, 560, 746, 590, 322, 280, 303, 277, 133)
 
 [node name="ScoreDisplay" parent="." unique_id=807158604 instance=ExtResource("5_6ndmv")]
+
+[node name="EscMenu" parent="." unique_id=623134519 instance=ExtResource("6_i64jm")]
 
 [connection signal="card_selected" from="Hands" to="." method="_on_hands_card_selected"]

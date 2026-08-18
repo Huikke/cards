@@ -48,6 +48,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Settings"
 
+[node name="QuitButton" type="Button" parent="FirstMenu" unique_id=1386474595]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Quit"
+
 [node name="GameMenu" type="VBoxContainer" parent="." unique_id=1393832728]
 visible = false
 anchors_preset = 8
@@ -202,6 +208,7 @@ visible = false
 [connection signal="pressed" from="FirstMenu/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="FirstMenu/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
 [connection signal="pressed" from="FirstMenu/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="FirstMenu/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="pressed" from="GameMenu/Game1Button" to="." method="_on_game_button_pressed" binds= [0]]
 [connection signal="pressed" from="GameMenu/Game2Button" to="." method="_on_game_button_pressed" binds= [1]]
 [connection signal="pressed" from="GameMenu/Game3HBC/Game3Button" to="." method="_on_game_button_pressed" binds= [2]]

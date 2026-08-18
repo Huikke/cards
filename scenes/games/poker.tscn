@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_gbg6l"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
+[ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="6_y74yl"]
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="7_jyp7r"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2teuh"]
@@ -111,23 +112,27 @@ text = "Blinds: 1 € / 2 €"
 label_settings = SubResource("LabelSettings_wkadk")
 metadata/_edit_use_anchors_ = true
 
-[node name="GameLog" type="TextEdit" parent="ExtraLayer" unique_id=760562557]
-visible = false
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -392.0
-offset_top = 162.0
-offset_right = -113.0
-offset_bottom = 267.0
-grow_horizontal = 0
-placeholder_text = "Game Log"
-
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
 
 [node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
 visible = false
 
 [node name="Countdown" type="Timer" parent="." unique_id=1075979618]
+
+[node name="EscMenu" parent="." unique_id=623134519 instance=ExtResource("6_y74yl")]
+
+[node name="VBC" type="VBoxContainer" parent="EscMenu" unique_id=386618613]
+offset_left = 888.0
+offset_top = 162.0
+offset_right = 928.0
+offset_bottom = 202.0
+
+[node name="Label" type="Label" parent="EscMenu/VBC" unique_id=1919899118]
+layout_mode = 2
+text = "Game Log"
+
+[node name="GameLog" type="TextEdit" parent="EscMenu/VBC" unique_id=760562557]
+custom_minimum_size = Vector2(300, 440)
+layout_mode = 2
 
 [connection signal="timeout" from="Countdown" to="." method="_on_countdown_timeout"]

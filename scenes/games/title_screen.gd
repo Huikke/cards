@@ -102,3 +102,7 @@ func _on_remove_pressed() -> void:
 	Global.player_poker_modes.remove_at(-1)
 	Global.player_poker_names.remove_at(-1)
 	print(Global.player_poker_modes)
+
+
+func _on_quit_button_pressed() -> void:
+	get_tree().quit()

@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://bdvs8thxqfq51"]
+
+[ext_resource type="Script" uid="uid://bnvm4nkaldwhd" path="res://scenes/user_interface/esc_menu.gd" id="1_audev"]
+
+[node name="EscMenu" type="CanvasLayer" unique_id=623134519]
+visible = false
+script = ExtResource("1_audev")
+
+[node name="Panel" type="Panel" parent="." unique_id=941058628]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FirstMenu" type="VBoxContainer" parent="." unique_id=292242321]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 32
+
+[node name="Continue" type="Button" parent="FirstMenu" unique_id=4230405]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Continue"
+
+[node name="Settings" type="Button" parent="FirstMenu" unique_id=738394392]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Settings"
+
+[node name="Quit" type="Button" parent="FirstMenu" unique_id=1186908539]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Quit"
+
+[connection signal="pressed" from="FirstMenu/Continue" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="FirstMenu/Quit" to="." method="_on_quit_pressed"]
