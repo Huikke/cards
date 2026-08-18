@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_8j86d"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_tpt06"]
 [ext_resource type="PackedScene" uid="uid://dlyxqijksc6ws" path="res://scenes/user_interface/extra_gui.tscn" id="5_sboq1"]
+[ext_resource type="PackedScene" uid="uid://5bmjwkuw0yc7" path="res://scenes/objects/japanese_deck.tscn" id="6_wsgvi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
 size = Vector2(718.75, 119)
@@ -82,6 +83,9 @@ polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081
 [node name="Deck" parent="Objects" unique_id=1594890157 instance=ExtResource("2_j6lu3")]
 position = Vector2(-186, -34)
 
+[node name="FlipCardDeck" parent="Objects" unique_id=2012358881 instance=ExtResource("6_wsgvi")]
+position = Vector2(114, -53)
+
 [node name="Hands" parent="." unique_id=661734421 instance=ExtResource("3_tpt06")]
 
 [node name="ExtraGUI" parent="." unique_id=356094007 instance=ExtResource("5_sboq1")]
@@ -125,6 +129,27 @@ layout_mode = 2
 text = "Remove
 Player"
 
+[node name="PlayerAmountControl2" type="HBoxContainer" parent="ExtraGUI" unique_id=2146857556]
+offset_left = 1065.0
+offset_top = 649.0
+offset_right = 1240.0
+offset_bottom = 689.0
+size_flags_horizontal = 4
+
+[node name="SpawnDeck" type="Button" parent="ExtraGUI/PlayerAmountControl2" unique_id=1423595860]
+layout_mode = 2
+text = "Add Deck"
+
+[node name="Left" type="Button" parent="ExtraGUI/PlayerAmountControl2" unique_id=763995156]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⬅️"
+
+[node name="Right" type="Button" parent="ExtraGUI/PlayerAmountControl2" unique_id=258804447]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "➡️"
+
 [connection signal="card_entered" from="." to="Hands" method="_on_card_to_hand"]
 [connection signal="area_entered" from="AreaP1" to="." method="_on_area_entered" flags=18]
 [connection signal="area_entered" from="AreaP3" to="." method="_on_area_entered" flags=18]
@@ -135,5 +160,8 @@ Player"
 [connection signal="pressed" from="ExtraGUI/Flipper" to="Hands" method="_on_flipper_pressed"]
 [connection signal="pressed" from="ExtraGUI/PlayerAmountControl/Add" to="." method="_on_add_player_pressed"]
 [connection signal="pressed" from="ExtraGUI/PlayerAmountControl/Remove" to="." method="_on_remove_player_pressed"]
+[connection signal="pressed" from="ExtraGUI/PlayerAmountControl2/SpawnDeck" to="." method="_on_spawn_deck_pressed"]
+[connection signal="pressed" from="ExtraGUI/PlayerAmountControl2/Left" to="." method="_on_deck_left_pressed"]
+[connection signal="pressed" from="ExtraGUI/PlayerAmountControl2/Right" to="." method="_on_deck_right_pressed"]
 
 [editable path="ExtraGUI"]

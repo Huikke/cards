@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://oqrdw7hfbyru"]
+
+[ext_resource type="Texture2D" uid="uid://cghmebdu582cn" path="res://assets/cards/blank_yellow.svg" id="1_oij2i"]
+[ext_resource type="Script" uid="uid://1esyjcdsfoaq" path="res://scenes/objects/flip_card.gd" id="1_sk8gr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sk8gr"]
+size = Vector2(120, 168)
+
+[sub_resource type="LabelSettings" id="LabelSettings_w5m72"]
+font_size = 80
+font_color = Color(0.09239707, 0.09239706, 0.09239706, 1)
+
+[node name="FlipCard" type="Area2D" unique_id=1027170190]
+script = ExtResource("1_sk8gr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=288632179]
+shape = SubResource("RectangleShape2D_sk8gr")
+
+[node name="BlankYellow" type="Sprite2D" parent="." unique_id=1796208069]
+texture = ExtResource("1_oij2i")
+
+[node name="Label" type="Label" parent="." unique_id=325398156]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -31.0
+offset_top = -45.0
+offset_right = 31.0
+offset_bottom = 45.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_w5m72")
+
+[node name="StopMotion" type="Timer" parent="." unique_id=843830226]
+wait_time = 0.2
+one_shot = true
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="timeout" from="StopMotion" to="." method="_on_stop_motion_timeout"]

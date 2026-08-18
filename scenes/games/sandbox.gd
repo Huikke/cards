@@ -36,3 +36,17 @@ func _on_add_player_pressed() -> void:
 
 func _on_remove_player_pressed() -> void:
 	$Hands.set_seat_size(len($Hands.seat_setup) - 1)
+
+var decks = ["res://scenes/objects/deck.tscn", "res://scenes/objects/japanese_deck.tscn", "res://scenes/objects/japanese_deck.tscn"]
+var no = 0
+func _on_spawn_deck_pressed() -> void:
+	var new_deck = load(decks[no]).instantiate()
+	add_child(new_deck)
+	if no == 2:
+		new_deck.reset_deck("katakana")
+
+func _on_deck_left_pressed() -> void:
+	no = (no - 1) % len(decks)
+
+func _on_deck_right_pressed() -> void:
+	no = (no + 1) % len(decks)

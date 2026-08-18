@@ -1,4 +1,4 @@
-extends CollisionObject2D
+extends Area2D
 class_name GameObject2D
 
 var moving
