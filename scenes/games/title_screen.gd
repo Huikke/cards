@@ -90,6 +90,7 @@ func _on_add_pressed() -> void:
 		new_player.get_node("OptionButton").add_item(option)
 	new_player.get_node("Left").pressed.connect(_on_left_pressed.bind(p))
 	new_player.get_node("Right").pressed.connect(_on_right_pressed.bind(p))
+	new_player.get_node("OptionButton").item_selected.connect(_on_option_button_item_selected.bind(p))
 	$PokerSettingMenu/PlayerSettingsBox.add_child(new_player)
 	
 	print(Global.player_poker_modes)

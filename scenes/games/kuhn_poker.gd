@@ -9,16 +9,20 @@ var turn = 0
 var bet_bool = false
 var pot = 0
 
+@onready var _main_label = $ExtraLayer/MainLabel
+@onready var _pot_label = $ExtraLayer/PotLabel
+
 var new_game_ready = false
 
 func _ready():
 	$Hands.set_seat_size(2)
 	$Hands.change_card_overlap(120)
+	$Hands.seat_setup[1].get_node("PokerStats").set_player_name("Player 2") # Quick and dirty
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 
 	$ButtonsLayer/ButtonsContainer/RaiseSlider.visible = false
 	$ButtonsLayer/ButtonsContainer/Raise.text = "Bet"
-	$ExtraLayer/RoundLabel.text = "Betting Round"
+	label_update("Main", "Betting Round")
 
 	players_balance = [5, 5]
 
@@ -71,14 +75,14 @@ func showdown_phase():
 	$Hands.flip_hand(1)
 	if $Hands.get_hand_content(0)[0][0] > $Hands.get_hand_content(1)[0][0]:
 		players_balance[0] += pot
-		$ExtraLayer/RoundLabel.text = "Showdown Round, Player 1 wins!"
+		label_update("Main", "Showdown Round, Player 1 wins!")
 	else:
 		players_balance[1] += pot
-		$ExtraLayer/RoundLabel.text = "Showdown Round, Player 2 wins!"
+		label_update("Main", "Showdown Round, Player 2 wins!")
 
 	balance_display_update()
 	if players_balance[0] <= 0:
-		game_end(2)
+		game_end(1)
 	elif players_balance[1] <= 0:
 		game_end(0)
 	else:
@@ -108,14 +112,14 @@ func game_reset():
 
 	balance_display_update()
 	indicator_reset()
-	$ExtraLayer/RoundLabel.text = "Betting Round"
+	label_update("Main", "Betting Round")
 
 func game_end(winner):
-	$ExtraLayer/RoundLabel.text = "The winner is Player " + str(winner+1) + "!"
+	label_update("Main", "The winner is Player " + str(winner+1) + "!")
 
 func _on_fold(player):
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Red")
-	$Hands.change_hand_heads_up_text(player, "Fold")
+	indicator_color_update(player, Color("Red"))
+	label_update("PlayerHeadsUp", "Fold", player)
 
 	if player == 0:
 		uncontested_win(1)
@@ -128,12 +132,8 @@ func _on_call(player):
 		players_balance[player] -= 1
 
 	# Display updates
-	var indicator = $ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator")
-	if indicator.color != Color("Lime_Green"):
-		indicator.color = Color("Lime_Green")
-	else:
-		indicator.modulate *= 1.5
-	$Hands.change_hand_heads_up_text(player, "Call")
+	indicator_color_update(player, Color("Lime_Green"))
+	label_update("PlayerHeadsUp", "Call", player)
 
 	turn += 1
 	if player == 0:
@@ -144,8 +144,8 @@ func _on_raise(player, _amount = 1):
 	if bet_bool:
 		_on_call(player)
 		return
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Blue")
-	$Hands.change_hand_heads_up_text(player, "Raise")
+	indicator_color_update(player, Color("Blue"))
+	label_update("PlayerHeadsUp", "Raise", player)
 
 	pot += 1
 	players_balance[player] -= 1
@@ -158,14 +158,27 @@ func _on_raise(player, _amount = 1):
 
 func balance_display_update():
 	for p in players:
-		$ExtraLayer.get_node("StatsP" + str(p) + "/HBC/PC/MC/CurrencyLabel").text = str(players_balance[p]) + " €"
+		label_update("PlayerBalance", str(players_balance[p]), p)
 
-	$ExtraLayer/PotLabel.text = "Pot: " + str(pot) + " €"
+	label_update("Pot", str("Pot: " + str(pot) + " €"))
+
+@rpc("authority")
+func label_update(label_name: String, text: String, number: int = -1) -> void:
+	if label_name == "Main":
+		_main_label.text = text
+	elif label_name == "Pot":
+		_pot_label.text = text
+	elif label_name == "PlayerBalance":
+		$Hands.seat_setup[number].get_node("PokerStats").set_balance(text)
+	elif label_name == "PlayerHeadsUp":
+		$Hands.seat_setup[number].get_node("PokerStats").set_heads_up(text)
+
+func indicator_color_update(player: int, color: Color) -> void:
+	$Hands.seat_setup[player].get_node("PokerStats").set_indicator_color(color)
 
 func indicator_reset():
 	for player in players:
-		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = Color("Gray")
-		$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").modulate = Color(1, 1, 1)
+		indicator_color_update(player, Color("Gray"))
 		$Hands.change_hand_heads_up_text(player, "")
 
 func _unhandled_input(event):

@@ -9,6 +9,7 @@ var ai_score = 0
 func _ready():
 	$Hands.set_seat_size(2)
 	$Hands.change_card_overlap(120)
+	$Hands.poker_stats_visibility_off()
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 	$Deck.deck_shuffle()
 	await get_tree().create_timer(0.3).timeout

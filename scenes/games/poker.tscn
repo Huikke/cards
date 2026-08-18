@@ -31,11 +31,6 @@ region_rect = Rect2(0, 0, 1280, 800)
 [node name="Deck" parent="Objects" unique_id=1594890157 instance=ExtResource("1_gbg6l")]
 position = Vector2(325, 0)
 
-[node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
-
-[node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
-visible = false
-
 [node name="ExtraLayer" type="CanvasLayer" parent="." unique_id=810472621]
 
 [node name="MainPC" type="PanelContainer" parent="ExtraLayer" unique_id=1745462846]
@@ -127,6 +122,11 @@ offset_right = -113.0
 offset_bottom = 267.0
 grow_horizontal = 0
 placeholder_text = "Game Log"
+
+[node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
+
+[node name="ButtonsLayer" parent="." unique_id=685716816 instance=ExtResource("5_2teuh")]
+visible = false
 
 [node name="Countdown" type="Timer" parent="." unique_id=1075979618]
 

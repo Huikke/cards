@@ -24,12 +24,12 @@ func _ready():
 	set_seat_size(4)
 	poker_stats_placement()
 	poker_stats_visibility_update()
-	
 
 func set_seat_size(size):
 	seat_setup = SEAT_SETUPS[size]
 	player_cards_face_up_list.resize(len(seat_setup))
 	player_cards_face_up_list.fill(false)
+	poker_stats_visibility_update()
 	if !Global.mp_enabled:
 		player_cards_face_up_list[0] = true
 
@@ -58,6 +58,10 @@ func poker_stats_visibility_update():
 		seat.get_node("PokerStats").visible = false
 		if seat in seat_setup:
 			seat.get_node("PokerStats").visible = true
+
+func poker_stats_visibility_off():
+	for seat in get_children():
+		seat.get_node("PokerStats").visible = false
 
 func set_player_names():
 	for player in range(len(seat_setup)):

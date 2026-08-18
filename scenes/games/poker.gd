@@ -12,7 +12,7 @@ const POKER_POSITIONS: Array[String] = ["Button", "Small Blind", "Big Blind", "U
 @onready var _game_log = $ExtraLayer/GameLog
 
 # Pre-Game variables
-var players_agent: Array = Global.player_poker_modes
+var players_agent: Array
 var starting_player_count: int
 var player_agent_core: Array = [] # AI Object goes here
 var starting_balance = 10000
@@ -58,6 +58,40 @@ var game_log = []
 # ==============================================================================
 
 func _ready():
+	if !Global.mp_enabled or multiplayer.is_server():
+		# Game setup
+		game_setup()
+		# Initiate ai_agents
+		for i in range(len(players_agent)):
+			if players_agent[i][0] == 0 and Global.mp_enabled:
+				player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
+			elif players_agent[i][0] == 1:
+				player_agent_core.append(players_agent[i][1])
+			elif players_agent[i][0] == 2:
+				if players_agent[i][1] == 0:
+					player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
+					add_child(player_agent_core[i])
+				elif players_agent[i][1] == 1:
+					player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
+					add_child(player_agent_core[i])
+			else:
+				player_agent_core.append(null)
+
+		_game_log.visible = true
+		game_start_export()
+		set_player_face_dir_default()
+		game_begin()
+
+@rpc("authority")
+@warning_ignore("shadowed_variable")
+func game_setup(players_modes = null, player_names = null):
+	if Global.mp_enabled and multiplayer.is_server():
+		game_setup.rpc(Global.player_poker_modes, Global.player_poker_names)
+	if Global.mp_enabled and !multiplayer.is_server():
+		Global.player_poker_modes = players_modes
+		Global.player_poker_names = player_names
+	
+	players_agent = Global.player_poker_modes
 	starting_player_count = len(players_agent)
 	$Hands.set_seat_size(starting_player_count)
 	$Hands.poker_stats_visibility_update()
@@ -85,31 +119,8 @@ func _ready():
 	min_bet = starting_bet * stakes_mult
 	player_count = len(players_live)
 
-
 	balance_display_update(-1)
 	label_update("Blinds", "Blinds: " + str(min_bet / 2) + " € / " + str(min_bet) + " €")
-	# Start the game
-	if !Global.mp_enabled or multiplayer.is_server():
-		# Initiate ai_agents
-		for i in range(len(players_agent)):
-			if players_agent[i][0] == 0 and Global.mp_enabled:
-				player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
-			elif players_agent[i][0] == 1:
-				player_agent_core.append(players_agent[i][1])
-			elif players_agent[i][0] == 2:
-				if players_agent[i][1] == 0:
-					player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
-					add_child(player_agent_core[i])
-				elif players_agent[i][1] == 1:
-					player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
-					add_child(player_agent_core[i])
-			else:
-				player_agent_core.append(null)
-
-		_game_log.visible = true
-		game_start_export()
-		set_player_face_dir_default()
-		game_begin()
 
 # ==============================================================================
 # CORE GAME FLOW
