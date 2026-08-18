@@ -3,7 +3,13 @@ extends Node2D
 # Constants
 const HAND_TYPES: Array[String] = ["Folded", "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 const ROUND_NAMES: Array[String] = ["Pre-Round", "Pre-Flop", "Flop", "Turn", "River", "Showdown", "Post-Round"]
-var POKER_POSITIONS: Array[String] = ["Button", "Small Blind", "Big Blind", "Under the Gun"]
+const POKER_POSITIONS: Array[String] = ["Button", "Small Blind", "Big Blind", "Under the Gun", "+1", "+2", "+3", "+4"]
+
+# References
+@onready var _main_label = $ExtraLayer/MainPC/MC/MainLabel
+@onready var _pot_label = $ExtraLayer/PotPC/MC/PotLabel
+@onready var _blinds_label = $ExtraLayer/BlindsPC/MC/BlindsLabel
+@onready var _game_log = $ExtraLayer/GameLog
 
 # Pre-Game variables
 var players_agent: Array = Global.player_poker_modes
@@ -53,6 +59,9 @@ var game_log = []
 
 func _ready():
 	starting_player_count = len(players_agent)
+	$Hands.set_seat_size(starting_player_count)
+	$Hands.poker_stats_visibility_update()
+	$Hands.set_player_names()
 
 	# Visuals
 	$Hands.change_card_overlap(120)
@@ -97,7 +106,7 @@ func _ready():
 			else:
 				player_agent_core.append(null)
 
-		$ExtraLayer/GameLog.visible = true
+		_game_log.visible = true
 		game_start_export()
 		set_player_face_dir_default()
 		game_begin()
@@ -521,7 +530,7 @@ func game_reset():
 	community_cards_data.clear()
 	players_roles.clear()
 	game_log.clear()
-	$ExtraLayer/GameLog.text = ""
+	_game_log.text = ""
 	current_turn = 0
 	phase = 1
 	card_placement_reset()
@@ -538,6 +547,10 @@ func game_reset():
 		stakes_mult += 1
 	min_bet = starting_bet * stakes_mult
 	label_update("Blinds", "Blinds: " + str(min_bet / 2) + " € / " + str(min_bet) + " €")
+	
+	for player in range(starting_player_count):
+		if players_balance[player] == 0:
+			label_update("PlayerHeadsUp", "Busted Out", player)
 
 	starting_slot = (starting_slot + 1) % player_count
 
@@ -605,7 +618,7 @@ func logger(action: String, p: int = -1, amount: int = -1) -> void:
 		game_log.append(ROUND_NAMES[phase] + ": " + " ".join(mapped_c_cards))
 	elif action == "win":
 		game_log.append("Player " + str(p + 1) + " wins " + str(amount) + " €")
-	$ExtraLayer/GameLog.text += game_log[-1] + "\n"
+	_game_log.text += game_log[-1] + "\n"
 
 func cards_data_to_str(card):
 	if card[0] == 11:
@@ -629,9 +642,6 @@ func indicator_reset():
 			indicator_color_update(player, Color("Gray"))
 		if player in all_in_list:
 			indicator_color_update(player, Color("Dark_Green"))
-	# For clearing players, who have been eliminated
-	for player in range(starting_player_count):
-		label_update("PlayerHeadsUp", "", player)
 
 func balance_display_update(player = null):
 	# Player
@@ -685,21 +695,21 @@ func label_update(label_name: String, text: String, number: int = -1) -> void:
 		label_update.rpc(label_name, text, number)
 
 	if label_name == "Main":
-		$ExtraLayer/MainLabel.text = text
+		_main_label.text = text
 	elif label_name == "Pot":
-		$ExtraLayer/PotLabel.text = text
+		_pot_label.text = text
 	elif label_name == "Blinds":
-		$ExtraLayer/BlindsLabel.text = text
+		_blinds_label.text = text
 	elif label_name == "PlayerBalance":
-		$ExtraLayer.get_node("StatsP" + str(number) + "/HBC/PC/MC/CurrencyLabel").text = text + " €"
+		$Hands.seat_setup[number].get_node("PokerStats").set_balance(text)
 	elif label_name == "PlayerHeadsUp":
-		$Hands.change_hand_heads_up_text(number, text)
+		$Hands.seat_setup[number].get_node("PokerStats").set_heads_up(text)
 
 @rpc("authority")
 func indicator_color_update(player: int, color: Color) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		indicator_color_update.rpc(player, color)
-	$ExtraLayer.get_node("StatsP" + str(player) + "/HBC/Indicator").color = color
+	$Hands.seat_setup[player].get_node("PokerStats").set_indicator_color(color)
 
 @rpc("authority")
 func card_placement_reset():
@@ -711,27 +721,18 @@ func card_placement_reset():
 func balance_change_animation(player, amount) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		balance_change_animation.rpc(player, amount)
-	var the_node = get_node("ExtraLayer/StatsP" + str(player) + "/BCMC")
 
 	if amount == 0:
 		return
 	elif amount > 0:
-		the_node.get_child(0).text = "+" + str(amount) + " €"
+		amount = "+" + str(amount)
 	else:
-		the_node.get_child(0).text = str(amount) + " €"
-
-	the_node.visible = true
-	the_node.position = get_node("ExtraLayer/StatsP" + str(player) + "/HBC").position
-
-	var yd = -66
-	if player == 2 or player == 3:
-		yd *= -1
-
-	var tween = create_tween()
-	tween.tween_property(the_node, "modulate:a", 1, 0.2)
-	tween.parallel().tween_property(the_node, "position", the_node.position + Vector2(0, yd), 0.3)
-	# Causes visual bug
-	tween.tween_property(the_node, "modulate:a", 0, 0.2).set_delay(2)
+		amount = str(amount)
+	var dir = "down"
+	if str($Hands.seat_setup[player].name)[1] == "0":
+		dir = "up"
+	
+	$Hands.seat_setup[player].get_node("PokerStats").balance_change_animation(amount, dir)
 
 func set_player_face_dir_default():
 	# Player's card is up

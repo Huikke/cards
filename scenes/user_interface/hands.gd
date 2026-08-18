@@ -22,6 +22,9 @@ var seat_setup: Array
 
 func _ready():
 	set_seat_size(4)
+	poker_stats_placement()
+	poker_stats_visibility_update()
+	
 
 func set_seat_size(size):
 	seat_setup = SEAT_SETUPS[size]
@@ -30,6 +33,35 @@ func set_seat_size(size):
 	if !Global.mp_enabled:
 		player_cards_face_up_list[0] = true
 
+func poker_stats_placement():
+	for seat in get_children():
+		if str(seat.name)[1] == "0":
+			seat.get_node("PokerStats/MC/VBC").move_child(seat.get_node("PokerStats/MC/VBC").get_child(0), -1)
+			seat.get_node("PokerStats/MC/VBC").move_child(seat.get_node("PokerStats/MC/VBC").get_child(1), 0)
+		elif str(seat.name)[1] == "1":
+			seat.get_node("PokerStats").rotation_degrees = -90
+			seat.get_node("PokerStats").position += Vector2(20, 110)
+		elif str(seat.name)[1] == "2":
+			seat.get_node("PokerStats").rotation_degrees = 180
+			seat.get_node("PokerStats").position += Vector2(150, 110)
+		elif str(seat.name)[1] == "3":
+			seat.get_node("PokerStats").rotation_degrees = 90
+			seat.get_node("PokerStats").position += Vector2(130, -36)
+		
+		if str(seat.name) == "H01" or str(seat.name) == "H21":
+			seat.get_node("PokerStats").position += Vector2(-40, 0)
+		elif str(seat.name) == "H02" or str(seat.name) == "H22":
+			seat.get_node("PokerStats").position += Vector2(40, 0)
+
+func poker_stats_visibility_update():
+	for seat in get_children():
+		seat.get_node("PokerStats").visible = false
+		if seat in seat_setup:
+			seat.get_node("PokerStats").visible = true
+
+func set_player_names():
+	for player in range(len(seat_setup)):
+		seat_setup[player].get_node("PokerStats").set_player_name(Global.player_poker_names[player])
 
 func _on_card_to_hand(card_i, player: int) -> void:
 	var hand_content = seat_setup[player].get_child(0)
@@ -112,7 +144,7 @@ func clear_hand(player):
 			card.queue_free()
 
 func clear_hands():
-	for player in range(2):
+	for player in range(len(seat_setup)):
 		clear_hand(player)
 
 func change_hand_heads_up_text(player, text):

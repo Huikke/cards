@@ -4,14 +4,13 @@
 [ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_gbg6l"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
-[ext_resource type="PackedScene" uid="uid://vt3aar4cejpm" path="res://scenes/user_interface/poker_stats.tscn" id="6_y74yl"]
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="7_jyp7r"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2teuh"]
-font_size = 50
+font_size = 40
 
 [sub_resource type="LabelSettings" id="LabelSettings_y74yl"]
-font_size = 40
+font_size = 30
 
 [sub_resource type="LabelSettings" id="LabelSettings_wkadk"]
 font_size = 24
@@ -30,7 +29,7 @@ region_rect = Rect2(0, 0, 1280, 800)
 [node name="Objects" type="Node2D" parent="." unique_id=434545024]
 
 [node name="Deck" parent="Objects" unique_id=1594890157 instance=ExtResource("1_gbg6l")]
-position = Vector2(343, 0)
+position = Vector2(325, 0)
 
 [node name="Hands" parent="." unique_id=1156811625 instance=ExtResource("3_2teuh")]
 
@@ -39,80 +38,83 @@ visible = false
 
 [node name="ExtraLayer" type="CanvasLayer" parent="." unique_id=810472621]
 
-[node name="MainLabel" type="Label" parent="ExtraLayer" unique_id=1757960512]
+[node name="MainPC" type="PanelContainer" parent="ExtraLayer" unique_id=1745462846]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -32.5
-offset_top = -200.0
-offset_right = 32.5
-offset_bottom = -181.0
+offset_left = -121.0
+offset_top = -182.0
+offset_right = 119.0
+offset_bottom = -116.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MC" type="MarginContainer" parent="ExtraLayer/MainPC" unique_id=312535887]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="MainLabel" type="Label" parent="ExtraLayer/MainPC/MC" unique_id=1757960512]
+layout_mode = 2
 text = "Round 1"
 label_settings = SubResource("LabelSettings_2teuh")
+horizontal_alignment = 1
 
-[node name="PotLabel" type="Label" parent="ExtraLayer" unique_id=42246331]
+[node name="PotPC" type="PanelContainer" parent="ExtraLayer" unique_id=455291390]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 153.5
-offset_top = 157.0
-offset_right = 308.5
-offset_bottom = 203.0
+offset_left = 160.0
+offset_top = 102.0
+offset_right = 288.0
+offset_bottom = 149.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MC" type="MarginContainer" parent="ExtraLayer/PotPC" unique_id=1180603317]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="PotLabel" type="Label" parent="ExtraLayer/PotPC/MC" unique_id=42246331]
+layout_mode = 2
 text = "Pot: 0 €"
 label_settings = SubResource("LabelSettings_y74yl")
 metadata/_edit_use_anchors_ = true
 
-[node name="BlindsLabel" type="Label" parent="ExtraLayer" unique_id=784492615]
+[node name="BlindsPC" type="PanelContainer" parent="ExtraLayer" unique_id=1704323133]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = 155.0
-offset_right = -55.0
-offset_bottom = 183.0
+offset_left = -334.0
+offset_top = 89.0
+offset_right = -132.0
+offset_bottom = 129.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MC" type="MarginContainer" parent="ExtraLayer/BlindsPC" unique_id=682122431]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="BlindsLabel" type="Label" parent="ExtraLayer/BlindsPC/MC" unique_id=784492615]
+layout_mode = 2
 text = "Blinds: 1 € / 2 €"
 label_settings = SubResource("LabelSettings_wkadk")
 metadata/_edit_use_anchors_ = true
-
-[node name="StatsP0" parent="ExtraLayer" unique_id=1693016226 instance=ExtResource("6_y74yl")]
-
-[node name="StatsP1" parent="ExtraLayer" unique_id=447980441 instance=ExtResource("6_y74yl")]
-anchors_preset = -1
-anchor_left = 0.01
-anchor_top = 0.33
-anchor_right = 0.01
-anchor_bottom = 0.33
-offset_bottom = -16.0
-grow_vertical = 1
-
-[node name="StatsP2" parent="ExtraLayer" unique_id=1677276982 instance=ExtResource("6_y74yl")]
-anchors_preset = -1
-anchor_left = 0.6
-anchor_top = 0.1
-anchor_right = 0.6
-anchor_bottom = 0.1
-grow_vertical = 1
-
-[node name="StatsP3" parent="ExtraLayer" unique_id=915369297 instance=ExtResource("6_y74yl")]
-anchors_preset = -1
-anchor_left = 0.8
-anchor_top = 0.75
-anchor_right = 0.8
-anchor_bottom = 0.75
-offset_bottom = -80.0
-grow_vertical = 1
 
 [node name="GameLog" type="TextEdit" parent="ExtraLayer" unique_id=760562557]
 visible = false

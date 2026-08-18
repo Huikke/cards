@@ -1,64 +1,98 @@
 [gd_scene format=3 uid="uid://vt3aar4cejpm"]
 
+[ext_resource type="Script" uid="uid://7twoejpta2lr" path="res://scenes/user_interface/poker_stats.gd" id="1_vr13r"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_bqnes"]
-font_size = 40
 
-[sub_resource type="LabelSettings" id="LabelSettings_vr13r"]
-font_size = 40
+[node name="PokerStats" type="PanelContainer" unique_id=306905775]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -56.5
+offset_right = 75.0
+offset_bottom = 56.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+mouse_behavior_recursive = 1
+script = ExtResource("1_vr13r")
 
-[node name="PokerStats" type="Control" unique_id=1693016226]
-layout_mode = 3
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-grow_vertical = 0
+[node name="MC" type="MarginContainer" parent="." unique_id=1300882780]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
 
-[node name="HBC" type="HBoxContainer" parent="." unique_id=2039971285]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -66.0
-offset_right = 248.0
-grow_vertical = 0
+[node name="VBC" type="VBoxContainer" parent="MC" unique_id=459817388]
+layout_mode = 2
+
+[node name="TopPC" type="PanelContainer" parent="MC/VBC" unique_id=1861633204]
+layout_mode = 2
+
+[node name="MC" type="MarginContainer" parent="MC/VBC/TopPC" unique_id=844958609]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="NameLabel" type="Label" parent="MC/VBC/TopPC/MC" unique_id=1802587061]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Player 1"
+label_settings = SubResource("LabelSettings_bqnes")
+
+[node name="MidPC" type="PanelContainer" parent="MC/VBC" unique_id=1448361913]
+layout_mode = 2
+
+[node name="MC" type="MarginContainer" parent="MC/VBC/MidPC" unique_id=1745611933]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HeadsUpLabel" type="Label" parent="MC/VBC/MidPC/MC" unique_id=1728218849]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Info"
+label_settings = SubResource("LabelSettings_bqnes")
+
+[node name="BottomHBC" type="HBoxContainer" parent="MC/VBC" unique_id=2039971285]
+layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PC" type="PanelContainer" parent="HBC" unique_id=1728718009]
+[node name="PC" type="PanelContainer" parent="MC/VBC/BottomHBC" unique_id=1728718009]
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="MC" type="MarginContainer" parent="HBC/PC" unique_id=887584120]
+[node name="MC" type="MarginContainer" parent="MC/VBC/BottomHBC/PC" unique_id=887584120]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
-[node name="CurrencyLabel" type="Label" parent="HBC/PC/MC" unique_id=1125409101]
+[node name="CurrencyLabel" type="Label" parent="MC/VBC/BottomHBC/PC/MC" unique_id=1125409101]
 layout_mode = 2
+size_flags_horizontal = 4
 text = "10000 €"
 label_settings = SubResource("LabelSettings_bqnes")
 
-[node name="Indicator" type="ColorRect" parent="HBC" unique_id=1904205855]
-custom_minimum_size = Vector2(66, 66)
+[node name="BalanceChangeLabel" type="Label" parent="MC/VBC/BottomHBC/PC/MC" unique_id=1185379886]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+offset_transform_enabled = true
+text = "10000 €"
+label_settings = SubResource("LabelSettings_bqnes")
+horizontal_alignment = 1
+
+[node name="Indicator" type="ColorRect" parent="MC/VBC/BottomHBC" unique_id=1904205855]
+custom_minimum_size = Vector2(39, 39)
 layout_mode = 2
 color = Color(0.6797427, 0.67084867, 0.68869585, 1)
-
-[node name="BCMC" type="MarginContainer" parent="." unique_id=602591501]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -66.0
-offset_right = 172.0
-grow_vertical = 0
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="BalanceChangeLabel" type="Label" parent="BCMC" unique_id=1185379886]
-layout_mode = 2
-text = "10000 €"
-label_settings = SubResource("LabelSettings_vr13r")
-horizontal_alignment = 1

@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://ile8r5dimjpv"]
 
+[ext_resource type="PackedScene" uid="uid://vt3aar4cejpm" path="res://scenes/user_interface/poker_stats.tscn" id="1_hgomj"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_manev"]
 font_size = 40
 
@@ -45,3 +47,12 @@ offset_bottom = -107.0
 grow_horizontal = 2
 grow_vertical = 2
 label_settings = SubResource("LabelSettings_manev")
+
+[node name="PokerStats" parent="." unique_id=306905775 instance=ExtResource("1_hgomj")]
+layout_mode = 1
+anchors_preset = 7
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -210.0
+offset_bottom = -97.0
+grow_vertical = 0

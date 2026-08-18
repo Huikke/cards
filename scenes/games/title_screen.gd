@@ -83,7 +83,8 @@ func _on_add_pressed() -> void:
 	var p = len(Global.player_poker_modes)
 	new_player.name = "PlayerSettings" + str(p)
 	Global.player_poker_modes.append([0, 0])
-	new_player.get_node("PlayerNro").text = "Player " + str(p)
+	Global.player_poker_names.append("Player " + str(p+1))
+	new_player.get_node("PlayerNro").text = "Player " + str(p+1)
 	new_player.get_node("Mode").text = modes[0]
 	for option in mode_options[0]:
 		new_player.get_node("OptionButton").add_item(option)
@@ -98,4 +99,5 @@ func _on_remove_pressed() -> void:
 	var last_child = $PokerSettingMenu/PlayerSettingsBox.get_child(-1)
 	$PokerSettingMenu/PlayerSettingsBox.remove_child(last_child)
 	Global.player_poker_modes.remove_at(-1)
+	Global.player_poker_names.remove_at(-1)
 	print(Global.player_poker_modes)
