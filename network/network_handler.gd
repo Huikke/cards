@@ -1,11 +1,13 @@
 extends Node
 
-var PORT = 6060
+var DEFAULT_PORT = 6060
 var DEFAULT_SERVER_IP = "localhost"
 var peer := WebSocketMultiplayerPeer.new()
-@onready var chat_window = $ChatContainer/ChatWindow
-@onready var type_window = $ChatContainer/HBC/TypeWindow
-@onready var send_button = $ChatContainer/HBC/Send
+@onready var _chat_window = $ChatContainer/ChatWindow
+@onready var _type_window = $ChatContainer/HBC/TypeWindow
+@onready var _send_button = $ChatContainer/HBC/Send
+@onready var _ip_field = $JoinMenu/IpField
+@onready var _port_field = $JoinMenu/PortField
 
 func _ready() -> void:
 	# Connect Godot's built-in multiplayer signals
@@ -21,24 +23,31 @@ func host_game() -> void:
 	peer = WebSocketMultiplayerPeer.new()
 	
 	# create_server(port, bind_address, TLSOptions)
-	var error = peer.create_server(PORT)
+	var error = peer.create_server(DEFAULT_PORT)
 	if error != OK:
 		print("Failed to start WebSocket server: ", error)
 		return
 		
 	# Assigning this activates Godot's multiplayer RPCs and synchronizers
 	multiplayer.multiplayer_peer = peer
-	print("WebSocket Server listening on port: ", PORT)
-	chat_print("Server started on port: " + str(PORT))
+	print("WebSocket Server listening on port: ", DEFAULT_PORT)
+	chat_print("Server started on port: " + str(DEFAULT_PORT))
 
 
 # --- CLIENT METHOD ---
-func join_game(ip: String = DEFAULT_SERVER_IP) -> void:
+func join_game() -> void:
 	peer = WebSocketMultiplayerPeer.new()
 	
 	# WebSockets use URL format: ws:// for standard, wss:// for SSL/TLS encrypted
-	var url = "ws://" + ip + ":" + str(PORT)
-	
+	var ip = DEFAULT_SERVER_IP
+	var port = str(DEFAULT_PORT)
+	if _ip_field.text != "":
+		ip = _ip_field.text
+	if _port_field.text != "":
+		port = _port_field.text
+
+	var url = "ws://" + ip + ":" + port
+
 	var error = peer.create_client(url)
 	if error != OK:
 		print("Failed to connect to WebSocket server: ", error)
@@ -62,9 +71,9 @@ func broadcast_chat_message(message: String) -> void:
 	chat_print(message)
 
 func chat_print(message: String) -> void:
-	if !chat_window.text == "":
-		chat_window.text += "\n"
-	chat_window.text += message
+	if !_chat_window.text == "":
+		_chat_window.text += "\n"
+	_chat_window.text += message
 
 
 # --- NETWORK SIGNAL CALLBACKS ---
@@ -72,11 +81,11 @@ func chat_print(message: String) -> void:
 func _on_peer_connected(id: int) -> void:
 	print("Peer connected: ", id)
 	Global.multiplayer_players.append(id)
-	update_players.rpc(Global.multiplayer_players)
-	var no = Global.multiplayer_players.find(id)
-	broadcast_chat_message(str(Global.player_names[no]) + " (" + str(id) + ") joined!")
 	# Trigger an RPC call to test communication
 	if multiplayer.is_server():
+		update_players.rpc(Global.multiplayer_players)
+		var index = Global.multiplayer_players.find(id)
+		broadcast_chat_message.rpc(str(Global.player_names[index]) + " (" + str(id) + ") joined!")
 		$MultiplayerMenu/Play.disabled = false
 
 @rpc("call_local")
@@ -123,12 +132,12 @@ func _on_play_pressed() -> void:
 
 
 func _on_send_pressed() -> void:
-	if type_window.text.contains("@"):
-		var new_name = str(type_window.text).trim_prefix("@")
+	if _type_window.text.contains("@"):
+		var new_name = str(_type_window.text).trim_prefix("@")
 		name_change.rpc(new_name)
 	else:
-		send_chat_message.rpc(type_window.text)
-	type_window.text = ""
+		send_chat_message.rpc(_type_window.text)
+	_type_window.text = ""
 
 func _on_type_window_text_submitted(_new_text: String) -> void:
 	_on_send_pressed()
