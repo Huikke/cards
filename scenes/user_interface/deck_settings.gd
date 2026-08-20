@@ -5,14 +5,10 @@ var back_art_list: Array[String] = []
 var back_id: int = 0
 
 func _ready() -> void:
-	var dir = DirAccess.open(path)
-	dir.list_dir_begin()
-	var file_name = dir.get_next()
-
-	while file_name != "":
+	var dir_list = ResourceLoader.list_directory(path)
+	for file_name in dir_list:
 		if !file_name.contains(".import"):
 			back_art_list.append(file_name)
-		file_name = dir.get_next()
 	
 	back_id = back_art_list.find("lokki.svg")
 	back_art_selection(back_id)

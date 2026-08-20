@@ -11,10 +11,10 @@ script = ExtResource("1_oer8j")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1367692986]
 texture_repeat = 2
-position = Vector2(640, 400)
+position = Vector2(960, 540)
 texture = ExtResource("2_gm3ob")
 region_enabled = true
-region_rect = Rect2(0, 0, 1280, 800)
+region_rect = Rect2(0, 0, 1920, 1080)
 
 [node name="FirstMenu" type="VBoxContainer" parent="." unique_id=654923601]
 anchors_preset = 8

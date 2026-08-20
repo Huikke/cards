@@ -25,7 +25,7 @@ script = ExtResource("1_dhslg")
 texture_repeat = 2
 texture = ExtResource("7_jyp7r")
 region_enabled = true
-region_rect = Rect2(0, 0, 1280, 800)
+region_rect = Rect2(0, 0, 1920, 1080)
 
 [node name="Objects" type="Node2D" parent="." unique_id=434545024]
 
@@ -122,10 +122,17 @@ visible = false
 [node name="EscMenu" parent="." unique_id=623134519 instance=ExtResource("6_y74yl")]
 
 [node name="VBC" type="VBoxContainer" parent="EscMenu" unique_id=386618613]
-offset_left = 888.0
-offset_top = 162.0
-offset_right = 928.0
-offset_bottom = 202.0
+anchors_preset = -1
+anchor_left = 0.58400005
+anchor_top = 0.5
+anchor_right = 0.58400005
+anchor_bottom = 0.5
+offset_left = 115.47992
+offset_top = -233.0
+offset_right = 415.47992
+offset_bottom = 230.0
+grow_horizontal = 0
+grow_vertical = 2
 
 [node name="Label" type="Label" parent="EscMenu/VBC" unique_id=1919899118]
 layout_mode = 2
