@@ -85,10 +85,10 @@ func _ready():
 @warning_ignore("shadowed_variable")
 func game_setup(players_modes = null, player_names = null):
 	if Global.mp_enabled and multiplayer.is_server():
-		game_setup.rpc(Global.player_poker_modes, Global.player_poker_names)
+		game_setup.rpc(Global.player_poker_modes, Global.player_names)
 	if Global.mp_enabled and !multiplayer.is_server():
 		Global.player_poker_modes = players_modes
-		Global.player_poker_names = player_names
+		Global.player_names = player_names
 	
 	players_agent = Global.player_poker_modes
 	starting_player_count = len(players_agent)

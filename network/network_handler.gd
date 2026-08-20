@@ -29,6 +29,7 @@ func host_game() -> void:
 	# Assigning this activates Godot's multiplayer RPCs and synchronizers
 	multiplayer.multiplayer_peer = peer
 	print("WebSocket Server listening on port: ", PORT)
+	chat_print("Server started on port: " + str(PORT))
 
 
 # --- CLIENT METHOD ---
@@ -45,38 +46,58 @@ func join_game(ip: String = DEFAULT_SERVER_IP) -> void:
 
 	multiplayer.multiplayer_peer = peer
 	print("Connecting to WebSocket server at: ", url)
+	chat_print("Connecting to " + url)
 
 
 # --- RPC FUNCTION FOR TESTING ---
+
 @rpc("any_peer", "call_local")
 func send_chat_message(message: String) -> void:
 	var sender_id = multiplayer.get_remote_sender_id()
-	print("Peer %d says: %s" % [sender_id, message])
-	chat_window.text += "Peer %d says: %s" % [sender_id, message] + "\n"
+	var sender_name = Global.player_names[Global.multiplayer_players.find(sender_id)]
+	chat_print(sender_name + " says: " + message)
+
+@rpc("authority", "call_local")
+func broadcast_chat_message(message: String) -> void:
+	chat_print(message)
+
+func chat_print(message: String) -> void:
+	if !chat_window.text == "":
+		chat_window.text += "\n"
+	chat_window.text += message
 
 
 # --- NETWORK SIGNAL CALLBACKS ---
 
 func _on_peer_connected(id: int) -> void:
 	print("Peer connected: ", id)
+	Global.multiplayer_players.append(id)
+	update_players.rpc(Global.multiplayer_players)
+	var no = Global.multiplayer_players.find(id)
+	broadcast_chat_message(str(Global.player_names[no]) + " (" + str(id) + ") joined!")
 	# Trigger an RPC call to test communication
 	if multiplayer.is_server():
-		send_chat_message.rpc("Welcome to the server!")
 		$MultiplayerMenu/Play.disabled = false
-		Global.multiplayer_players.append(id)
+
+@rpc("call_local")
+func update_players(multiplayer_players):
+	Global.multiplayer_players = multiplayer_players
 
 func _on_peer_disconnected(id: int) -> void:
 	print("Peer disconnected: ", id)
 
 func _on_connected_to_server() -> void:
 	print("Successfully connected to the WebSocket server!")
-	send_chat_message.rpc("Hello from new client!")
+	chat_print("Connected to server!")
 
 func _on_connection_failed() -> void:
 	print("Failed to connect to server.")
 
 func _on_server_disconnected() -> void:
 	print("Server closed or connection lost.")
+
+
+# --- Buttons ---
 
 func _on_host_pressed() -> void:
 	host_game()
@@ -102,14 +123,24 @@ func _on_play_pressed() -> void:
 
 
 func _on_send_pressed() -> void:
-	send_chat_message.rpc(type_window.text)
+	if type_window.text.contains("@"):
+		var new_name = str(type_window.text).trim_prefix("@")
+		name_change.rpc(new_name)
+	else:
+		send_chat_message.rpc(type_window.text)
 	type_window.text = ""
-
 
 func _on_type_window_text_submitted(_new_text: String) -> void:
 	_on_send_pressed()
 
-
 func _on_back_pressed() -> void:
 	$".".visible = false
 	$"../FirstMenu".visible = true
+
+# --- @ ---
+@rpc("any_peer", "call_local")
+func name_change(new_name: String):
+	var index = Global.multiplayer_players.find(multiplayer.get_remote_sender_id())
+	if multiplayer.is_server():
+		broadcast_chat_message.rpc(Global.player_names[index] + " changed name into " + new_name)
+	Global.player_names[index] = new_name

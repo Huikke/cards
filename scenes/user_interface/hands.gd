@@ -17,7 +17,11 @@ var seat_setup: Array
 	[$H01, $H02, $H10, $H20, $H30],
 	[$H01, $H02, $H10, $H21, $H22, $H30],
 	[$H01, $H02, $H11, $H12, $H21, $H22, $H30],
-	[$H01, $H02, $H11, $H12, $H21, $H22, $H31, $H32]
+	[$H01, $H02, $H11, $H12, $H21, $H22, $H31, $H32],
+	[$H01, $H00, $H02, $H11, $H12, $H21, $H22, $H31, $H32],
+	[$H01, $H00, $H02, $H11, $H12, $H21, $H20, $H22, $H31, $H32],
+	[$H01, $H00, $H02, $H11, $H10, $H12, $H21, $H20, $H22, $H31, $H32],
+	[$H01, $H00, $H02, $H11, $H10, $H12, $H21, $H20, $H22, $H31, $H30, $H32]
 ]
 
 func _ready():
@@ -65,7 +69,7 @@ func poker_stats_visibility_off():
 
 func set_player_names():
 	for player in range(len(seat_setup)):
-		seat_setup[player].get_node("PokerStats").set_player_name(Global.player_poker_names[player])
+		seat_setup[player].get_node("PokerStats").set_player_name(Global.player_names[player])
 
 func _on_card_to_hand(card_i, player: int) -> void:
 	var hand_content = seat_setup[player].get_child(0)
