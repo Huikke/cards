@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bdvs8thxqfq51"]
 
 [ext_resource type="Script" uid="uid://bnvm4nkaldwhd" path="res://scenes/user_interface/esc_menu.gd" id="1_audev"]
+[ext_resource type="PackedScene" uid="uid://dghyo5yd5q7yj" path="res://scenes/user_interface/deck_settings.tscn" id="2_e25uq"]
 
 [node name="EscMenu" type="CanvasLayer" unique_id=623134519]
 visible = false
@@ -45,5 +46,32 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Quit"
 
+[node name="SettingsMenu" type="VBoxContainer" parent="." unique_id=1509467301]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -195.5
+offset_top = -216.0
+offset_right = 195.5
+offset_bottom = 216.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 32
+
+[node name="DeckSettings" parent="SettingsMenu" unique_id=898123526 instance=ExtResource("2_e25uq")]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="SettingsMenu" unique_id=1425276445]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Back"
+
 [connection signal="pressed" from="FirstMenu/Continue" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="FirstMenu/Settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="FirstMenu/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="SettingsMenu/BackButton" to="." method="_on_back_button_pressed"]
