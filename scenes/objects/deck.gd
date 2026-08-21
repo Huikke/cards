@@ -42,7 +42,7 @@ func mouse5():
 	card_stack()
 
 
-func deal(mode: String = "local", player: int = -1):
+func deal(mode: String = "local", player: int = -1) -> void:
 	var pop_card = logic.deck.pop_front()
 	if mode == "local" or mode == "table":
 		deal_2d(pop_card, back_sprite, mode)
@@ -50,7 +50,7 @@ func deal(mode: String = "local", player: int = -1):
 		deal_ui(pop_card, back_sprite, player)
 
 @rpc("authority")
-func deal_2d(pop_card: Array, back_sprite_this: String, mode: String):
+func deal_2d(pop_card: Array, back_sprite_this: String, mode: String) -> void:
 	if Global.mp_enabled == true and multiplayer.is_server():
 		deal_2d.rpc(pop_card, back_sprite_this, mode)
 	var card = card_scene.instantiate()
@@ -65,7 +65,7 @@ func deal_2d(pop_card: Array, back_sprite_this: String, mode: String):
 		deck_deal(card, false)
 
 @rpc("authority")
-func deal_ui(pop_card: Array, back_sprite_this: String, player: int):
+func deal_ui(pop_card: Array, back_sprite_this: String, player: int) -> void:
 	if Global.mp_enabled == true and multiplayer.is_server():
 		deal_ui.rpc(pop_card, back_sprite_this, player)
 	var card = {}
@@ -95,7 +95,7 @@ func deck_deal(card, motion: bool = false):
 	else:
 		GlobalSignal.table_deal.emit(card)
 
-func deck_shuffle():
+func deck_shuffle() -> void:
 	logic.shuffle()
 	var tween = create_tween()
 	tween.tween_property(self, "rotation", 0.5, 0.13)
@@ -113,5 +113,5 @@ func empty_delete():
 		queue_free()
 		return true
 
-func reset_deck():
+func reset_deck() -> void:
 	logic = DeckLogic.new()

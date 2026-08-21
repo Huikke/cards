@@ -96,11 +96,11 @@ func _on_card_to_hand(card_i, player: int) -> void:
 	hand_content.add_child(card_o)
 	hand_content.move_child(seat_setup[player].get_node("HandContainer/CardPadding"), -1)
 
-func _on_card_gui_input(event, card_ui):
+func _on_card_gui_input(event, card_ui) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		card_selected.emit(card_ui)
 
-func get_hand_content(player: int):
+func get_hand_content(player: int) -> Array:
 	var hand = seat_setup[player].get_child(0).get_children()
 	var hand_list = []
 	for card in hand:
@@ -126,10 +126,10 @@ func change_card_overlap(custom_size):
 				else:
 					card.visible = false
 
-func face_dir_default(player, is_face_up):
+func face_dir_default(player, is_face_up) -> void:
 	player_cards_face_up_list[player] = is_face_up
 
-func flip_hand(player: int):
+func flip_hand(player: int) -> void:
 	var hand_cards = seat_setup[player].get_node("HandContainer").get_children()
 	for card in hand_cards:
 		if card.name == "CardPadding":
@@ -143,7 +143,7 @@ func flip_hand(player: int):
 				card.face_up = false
 
 @rpc("authority")
-func clear_hand(player):
+func clear_hand(player) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		clear_hand.rpc(player)
 	var hand = seat_setup[player].get_child(0).get_children()
@@ -151,11 +151,11 @@ func clear_hand(player):
 		if card is UiCard:
 			card.queue_free()
 
-func clear_hands():
+func clear_hands() -> void:
 	for player in range(len(seat_setup)):
 		clear_hand(player)
 
-func change_hand_heads_up_text(player, text):
+func change_hand_heads_up_text(player, text) -> void:
 	seat_setup[player].get_node("PlayerHeadsUpLabel").text = text
 
 # Sandbox only

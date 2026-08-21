@@ -1,7 +1,7 @@
 extends RefCounted
 class_name PokerLogic
 
-static func check_hand(cards: Array):
+static func check_hand(cards: Array) -> Array:
 	# Ace is the best
 	for card in cards:
 		if card[0] == 1:
@@ -146,7 +146,7 @@ static func straight_calculator(card, prev_rank, straight_hand, first_card):
 		prev_rank = rank
 		return [prev_rank, false]
 
-static func compare_hand(hand1, hand2):
+static func compare_hand(hand1, hand2) -> int:
 	if hand1[0] > hand2[0]:
 		return 1
 	elif hand1[0] < hand2[0]:

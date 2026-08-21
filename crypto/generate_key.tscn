@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dyx6noi0doait"]
+
+[ext_resource type="Script" uid="uid://cghk0uc54hypl" path="res://crypto/generate_key.gd" id="1_bm8vu"]
+
+[node name="GenerateKey" type="Node" unique_id=1788494198]
+script = ExtResource("1_bm8vu")

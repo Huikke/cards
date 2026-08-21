@@ -30,7 +30,7 @@ var community_cards_data: Array = []
 # Raise stakes
 var stakes_mult = 1
 var hands_played = 0
-var raise_stakes_in = 1
+var raise_stakes_in = 10
 
 # Player variables
 var players_live: Array[int]
@@ -57,46 +57,38 @@ var game_log = []
 # LIFECYCLE & INITIALIZATION
 # ==============================================================================
 
-func _ready():
+func _ready() -> void:
 	if !Global.mp_enabled or multiplayer.is_server():
 		# Game setup
 		game_setup()
 		# Initiate ai_agents
-		for i in range(len(players_agent)):
-			if players_agent[i][0] == 0 and Global.mp_enabled:
-				player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
-			elif players_agent[i][0] == 1:
-				player_agent_core.append(players_agent[i][1])
-			elif players_agent[i][0] == 2:
-				if players_agent[i][1] == 0:
-					player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
-					add_child(player_agent_core[i])
-				elif players_agent[i][1] == 1:
-					player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
-					add_child(player_agent_core[i])
-			else:
-				player_agent_core.append(null)
+		player_agent_setup()
 
-		game_start_export()
+		# Export relevant vars to peers
+		if Global.mp_enabled:
+			game_start_export()
+
 		set_player_face_dir_default()
 		game_begin()
 
+## Sets up the game parameters, synchronizes multiplayer data, and connects signals.
 @rpc("authority")
 @warning_ignore("shadowed_variable")
-func game_setup(players_modes = null, player_names = null):
+func game_setup(players_modes = null, player_names = null) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		game_setup.rpc(Global.player_poker_modes, Global.player_names)
 	if Global.mp_enabled and !multiplayer.is_server():
 		Global.player_poker_modes = players_modes
 		Global.player_names = player_names
-	
+
+	# Setup Variables
 	players_agent = Global.player_poker_modes
 	starting_player_count = len(players_agent)
+
+	# Setup UI & Visuals
 	$Hands.set_seat_size(starting_player_count)
 	$Hands.poker_stats_visibility_update()
 	$Hands.set_player_names()
-
-	# Visuals
 	$Hands.change_card_overlap(120)
 	label_update("Main", "")
 
@@ -121,11 +113,27 @@ func game_setup(players_modes = null, player_names = null):
 	balance_display_update(-1)
 	label_update("Blinds", "Blinds: " + str(min_bet / 2) + " € / " + str(min_bet) + " €")
 
+func player_agent_setup() -> void:
+	for i in range(len(players_agent)):
+			if players_agent[i][0] == 0 and Global.mp_enabled:
+				player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
+			elif players_agent[i][0] == 1:
+				player_agent_core.append(players_agent[i][1])
+			elif players_agent[i][0] == 2:
+				if players_agent[i][1] == 0:
+					player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
+					add_child(player_agent_core[i])
+				elif players_agent[i][1] == 1:
+					player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
+					add_child(player_agent_core[i])
+			else:
+				player_agent_core.append(null)
+
 # ==============================================================================
 # CORE GAME FLOW
 # ==============================================================================
 
-func game_begin():
+func game_begin() -> void:
 	# Shuffle Deck
 	$Objects/Deck.deck_shuffle()
 
@@ -197,7 +205,7 @@ func game_loop(player: int) -> void:
 		player_agent_core[player].ai_move(player, hand, players_roles, players_balance, pot_sum(), game_log)
 
 # Better known as "next_round"
-func next_phase():
+func next_phase() -> void:
 	# Advance to the next round
 	phase += 1
 	if phase == 2:
@@ -237,8 +245,8 @@ func next_phase():
 	else:
 		game_loop(players_live[starting_slot])
 
-## Cleans up per-round bets, calculates side pots, and refunds uncalled overbets.
-func round_end_process():
+## Cleans up per-round bets, refunds uncalled overbets and calls sidepot calculator
+func round_end_process() -> void:
 	# Reset round_bet
 	round_bet = 0
 	players_round_bet.fill(0)
@@ -262,7 +270,7 @@ func round_end_process():
 # ==============================================================================
 
 @rpc("authority")
-func player_turn(player, peer_id):
+func player_turn(player: int, peer_id: int) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		game_state_export()
 		player_turn.rpc(player, peer_id)
@@ -298,7 +306,7 @@ func player_turn(player, peer_id):
 
 	$ButtonsLayer.update_raise_text()
 
-func player_bet(p: int, amount: int):
+func player_bet(p: int, amount: int) -> int:
 	var difference = amount - players_round_bet[p]
 
 	if players_balance[p] - difference <= 0:
@@ -322,10 +330,10 @@ func player_award(p: int, amount: int):
 	balance_change_animation(p, amount)
 
 
-func pot_sum():
+func pot_sum() -> int:
 	return players_game_bet.reduce(func(accum, number): return accum + number, 0)
 
-func side_pot_handler():
+func side_pot_handler() -> void:
 	pots.clear()
 	var pot_sizes = [players_game_bet.max()]
 	for player in players_live:
@@ -350,7 +358,7 @@ func side_pot_handler():
 		balance_display_update()
 
 # ==============================================================================
-# PLAYER ACTIONS (SIGNAL HANDLERS)
+# PLAYER ACTIONS & SIGNAL HANDLERS
 # ==============================================================================
 
 @rpc("any_peer")
@@ -380,7 +388,7 @@ func _on_raise(player, amount = min_bet):
 	if Global.mp_enabled and !multiplayer.is_server():
 		_on_raise.rpc_id(1, player, amount)
 		return
-# If player does not have enough money to raise/bet the amount
+	# If player does not have enough money to raise/bet the amount
 	if players_balance[player] < round_bet - players_round_bet[player] + amount:
 		# If player does not have enough money to raise/bet the amount but has money to raise/bet
 		if players_balance[player] > round_bet - players_round_bet[player]:
@@ -402,27 +410,17 @@ func _on_raise(player, amount = min_bet):
 
 	game_loop(players_live[(players_live.find(player) + 1) % player_count])
 
-
-func _on_deck_table_deal(card):
-	card.position = card_placement
-	card_placement += Vector2(125, 0)
-	community_cards_physical.append(card)
-	community_cards_data.append([card.value, card.suit])
-
-	await get_tree().create_timer(0.6).timeout
-	card.flip_card()
-
 # ==============================================================================
 # SHOWDOWN & SCORING
 # ==============================================================================
 
-func uncontested_win():
+func uncontested_win() -> void:
 	for player in players_live:
 		if player not in fold_list:
 			label_update("Main", "Player " + str(player + 1) + " Wins!")
 			player_award(player, pot_sum())
 
-func showdown():
+func showdown() -> void:
 	var poker_hand_list = []
 
 	# Get players' poker hands
@@ -528,7 +526,7 @@ func pot_distribution(placements: Array) -> void:
 # STATE RESET & TRANSITIONS
 # ==============================================================================
 
-func game_reset():
+func game_reset() -> void:
 	fold_list.clear()
 	all_in_list.clear()
 	$Objects/Deck.reset_deck()
@@ -564,7 +562,7 @@ func game_reset():
 	starting_slot = (starting_slot + 1) % player_count
 
 
-func _on_countdown_timeout():
+func _on_countdown_timeout() -> void:
 	if start_mode == "manual":
 		if intermission >= 3:
 			label_update("Main", "Press anywhere to continue...")
@@ -584,7 +582,7 @@ func _on_countdown_timeout():
 			return
 	intermission += 1
 
-func _unhandled_input(event):
+func _unhandled_input(event) -> void:
 	# Click to start next hand
 	if event is InputEventMouseButton and event.button_index == 1:
 		if Global.mp_enabled and !multiplayer.is_server():
@@ -594,17 +592,17 @@ func _unhandled_input(event):
 		game_restart_conditional()
 
 @rpc("any_peer")
-func game_restart_conditional():
+func game_restart_conditional() -> void:
 	if new_game_ready:
 		new_game_ready = false
 		game_reset()
 		game_begin()
 
-func game_end():
+func game_end() -> void:
 	label_update("Main", "The winner is Player " + str(players_live[0] + 1) + "!")
 
 # ==============================================================================
-# Logging & Visuals
+# LOGGING & VISUALS
 # ==============================================================================
 
 func logger(action: String, p: int = -1, amount: int = -1) -> void:
@@ -630,19 +628,19 @@ func logger(action: String, p: int = -1, amount: int = -1) -> void:
 	logger_window_update(game_log[-1] + "\n")
 
 @rpc("authority")
-func logger_window_update(text):
+func logger_window_update(text) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		logger_window_update.rpc(text)
 	_game_log.text += text
 
 @rpc("authority")
-func game_log_reset():
+func game_log_reset() -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		game_log_reset.rpc()
 	game_log.clear()
 	_game_log.text = ""
 
-func cards_data_to_str(card):
+func cards_data_to_str(card: Array) -> String:
 	if card[0] == 11:
 		return "J" + card[1][0]
 	elif card[0] == 12:
@@ -658,14 +656,14 @@ func assign_player_position(i: int, role: String) -> void:
 	label_update("PlayerHeadsUp", role, players_live[(starting_slot + i - 1) % player_count])
 	players_roles.append("Player " + str(players_live[(starting_slot + i - 1) % player_count] + 1) + ": " + role)
 
-func indicator_reset():
+func indicator_reset() -> void:
 	for player in players_live:
 		if player not in fold_list:
 			indicator_color_update(player, Color("Gray"))
 		if player in all_in_list:
 			indicator_color_update(player, Color("Dark_Green"))
 
-func balance_display_update(player = null):
+func balance_display_update(player = null) -> void:
 	# Player
 	if player == -1:
 		for p in range(starting_player_count):
@@ -686,7 +684,7 @@ func balance_display_update(player = null):
 		pot_label_text += "\nTotal Pot: " + str(pot_sum()) + " €"
 		label_update("Pot", pot_label_text)
 
-func move_display_update(move: int, player: int, amount: int = 0):
+func move_display_update(move: int, player: int, amount: int = 0) -> void:
 	var move_text: String
 
 	if move == 0:
@@ -734,7 +732,7 @@ func indicator_color_update(player: int, color: Color) -> void:
 	$Hands.seat_setup[player].get_node("PokerStats").set_indicator_color(color)
 
 @rpc("authority")
-func card_placement_reset():
+func card_placement_reset() -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		card_placement_reset.rpc()
 	card_placement = get_viewport().get_camera_2d().position - Vector2(300, 0)
@@ -756,7 +754,7 @@ func balance_change_animation(player, amount) -> void:
 	
 	$Hands.seat_setup[player].get_node("PokerStats").balance_change_animation(amount, dir)
 
-func set_player_face_dir_default():
+func set_player_face_dir_default() -> void:
 	# Player's card is up
 	for p in range(starting_player_count):
 		if players_agent[p][0] == 0 and (player_agent_core[p] == multiplayer.get_unique_id() or !Global.mp_enabled):
@@ -765,36 +763,45 @@ func set_player_face_dir_default():
 			$Hands.face_dir_default(p, false)
 
 @rpc("authority")
-func showdown_card_reveal(player):
+func showdown_card_reveal(player) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		showdown_card_reveal.rpc(player)
 	if $Hands.player_cards_face_up_list[player] == false:
 		$Hands.flip_hand(player)
 
+func _on_deck_table_deal(card) -> void:
+	card.position = card_placement
+	card_placement += Vector2(125, 0)
+	community_cards_physical.append(card)
+	community_cards_data.append([card.value, card.suit])
+
+	await get_tree().create_timer(0.6).timeout
+	card.flip_card()
+
 # ==============================================================================
 # Multiplayer
 # ==============================================================================
 
-func game_start_export():
+func game_start_export() -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		game_start_import.rpc(players_agent, player_agent_core, starting_player_count)
 
 @rpc("authority")
 @warning_ignore("shadowed_variable")
-func game_start_import(players_agent, player_agent_core, starting_player_count):
+func game_start_import(players_agent, player_agent_core, starting_player_count) -> void:
 	self.players_agent = players_agent
 	self.starting_player_count = starting_player_count
 	self.player_agent_core = player_agent_core
 
 	set_player_face_dir_default()
 
-func game_state_export():
+func game_state_export() -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		game_state_import.rpc(players_balance, round_bet, players_round_bet, players_game_bet, min_bet)
 
 @rpc("authority")
 @warning_ignore("shadowed_variable")
-func game_state_import(players_balance, round_bet, players_round_bet, players_game_bet, min_bet):
+func game_state_import(players_balance, round_bet, players_round_bet, players_game_bet, min_bet) -> void:
 	self.players_balance = players_balance
 	self.round_bet = round_bet
 	self.players_round_bet = players_round_bet
