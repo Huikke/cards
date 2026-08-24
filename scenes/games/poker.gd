@@ -115,19 +115,19 @@ func game_setup(players_modes = null, player_names = null) -> void:
 
 func player_agent_setup() -> void:
 	for i in range(len(players_agent)):
-			if players_agent[i][0] == 0 and Global.mp_enabled:
-				player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
-			elif players_agent[i][0] == 1:
-				player_agent_core.append(players_agent[i][1])
-			elif players_agent[i][0] == 2:
-				if players_agent[i][1] == 0:
-					player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
-					add_child(player_agent_core[i])
-				elif players_agent[i][1] == 1:
-					player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
-					add_child(player_agent_core[i])
-			else:
-				player_agent_core.append(null)
+		if players_agent[i][0] == 0 and Global.mp_enabled:
+			player_agent_core.append(Global.multiplayer_players[players_agent[i][1]])
+		elif players_agent[i][0] == 1:
+			player_agent_core.append(players_agent[i][1])
+		elif players_agent[i][0] == 2:
+			if players_agent[i][1] == 0:
+				player_agent_core.append(PokerAiLLM.new("gemini-3.5-flash-lite"))
+				add_child(player_agent_core[i])
+			elif players_agent[i][1] == 1:
+				player_agent_core.append(PokerAiLLM.new("ai/llama3.2"))
+				add_child(player_agent_core[i])
+		else:
+			player_agent_core.append(null)
 
 # ==============================================================================
 # CORE GAME FLOW
@@ -270,7 +270,7 @@ func round_end_process() -> void:
 # ==============================================================================
 
 @rpc("authority")
-func player_turn(player: int, peer_id: int) -> void:
+func player_turn(player: int, peer_id) -> void:
 	if Global.mp_enabled and multiplayer.is_server():
 		game_state_export()
 		player_turn.rpc(player, peer_id)
