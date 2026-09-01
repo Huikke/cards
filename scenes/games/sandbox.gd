@@ -1,6 +1,6 @@
 extends Node2D
 
-var card_scene = preload("res://scenes/objects/card.tscn")
+var card_scene = preload("res://scenes/objects/playing_card.tscn")
 signal card_entered(Area2D, int)
 
 func _ready():
@@ -8,7 +8,7 @@ func _ready():
 	GlobalSignal.hand_deal.connect($Hands._on_card_to_hand)
 
 func _on_area_entered(object, area):
-	if object is not Card:
+	if object is not PlayingCard:
 		return
 	var p: int
 	if area == $AreaP1:

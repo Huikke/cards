@@ -15,9 +15,10 @@ func _on_input_event(_viewport, event, _shape_idx):
 	# Zoom and moving card still doesn't work correctly, very useful indeed.
 	if event is InputEventMouseButton and event.pressed:
 		var ppqp2d = PhysicsPointQueryParameters2D.new()
-		var zoom_factor = get_viewport().get_camera_2d().zoom
-		var topleft = get_viewport().get_camera_2d().position - (get_viewport_rect().size / 2) / zoom_factor
-		ppqp2d.position = topleft + event.position / zoom_factor
+		if get_viewport().get_camera_2d() != null:
+			var zoom_factor = get_viewport().get_camera_2d().zoom
+			var topleft = get_viewport().get_camera_2d().position - (get_viewport_rect().size / 2) / zoom_factor
+			ppqp2d.position = topleft + event.position / zoom_factor
 		ppqp2d.collide_with_areas = true
 		var objects_clicked = get_world_2d().direct_space_state.intersect_point(ppqp2d)
 

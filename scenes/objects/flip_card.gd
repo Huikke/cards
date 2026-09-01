@@ -1,10 +1,8 @@
-extends GameObject2D
+extends Card
 class_name FlipCard
 
 # Physics
 var content = ["A", "あ"]
-@export var direction = Vector2(0, 0)
-@export var speed = 0
 var japanese = false
 
 func _ready():
@@ -13,7 +11,6 @@ func _ready():
 
 func _process(delta):
 	super(delta)
-	position += direction * speed * delta
 
 func mouse2():
 	flip_card()

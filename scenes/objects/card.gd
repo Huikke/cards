@@ -2,10 +2,8 @@ extends GameObject2D
 class_name Card
 
 # Card Attributes
-@export var value = "troll"
-@export var suit = "face"
-@export var back_sprite = "res://assets/cards/back/" + "chicken.svg"
-var suits = ["spade", "heart", "club", "diamond"]
+@export var back_sprite = "res://assets/cards/back/chicken.svg"
+@export var front_sprite = "res://assets/cards/front/troll_face.svg"
 var face = false
 
 # Physics
@@ -26,8 +24,7 @@ func mouse2():
 
 func flip_card():
 	if not face:
-		var file_name = str(value) + "_" + suit + ".svg"
-		get_node("Sprite").texture = load("res://assets/cards/front/perfectionism/" + file_name)
+		get_node("Sprite").texture = load(front_sprite)
 		face = true
 	elif face:
 		get_node("Sprite").texture = load(back_sprite)

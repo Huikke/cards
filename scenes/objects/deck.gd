@@ -1,7 +1,7 @@
 extends GameObject2D
 class_name Deck
 
-var card_scene = preload("res://scenes/objects/card.tscn")
+var card_scene = preload("res://scenes/objects/playing_card.tscn")
 @onready var back_sprite = Global.back_art
 
 var logic = DeckLogic.new()
