@@ -1,8 +1,7 @@
 extends CanvasLayer
 
 var base_file_location = "res://scenes/games/"
-var game_scenes = ["best_of_three.tscn", "kuhn_poker.tscn", "poker.tscn", "sandbox.tscn"]
-
+var game_scenes = ["best_of_three.tscn", "kuhn_poker.tscn", "poker.tscn", "japanese.tscn", "sandbox.tscn"]
 
 func _on_play_button_pressed():
 	$FirstMenu.visible = false
@@ -36,29 +35,34 @@ var modes = Global.poker_mode_names
 var mode_options = Global.poker_mode_options
 var players_mode = Global.player_poker_modes
 
-func _on_game_3_setting_pressed():
+func _on_game_setting_pressed(game: String):
 	$GameMenu.visible = false
-	$PokerSettingMenu.visible = true
-	if game_settings_first:
-		for p in range(4):
-			mode_update(p, false)
-			var left_node = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Left")
-			var right_node = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Right")
-			var option_button = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton")
-			left_node.pressed.connect(_on_left_pressed.bind(p))
-			right_node.pressed.connect(_on_right_pressed.bind(p))
-			option_button.item_selected.connect(_on_option_button_item_selected.bind(p))
-		game_settings_first = false
+	if game == "poker":
+		$PokerSettingMenu.visible = true
+		if game_settings_first:
+			for p in range(4):
+				mode_update(p, false)
+				var left_node = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Left")
+				var right_node = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/Right")
+				var option_button = $PokerSettingMenu/PlayerSettingsBox.get_node("PlayerSettings" + str(p) + "/OptionButton")
+				left_node.pressed.connect(_on_left_pressed.bind(p))
+				right_node.pressed.connect(_on_right_pressed.bind(p))
+				option_button.item_selected.connect(_on_option_button_item_selected.bind(p))
+			game_settings_first = false
+	elif game == "japanese":
+		$JapaneseSettingMenu.visible = true
 
 
 func _on_setting_back_button_pressed():
 	$PokerSettingMenu.visible = false
+	$JapaneseSettingMenu.visible = false
 	$GameMenu.visible = true
 
+
+# Poker
 func _on_left_pressed(p):
 	players_mode[p][0] = (players_mode[p][0] - 1) % len(modes)
 	mode_update(p)
-
 
 func _on_right_pressed(p):
 	players_mode[p][0] = (players_mode[p][0] + 1) % len(modes)
@@ -111,3 +115,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_quit_button_pressed() -> void:
 	get_tree().quit()
+
+# Japanese
+func _on_deck_size_value_changed(value: float) -> void:
+	Global.deck_size = int(value-1)
+
+func _on_deck_type_item_selected(index: int) -> void:
+	Global.deck_type = index

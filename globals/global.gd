@@ -5,9 +5,14 @@ var mp_enabled = false
 
 var back_art: String
 
+# Poker
 var player_poker_modes = [[0, 0], [1, 0], [1, 1], [1, 0]]
 var player_names = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"]
 var poker_mode_names = ["Player", "Random", "LLM"]
 var poker_mode_options = [["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"], 
 							["Random 1", "Random 2"], ["Gemini", "Llama"]]
 var multiplayer_players = []
+
+# Japanese
+var deck_size: int = -1
+var deck_type: int = 0

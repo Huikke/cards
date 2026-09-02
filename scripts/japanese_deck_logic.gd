@@ -16,19 +16,16 @@ var letters_dict = {
 	'n': ['ん', 'ン']
 }
 
-func _init(type: String):
-	if type == "hiragana":
-		hiragana_deck()
-	elif type == "katakana":
-		katakana_deck()
-
-func hiragana_deck():
-	for english in letters_dict:
-		deck.append([english.to_upper(), letters_dict[english][0]])
-
-func katakana_deck():
-	for english in letters_dict:
-		deck.append([english.to_upper(), letters_dict[english][1]])
+func _init(type: int, size: int = -1):
+	if size == -1:
+		for english in letters_dict:
+			deck.append([english.to_upper(), letters_dict[english][type]])
+	else:
+		for english in letters_dict:
+			deck.append([english.to_upper(), letters_dict[english][type]])
+			size -= 1
+			if size < 0:
+				break
 
 
 func shuffle():

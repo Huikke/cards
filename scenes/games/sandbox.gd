@@ -43,7 +43,7 @@ func _on_spawn_deck_pressed() -> void:
 	var new_deck = load(decks[no]).instantiate()
 	add_child(new_deck)
 	if no == 2:
-		new_deck.reset_deck("katakana")
+		new_deck.reset_deck(1)
 
 func _on_deck_left_pressed() -> void:
 	no = (no - 1) % len(decks)

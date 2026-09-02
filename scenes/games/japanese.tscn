@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://tpfkrrlbjbyv"]
+
+[ext_resource type="PackedScene" uid="uid://5bmjwkuw0yc7" path="res://scenes/objects/japanese_deck.tscn" id="1_5epkc"]
+[ext_resource type="Script" uid="uid://cmcj3xvg6q3tr" path="res://scenes/games/japanese.gd" id="1_ju6yr"]
+[ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_0ysv7"]
+
+[node name="Japanese" type="Node2D" unique_id=623037273]
+script = ExtResource("1_ju6yr")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1794450823]
+texture_repeat = 2
+texture = ExtResource("2_0ysv7")
+region_enabled = true
+region_rect = Rect2(0, 0, 1920, 1080)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1281757979]
+
+[node name="FlipCardDeck" parent="." unique_id=1594890157 instance=ExtResource("1_5epkc")]
+position = Vector2(-1, 2)

@@ -99,7 +99,23 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "⚙️"
 
-[node name="Game4Button" type="Button" parent="GameMenu" unique_id=126181324]
+[node name="Game4HBC" type="HBoxContainer" parent="GameMenu" unique_id=2129465855]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="Game4Button" type="Button" parent="GameMenu/Game4HBC" unique_id=397193188]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Japanese"
+
+[node name="Game4Setting" type="Button" parent="GameMenu/Game4HBC" unique_id=179519145]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "⚙️"
+
+[node name="Game5Button" type="Button" parent="GameMenu" unique_id=126181324]
 custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -202,6 +218,53 @@ size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
 text = "Back"
 
+[node name="JapaneseSettingMenu" type="VBoxContainer" parent="." unique_id=1427420907]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -292.0
+offset_top = -280.0
+offset_right = 292.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 40
+
+[node name="PanelContainer" type="PanelContainer" parent="JapaneseSettingMenu" unique_id=459937085]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Label" type="Label" parent="JapaneseSettingMenu/PanelContainer" unique_id=1382528389]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="DeckType" type="OptionButton" parent="JapaneseSettingMenu" unique_id=1433812355]
+layout_mode = 2
+size_flags_horizontal = 4
+selected = 0
+item_count = 2
+popup/item_0/text = "Hiragana"
+popup/item_0/id = 0
+popup/item_1/text = "Katakana"
+popup/item_1/id = 1
+
+[node name="DeckSize" type="SpinBox" parent="JapaneseSettingMenu" unique_id=656792539]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="SettingBackButton" type="Button" parent="JapaneseSettingMenu" unique_id=1376864199]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Back"
+
 [node name="NetworkHandler" parent="." unique_id=798366590 instance=ExtResource("2_7oqx1")]
 visible = false
 
@@ -212,10 +275,15 @@ visible = false
 [connection signal="pressed" from="GameMenu/Game1Button" to="." method="_on_game_button_pressed" binds= [0]]
 [connection signal="pressed" from="GameMenu/Game2Button" to="." method="_on_game_button_pressed" binds= [1]]
 [connection signal="pressed" from="GameMenu/Game3HBC/Game3Button" to="." method="_on_game_button_pressed" binds= [2]]
-[connection signal="pressed" from="GameMenu/Game3HBC/Game3Setting" to="." method="_on_game_3_setting_pressed"]
-[connection signal="pressed" from="GameMenu/Game4Button" to="." method="_on_game_button_pressed" binds= [3]]
+[connection signal="pressed" from="GameMenu/Game3HBC/Game3Setting" to="." method="_on_game_setting_pressed" binds= ["poker"]]
+[connection signal="pressed" from="GameMenu/Game4HBC/Game4Button" to="." method="_on_game_button_pressed" binds= [3]]
+[connection signal="pressed" from="GameMenu/Game4HBC/Game4Setting" to="." method="_on_game_setting_pressed" binds= ["japanese"]]
+[connection signal="pressed" from="GameMenu/Game5Button" to="." method="_on_game_button_pressed" binds= [4]]
 [connection signal="pressed" from="GameMenu/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="SettingsMenu/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="PokerSettingMenu/PlayerAmountControl/Add" to="." method="_on_add_pressed"]
 [connection signal="pressed" from="PokerSettingMenu/PlayerAmountControl/Remove" to="." method="_on_remove_pressed"]
 [connection signal="pressed" from="PokerSettingMenu/SettingBackButton" to="." method="_on_setting_back_button_pressed"]
+[connection signal="item_selected" from="JapaneseSettingMenu/DeckType" to="." method="_on_deck_type_item_selected"]
+[connection signal="value_changed" from="JapaneseSettingMenu/DeckSize" to="." method="_on_deck_size_value_changed"]
+[connection signal="pressed" from="JapaneseSettingMenu/SettingBackButton" to="." method="_on_setting_back_button_pressed"]

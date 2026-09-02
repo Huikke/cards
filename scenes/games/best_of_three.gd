@@ -1,7 +1,7 @@
 extends Node2D
 
 var mathbot = preload("res://scripts/mathbot.gd").new()
-var card_scene = preload("res://scenes/objects/card.tscn")
+var card_scene = preload("res://scenes/objects/playing_card.tscn")
 
 var human_score = 0
 var ai_score = 0

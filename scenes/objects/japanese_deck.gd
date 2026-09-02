@@ -4,7 +4,7 @@ class_name JapaseneDeck
 var card_scene = preload("res://scenes/objects/flip_card.tscn")
 @onready var back_sprite = Global.back_art
 
-var logic = JapaneseDeckLogic.new("hiragana")
+var logic = JapaneseDeckLogic.new(0)
 
 func _ready():
 	if back_sprite != "":
@@ -110,5 +110,5 @@ func empty_delete():
 		queue_free()
 		return true
 
-func reset_deck(type):
-	logic = JapaneseDeckLogic.new(type)
+func reset_deck(type, size):
+	logic = JapaneseDeckLogic.new(type, size)

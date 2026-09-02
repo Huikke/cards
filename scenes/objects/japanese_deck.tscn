@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://5bmjwkuw0yc7"]
 
 [ext_resource type="Script" uid="uid://xw7p5aurd4tp" path="res://scenes/objects/japanese_deck.gd" id="1_wqx3t"]
-[ext_resource type="Texture2D" uid="uid://c1pdqojlw1p68" path="res://assets/cards/back/backman.svg" id="2_d4xd1"]
+[ext_resource type="Texture2D" uid="uid://cghmebdu582cn" path="res://assets/cards/blank_yellow.svg" id="2_ordlg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qthkk"]
 size = Vector2(120, 168)
@@ -13,7 +13,7 @@ script = ExtResource("1_wqx3t")
 shape = SubResource("RectangleShape2D_qthkk")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=400259144]
-texture = ExtResource("2_d4xd1")
+texture = ExtResource("2_ordlg")
 
 [node name="AdditionalSprites" type="Node2D" parent="." unique_id=2114078145]
 
