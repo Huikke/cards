@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dlyxqijksc6ws" path="res://scenes/user_interface/extra_gui.tscn" id="5_sboq1"]
 [ext_resource type="PackedScene" uid="uid://5bmjwkuw0yc7" path="res://scenes/objects/japanese_deck.tscn" id="6_wsgvi"]
 [ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="8_wsgvi"]
+[ext_resource type="PackedScene" uid="uid://bqm722s5235bf" path="res://scenes/objects/stopwatch.tscn" id="9_r8v8m"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfyh"]
 size = Vector2(718.75, 119)
@@ -86,6 +87,9 @@ position = Vector2(-186, -34)
 
 [node name="FlipCardDeck" parent="Objects" unique_id=2012358881 instance=ExtResource("6_wsgvi")]
 position = Vector2(114, -53)
+
+[node name="Stopwatch" parent="Objects" unique_id=237675044 instance=ExtResource("9_r8v8m")]
+position = Vector2(465, -347)
 
 [node name="Hands" parent="." unique_id=661734421 instance=ExtResource("3_tpt06")]
 
