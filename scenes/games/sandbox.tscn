@@ -1,12 +1,11 @@
 [gd_scene format=3 uid="uid://haa7gldbrc60"]
 
 [ext_resource type="Script" uid="uid://bcl51g5rqvaw0" path="res://scenes/games/sandbox.gd" id="1_a8pr3"]
-[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="2_j6lu3"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/playing_card_deck.tscn" id="2_j6lu3"]
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_rltwk"]
 [ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_8j86d"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_tpt06"]
 [ext_resource type="PackedScene" uid="uid://dlyxqijksc6ws" path="res://scenes/user_interface/extra_gui.tscn" id="5_sboq1"]
-[ext_resource type="PackedScene" uid="uid://5bmjwkuw0yc7" path="res://scenes/objects/japanese_deck.tscn" id="6_wsgvi"]
 [ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="8_wsgvi"]
 [ext_resource type="PackedScene" uid="uid://bqm722s5235bf" path="res://scenes/objects/stopwatch.tscn" id="9_r8v8m"]
 
@@ -84,9 +83,6 @@ polygon = PackedVector2Array(340, 420, 459.1101, 420, 1080, 420, 1080, 665, 1081
 
 [node name="Deck" parent="Objects" unique_id=1594890157 instance=ExtResource("2_j6lu3")]
 position = Vector2(-186, -34)
-
-[node name="FlipCardDeck" parent="Objects" unique_id=2012358881 instance=ExtResource("6_wsgvi")]
-position = Vector2(114, -53)
 
 [node name="Stopwatch" parent="Objects" unique_id=237675044 instance=ExtResource("9_r8v8m")]
 position = Vector2(465, -347)

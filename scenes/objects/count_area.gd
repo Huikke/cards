@@ -12,5 +12,4 @@ func _on_area_exited(_area: Area2D) -> void:
 	update_label()
 
 func update_label():
-	print(count)
 	$Label.text = "Count: " + str(count)

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://8u28xvynurd7"]
 
 [ext_resource type="Script" uid="uid://c6ex16e5a1a1m" path="res://scenes/games/poker.gd" id="1_dhslg"]
-[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="1_gbg6l"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/playing_card_deck.tscn" id="1_gbg6l"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="3_2teuh"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_2teuh"]
 [ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="6_y74yl"]

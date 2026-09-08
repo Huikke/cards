@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://gh1l8tg4ueav" path="res://scenes/games/kuhn_poker.gd" id="1_7nd1m"]
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_mpjaf"]
-[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/deck.tscn" id="3_mpjaf"]
+[ext_resource type="PackedScene" uid="uid://tsli6q2atxla" path="res://scenes/objects/playing_card_deck.tscn" id="3_mpjaf"]
 [ext_resource type="PackedScene" uid="uid://brmadw04ieoxr" path="res://scenes/user_interface/hands.tscn" id="4_uryfc"]
 [ext_resource type="PackedScene" uid="uid://de6wcdlfhqgrb" path="res://scenes/user_interface/poker_buttons.tscn" id="5_u6pjw"]
 [ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="6_rqdjo"]

@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://5bmjwkuw0yc7" path="res://scenes/objects/japanese_deck.tscn" id="1_5epkc"]
 [ext_resource type="Script" uid="uid://cmcj3xvg6q3tr" path="res://scenes/games/japanese.gd" id="1_ju6yr"]
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_0ysv7"]
+[ext_resource type="Script" uid="uid://bhrvemx7vo6fm" path="res://scripts/camera.gd" id="3_wgib1"]
 [ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="4_hucel"]
 [ext_resource type="PackedScene" uid="uid://bqm722s5235bf" path="res://scenes/objects/stopwatch.tscn" id="5_qctjt"]
 [ext_resource type="PackedScene" uid="uid://dc33ng0gidleh" path="res://scenes/objects/count_area.tscn" id="6_y5m0g"]
@@ -18,6 +19,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 1920, 1080)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1281757979]
+script = ExtResource("3_wgib1")
 
 [node name="FlipCardDeck" parent="." unique_id=1594890157 instance=ExtResource("1_5epkc")]
 position = Vector2(-1, 2)

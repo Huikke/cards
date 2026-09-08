@@ -1,12 +1,12 @@
 extends GameObject2D
 class_name Deck
 
-var card_scene = preload("res://scenes/objects/playing_card.tscn")
+var card_scene: Resource
 @onready var back_sprite = Global.back_art
 
-var logic = DeckLogic.new()
+var logic: Object
 
-func _ready():
+func _ready() -> void:
 	if back_sprite != "":
 		$Sprite.texture = load(back_sprite)
 	for i in range(1, len(logic.deck)/6 + 1):
@@ -45,39 +45,21 @@ func mouse5():
 func deal(mode: String = "local", player: int = -1) -> void:
 	var pop_card = logic.deck.pop_front()
 	if mode == "local" or mode == "table":
-		deal_2d(pop_card, back_sprite, mode)
+		deal_2d(pop_card, mode)
 	elif mode == "player":
-		deal_ui(pop_card, back_sprite, player)
+		deal_ui(pop_card, player)
 
 @rpc("authority")
-func deal_2d(pop_card: Array, back_sprite_this: String, mode: String) -> void:
-	if Global.mp_enabled == true and multiplayer.is_server():
-		deal_2d.rpc(pop_card, back_sprite_this, mode)
-	var card = card_scene.instantiate()
-	card.position = position
-	card.value = pop_card[0]
-	card.suit = pop_card[1]
-	card.back_sprite = back_sprite_this
-
-	if mode == "local":
-		deck_deal(card, true)
-	if mode == "table":
-		deck_deal(card, false)
+func deal_2d(pop_card: Array, mode: String) -> void:
+	pass
 
 @rpc("authority")
-func deal_ui(pop_card: Array, back_sprite_this: String, player: int) -> void:
-	if Global.mp_enabled == true and multiplayer.is_server():
-		deal_ui.rpc(pop_card, back_sprite_this, player)
-	var card = {}
-	card["value"] = pop_card[0]
-	card["suit"] = pop_card[1]
-	card["back_sprite"] = back_sprite_this
-	GlobalSignal.hand_deal.emit(card, player)
+func deal_ui(pop_card: Array, player: int) -> void:
+	pass
 
 func deal_burst():
 	for i in len(logic.deck):
 		deal()
-
 
 func deck_deal(card, motion: bool = false):
 	get_parent().add_child(card)
@@ -113,5 +95,5 @@ func empty_delete():
 		queue_free()
 		return true
 
-func reset_deck() -> void:
-	logic = DeckLogic.new()
+func reset_deck(type: int = -1, size: int = -1) -> void:
+	pass
