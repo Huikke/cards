@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://dc33ng0gidleh"]
+
+[ext_resource type="Script" uid="uid://c5b5katnbykv5" path="res://scenes/objects/count_area.gd" id="1_xa5r5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w5m72"]
+size = Vector2(208, 295)
+
+[node name="CountArea" type="Area2D" unique_id=1904399239]
+script = ExtResource("1_xa5r5")
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=561742314]
+color = Color(0.3600277, 0.541361, 0.38951734, 1)
+polygon = PackedVector2Array(-104, -192, 104, -192, 104, 104, -104, 104)
+uv = PackedVector2Array(-103.00001, -100, 99.99999, -100, 100, 97, -103, 97)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1378034942]
+visible = false
+position = Vector2(0, -43.5)
+shape = SubResource("RectangleShape2D_w5m72")
+
+[node name="Label" type="Label" parent="." unique_id=790527155]
+offset_left = -34.0
+offset_top = -215.0
+offset_right = 34.0
+offset_bottom = -196.0
+text = "Count: 0"
+metadata/_edit_use_anchors_ = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="area_exited" from="." to="." method="_on_area_exited"]

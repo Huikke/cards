@@ -5,15 +5,14 @@
 [ext_resource type="Texture2D" uid="uid://rcdkry2ropkw" path="res://assets/backgrounds/blueprint_bg.png" id="2_0ysv7"]
 [ext_resource type="PackedScene" uid="uid://bdvs8thxqfq51" path="res://scenes/user_interface/esc_menu.tscn" id="4_hucel"]
 [ext_resource type="PackedScene" uid="uid://bqm722s5235bf" path="res://scenes/objects/stopwatch.tscn" id="5_qctjt"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_w5m72"]
-size = Vector2(264, 798)
+[ext_resource type="PackedScene" uid="uid://dc33ng0gidleh" path="res://scenes/objects/count_area.tscn" id="6_y5m0g"]
 
 [node name="Japanese" type="Node2D" unique_id=623037273]
 script = ExtResource("1_ju6yr")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1794450823]
 texture_repeat = 2
+position = Vector2(0, -15)
 texture = ExtResource("2_0ysv7")
 region_enabled = true
 region_rect = Rect2(0, 0, 1920, 1080)
@@ -23,19 +22,15 @@ region_rect = Rect2(0, 0, 1920, 1080)
 [node name="FlipCardDeck" parent="." unique_id=1594890157 instance=ExtResource("1_5epkc")]
 position = Vector2(-1, 2)
 
-[node name="Area2D" type="Area2D" parent="." unique_id=245447113]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1565846254]
-position = Vector2(-507, -2)
-shape = SubResource("RectangleShape2D_w5m72")
-
-[node name="Area2D2" type="Area2D" parent="." unique_id=2059115660]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2" unique_id=1861387033]
-position = Vector2(509, -2)
-shape = SubResource("RectangleShape2D_w5m72")
-
 [node name="EscMenu" parent="." unique_id=623134519 instance=ExtResource("4_hucel")]
 
 [node name="Stopwatch" parent="." unique_id=237675044 instance=ExtResource("5_qctjt")]
 position = Vector2(267, -335)
+
+[node name="Areas" type="Node2D" parent="." unique_id=1968318289]
+
+[node name="CountArea" parent="Areas" unique_id=1904399239 instance=ExtResource("6_y5m0g")]
+position = Vector2(-423, 56)
+
+[node name="CountArea2" parent="Areas" unique_id=1197960905 instance=ExtResource("6_y5m0g")]
+position = Vector2(384, 64)
